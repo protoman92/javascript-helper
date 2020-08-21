@@ -136,7 +136,6 @@ export default function createGremlinClient({
   let didOpenClient = false;
 
   return {
-    process,
     g: async function () {
       if (!didOpenDriver) {
         await driver.open();

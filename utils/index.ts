@@ -1,4 +1,5 @@
 import { backOff } from "exponential-backoff";
+import { AnyClient, PromisifiedClient } from "../interface";
 
 export function analyzeError(err: any) {
   const {
@@ -90,14 +91,39 @@ export function requireNotNull<T>(
   return obj;
 }
 
-export function retry<FN extends (...args: any[]) => Promise<any>>({
-  times: numOfAttempts = 3,
-}: Readonly<{ times?: number }> = {}): (fn: FN) => FN {
-  return (fn) =>
-    ((...args) => backOff(() => fn(...args), { numOfAttempts })) as FN;
+export function wrapFunctionWithRetry<
+  FN extends (...args: any[]) => Promise<any>
+>(fn: FN, { times: numOfAttempts = 3 }: Readonly<{ times?: number }> = {}): FN {
+  return ((...args) => backOff(() => fn(...args), { numOfAttempts })) as FN;
 }
 
 export function toArray<T>(elemOrArray: T | T[]): readonly T[] {
   if (elemOrArray instanceof Array) return elemOrArray;
   return [elemOrArray];
+}
+
+/**
+ * This expects a key-value object client, and currently does not support class
+ * instances.
+ */
+export function wrapClientWithBackoffRetry<C extends AnyClient>(
+  client: C,
+  options?: Parameters<typeof wrapFunctionWithRetry>[1]
+) {
+  return Object.entries(client).reduce(
+    (acc, [k, v]) => ({
+      ...acc,
+      [k]: (() => {
+        if (v instanceof Function) {
+          return wrapFunctionWithRetry(
+            async (...args: readonly any[]) => v(...args),
+            options
+          );
+        } else {
+          return v;
+        }
+      })(),
+    }),
+    {}
+  ) as PromisifiedClient<C>;
 }
