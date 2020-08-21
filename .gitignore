@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# We are ignoring yarn.lock here, and instead rely on the host project to
+# control its own yarn.lock, e.g. in case host project is using workspaces.
+yarn*
