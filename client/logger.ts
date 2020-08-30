@@ -1,5 +1,5 @@
-import { analyzeError } from "../utils";
 import winston, { transports } from "winston";
+import { analyzeError } from "../utils";
 
 export default function () {
   const logger = winston.createLogger({

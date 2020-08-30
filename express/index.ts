@@ -11,7 +11,7 @@ export const validateRequest: express.RequestHandler = async function (
   try {
     const errors = result.array({ onlyFirstError: false });
 
-    if (!!errors.length) {
+    if (errors.length > 0) {
       const message = errors.map((e) => `${e.param}: ${e.msg}`).join("\n");
       const error: any = new Error(message);
       error["status"] = 400;
