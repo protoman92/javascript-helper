@@ -21,7 +21,7 @@ module.exports = async function ({
 
   const {
     data: { sheets: worksheets = [] },
-  } = await workbook.spreadsheets.get();
+  } = await workbook.spreadsheets.get({ spreadsheetId });
 
   await Promise.all(
     worksheets.map(async ({ properties: { title: sheetTitle = "" } = {} }) => {
