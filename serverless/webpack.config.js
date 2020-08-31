@@ -7,6 +7,7 @@ const WebpackShellPlugin = require("webpack-shell-plugin");
  * @property {string} dirname
  * @property {'server' | 'serverless'} infrastructure
  * @param {Args} args
+ * @return {import('webpack').Configuration}
  */
 module.exports = function ({ dirname, infrastructure }) {
   switch (infrastructure) {
@@ -31,8 +32,6 @@ module.exports = function ({ dirname, infrastructure }) {
     case "serverless":
     default:
       return {
-        plugins,
-        resolve,
         entry: slsw.lib.entries,
         target: "node",
         mode: slsw.lib.webpack.isLocal ? "development" : "production",

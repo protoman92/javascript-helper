@@ -1,9 +1,8 @@
 const dotenv = require("dotenv");
-const fs = require("fs-extra");
 const path = require("path");
 
 /**
- * @param {{[x: string]: string}} envVars
+ * @param {{[x: string]: unknown}} envVars
  * @param {string[]} keys
  */
 function requireEnvVars(envVars, ...keys) {
@@ -45,6 +44,7 @@ exports.constructEnvVars = function ({
     }
   })();
 
+  /** @type {{[x: string]: unknown}} */
   let extraEnv = {
     ...dotenv.config({ path: path.join(dirname, `.env.${stage}`) }).parsed,
     NODE_ENV,
