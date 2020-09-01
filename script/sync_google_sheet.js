@@ -7,16 +7,18 @@ const authorizeGoogle = require("./authorize_google");
  * @property {string} sheetTitle
  * @typedef Args
  * @property {(args: SheetCallbackArgs) => Promise<void>} callback
+ * @property {string} dirname
  * @property {string[]} [scopes]
  * @property {string} spreadsheetID
  * @param {Args} args
  */
 module.exports = async function ({
   callback,
+  dirname,
   scopes = [],
   spreadsheetID: spreadsheetId,
 }) {
-  const oAuth2Client = await authorizeGoogle({ scopes });
+  const oAuth2Client = await authorizeGoogle({ dirname, scopes });
   const workbook = google.sheets({ auth: oAuth2Client, version: "v4" });
 
   const {
