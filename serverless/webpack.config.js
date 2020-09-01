@@ -1,15 +1,15 @@
 const path = require("path");
-const slsw = require("serverless-webpack");
 const WebpackShellPlugin = require("webpack-shell-plugin");
 
 /**
  * @typedef Args
  * @property {string} dirname
  * @property {'server' | 'serverless'} infrastructure
+ * @property {typeof import('serverless-webpack')} slsw
  * @param {Args} args
  * @return {import('webpack').Configuration}
  */
-module.exports = function ({ dirname, infrastructure }) {
+module.exports = function ({ dirname, infrastructure, slsw }) {
   switch (infrastructure) {
     case "server":
       return {
