@@ -154,6 +154,7 @@ export default function createGremlinClient({
 
       if (shouldLogQuery) console.log(args[0]);
       const result: gdriver.ResultSet = await client.submit(...args);
+      if (result == null) return [];
       return result.toArray() as T[];
     },
   };
