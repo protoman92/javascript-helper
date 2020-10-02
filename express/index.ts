@@ -1,7 +1,7 @@
-import express, { Application } from "express";
+import express from "express";
 import { validationResult } from "express-validator";
 export * from "express-validator";
-export { express, Application };
+export { express };
 
 export const validateRequest: express.RequestHandler = async function (
   ...[req, , next]
