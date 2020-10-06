@@ -20,19 +20,18 @@ export {
   createHttpLink,
 };
 
+export type BoostRequestArgs<A, R> = MutationOptions<R, A> | QueryOptions<A>;
+
 export default function (
   boostOrOptions: ApolloClient<unknown> | ApolloClientOptions<unknown>
 ) {
   const apollo = (() => {
-    if (boostOrOptions instanceof ApolloClient) {
-      return boostOrOptions;
-    }
-
+    if (boostOrOptions instanceof ApolloClient) return boostOrOptions;
     return new ApolloClient(boostOrOptions);
   })();
 
   return {
-    request: async <A, R>(args: MutationOptions<R, A> | QueryOptions<A>) => {
+    request: async <A, R>(args: BoostRequestArgs<A, R>) => {
       try {
         let data: R | null | undefined;
         let errors: readonly GraphQLError[] | undefined;
