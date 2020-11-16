@@ -44,7 +44,13 @@ export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
 
 export function omitNull<T extends { [x: string]: any }>(
   obj: T
-): Readonly<{ [x in keyof T]: T[x] extends null | undefined ? never : T[x] }> {
+): Readonly<
+  {
+    [x in keyof T]: T[x] extends NonNullable<T[x]>
+      ? T[x]
+      : NonNullable<T[x]> | undefined;
+  }
+> {
   return Object.entries(obj)
     .filter(([, v]) => v != null)
     .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {}) as any;
