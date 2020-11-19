@@ -1,4 +1,18 @@
 export type AnyClient = Readonly<{ [x: string]: (...args: any[]) => any }>;
+
+export interface EventEmitterClient<
+  CB extends { [x: string]: (...args: any[]) => void }
+> {
+  /** Use this only for type checking. It will not give the actual callbacks */
+  callbacksType: CB;
+  emit<K extends keyof CB>(key: K, ...args: Parameters<CB[K]>): void;
+  getCallbackCount<K extends keyof CB>(key: K): number;
+  on<K extends keyof CB>(key: K, callback: CB[K]): void;
+  off<K extends keyof CB>(key: K, callback: CB[K]): void;
+}
+
+export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
+
 export type Promised<T> = T extends Promise<infer U> ? U : T;
 
 export type Promisified<FN extends (...args: any[]) => any> = FN extends (
