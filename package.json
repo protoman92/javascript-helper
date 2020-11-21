@@ -13,6 +13,7 @@
     "express-validator": "6.5.0",
     "googleapis": "59.0.0",
     "graphql-iso-date": "3.6.1",
+    "graphql-tools": "6.2.3",
     "graphql-type-json": "0.3.2",
     "gremlin": "3.4.8",
     "serverless": "1.71.1",
