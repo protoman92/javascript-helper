@@ -1,6 +1,8 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
+    "@graphql-tools/schema": "7.0.0",
+    "@graphql-tools/utils": "7.0.1",
     "@lifeomic/axios-fetch": "1.4.2",
     "apollo-boost": "0.4.9",
     "apollo-link-context": "1.0.20",
@@ -13,7 +15,6 @@
     "express-validator": "6.5.0",
     "googleapis": "59.0.0",
     "graphql-iso-date": "3.6.1",
-    "graphql-tools": "7.0.1",
     "graphql-type-json": "0.3.2",
     "gremlin": "3.4.8",
     "serverless": "1.71.1",
