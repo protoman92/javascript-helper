@@ -1,4 +1,3 @@
-import { EventEmitterClient } from "../interface";
 import createEventEmitterClient from "./event_emitter_client";
 
 interface LocalStorageClientArgs {
@@ -12,7 +11,7 @@ type Callbacks = Readonly<{
 
 export function createLocalStorageClient({
   global = window,
-}: LocalStorageClientArgs): EventEmitterClient<Callbacks> {
+}: LocalStorageClientArgs) {
   const eventEmitter = createEventEmitterClient<Callbacks>();
   const currentOn = eventEmitter.on.bind(eventEmitter);
   const currentOff = eventEmitter.off.bind(eventEmitter);
@@ -56,7 +55,45 @@ export function createLocalStorageClient({
     }
   };
 
-  return eventEmitter;
+  const client = {
+    ...eventEmitter,
+    /**
+     * Beware that there is no replay mechanism for this emission, so if by
+     * now the required callbacks have not been set up, you will miss these
+     * events.
+     */
+    emitStartingValues: async function () {
+      const currentItems = await client.getItems();
+
+      for (const key in currentItems) {
+        const value = currentItems[key];
+        client.emit("change", key, value);
+      }
+    },
+    getItem: async function (key: string) {
+      return global.localStorage.getItem(key) ?? undefined;
+    },
+    getItems: async function () {
+      const items: Record<string, string> = {};
+      const length = global.localStorage.length;
+
+      for (let i = 0; i < length; i += 1) {
+        let key: string | null;
+        let value: string | null;
+
+        if (
+          (key = global.localStorage.key(i)) != null &&
+          (value = global.localStorage.getItem(key)) != null
+        ) {
+          items[key] = value ?? undefined;
+        }
+      }
+
+      return items;
+    },
+  };
+
+  return client;
 }
 
 const defaultLocalStorageClient = createLocalStorageClient({});
