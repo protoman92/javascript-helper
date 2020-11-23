@@ -17,6 +17,7 @@
     "graphql-iso-date": "3.6.1",
     "graphql-type-json": "0.3.2",
     "gremlin": "3.4.8",
+    "rxjs": "6.6.3",
     "serverless": "1.71.1",
     "serverless-http": "2.4.1",
     "winston": "3.3.3"
