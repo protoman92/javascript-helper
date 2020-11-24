@@ -27,6 +27,7 @@
     "@types/graphql-type-json": "0.3.2",
     "@types/gremlin": "3.4.6",
     "@types/jest": "26.0.15",
+    "@types/react": "16.8.24",
     "@types/serverless": "1.72.6",
     "@types/webpack-shell-plugin": "0.5.0",
     "babel-jest": "26.3.0",
@@ -37,6 +38,8 @@
     "jest": "26.3.0",
     "json-beautify": "1.1.1",
     "nodemon": "2.0.4",
+    "react": "*",
+    "rxjs": "*",
     "serverless-webpack": "5.3.4",
     "ts-jest": "26.3.0",
     "typescript": "4.0.2",
@@ -48,9 +51,14 @@
   "license": "MIT",
   "name": "javascript-helper",
   "peerDependencies": {
-    "rxjs": "6.6.3"
+    "react": "*",
+    "rxjs": "*"
   },
   "repository": "https://github.com/protoman92/javascript-helper.git",
+  "resolutions": {
+    "react": "16.13.1",
+    "rxjs": "6.6.3"
+  },
   "scripts": {
     "nodemon": "nodemon",
     "test": "jest"

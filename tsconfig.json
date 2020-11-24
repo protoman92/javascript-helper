@@ -4,6 +4,7 @@
     "alwaysStrict": true,
     "checkJs": true,
     "esModuleInterop": true,
+    "jsx": "react",
     "module": "commonjs",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,

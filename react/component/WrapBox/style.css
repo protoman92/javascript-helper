@@ -1,0 +1,20 @@
+.wrap-box-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.wrap-box-container_small {
+  margin-bottom: -8px;
+}
+
+.wrap-box-container_small > * {
+  margin: 0 8px 8px 0;
+}
+
+.wrap-box-container_large {
+  margin-bottom: -16px;
+}
+
+.wrap-box-container_large > * {
+  margin: 0 16px 16px 0;
+}
