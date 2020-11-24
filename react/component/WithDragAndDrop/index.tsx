@@ -57,7 +57,7 @@ export default class WithDragAndDrop<T> extends Component<Props<T>> {
     return result;
   }
 
-  renderView = () => {
+  render = () => {
     const {
       children,
       childClassName,
