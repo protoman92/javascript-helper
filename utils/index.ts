@@ -1,4 +1,5 @@
 import { backOff } from "exponential-backoff";
+import { shallowEqual } from "recompose";
 import { AnyClient, PromisifiedClient } from "../interface";
 
 export function analyzeError(err: any) {
@@ -34,6 +35,13 @@ export async function asyncTimeout(timeout: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
+}
+
+export function isShallowEqual<T>(
+  lhs: T | undefined,
+  rhs: T | undefined
+): boolean {
+  return shallowEqual(lhs as any, rhs as any);
 }
 
 export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {

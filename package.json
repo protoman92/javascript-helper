@@ -30,6 +30,8 @@
     "@types/jest": "26.0.15",
     "@types/react": "*",
     "@types/react-beautiful-dnd": "13.0.0",
+    "@types/react-redux": "*",
+    "@types/recompose": "0.26.1",
     "@types/serverless": "1.72.6",
     "@types/webpack-shell-plugin": "0.5.0",
     "babel-jest": "26.3.0",
@@ -41,6 +43,9 @@
     "json-beautify": "1.1.1",
     "nodemon": "2.0.4",
     "react": "*",
+    "react-redux": "*",
+    "recompose": "*",
+    "redux": "*",
     "rxjs": "*",
     "serverless-webpack": "5.3.4",
     "ts-jest": "26.3.0",
@@ -54,12 +59,19 @@
   "name": "javascript-helper",
   "peerDependencies": {
     "react": "*",
+    "react-redux": "*",
+    "recompose": "*",
+    "redux": "*",
     "rxjs": "*"
   },
   "repository": "https://github.com/protoman92/javascript-helper.git",
   "resolutions": {
     "@types/react": "16.8.24",
+    "@types/react-redux": "7.1.9",
     "react": "16.13.1",
+    "react-redux": "7.2.1",
+    "recompose": "0.30.0",
+    "redux": "4.0.5",
     "rxjs": "6.6.3"
   },
   "scripts": {
