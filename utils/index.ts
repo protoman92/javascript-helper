@@ -116,6 +116,18 @@ export function toArray<T>(elemOrArray: T | T[]): readonly T[] {
   return [elemOrArray];
 }
 
+export function swapArrayIndexes<T>(
+  array: T[] | readonly T[],
+  i: number,
+  j: number
+) {
+  const arrayClone = [...array];
+  const iElement = arrayClone[i];
+  arrayClone[i] = arrayClone[j];
+  arrayClone[j] = iElement;
+  return arrayClone;
+}
+
 /**
  * This expects a key-value object client, and currently does not support class
  * instances.
