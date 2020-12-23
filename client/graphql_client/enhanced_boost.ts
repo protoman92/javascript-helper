@@ -8,16 +8,18 @@ import {
   QueryOptions,
 } from "apollo-boost";
 import { setContext } from "apollo-link-context";
+import { onError as createErrorLink } from "apollo-link-error";
 import { createHttpLink } from "apollo-link-http";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 export {
-  gql,
   ApolloClient,
   buildAxiosFetch,
+  createErrorLink,
+  createHttpLink,
+  gql,
   InMemoryCache,
   setContext,
-  createHttpLink,
 };
 
 export type BoostRequestArgs<A, R> = MutationOptions<R, A> | QueryOptions<A>;
