@@ -24,6 +24,26 @@ export {
 
 export type BoostRequestArgs<A, R> = MutationOptions<R, A> | QueryOptions<A>;
 
+export function extractGraphQLError(error: any): Error {
+  if (
+    "networkError" in error &&
+    error.networkError != null &&
+    "result" in error.networkError &&
+    "errors" in error.networkError.result &&
+    error.networkError.result.errors instanceof Array
+  ) {
+    const [{ message }] = error.networkError.result.errors;
+    return new Error(message);
+  }
+
+  if ("graphQLErrors" in error && error.graphQLErrors instanceof Array) {
+    const [{ message = "" } = {}] = error.graphQLErrors;
+    return new Error(message);
+  }
+
+  return error;
+}
+
 export default function (
   boostOrOptions: ApolloClient<unknown> | ApolloClientOptions<unknown>
 ) {
@@ -32,8 +52,10 @@ export default function (
     return new ApolloClient(boostOrOptions);
   })();
 
-  return {
-    request: async <A, R>(args: BoostRequestArgs<A, R>) => {
+  const errorInterceptors: ((error: Error) => void)[] = [];
+
+  const boostClient = {
+    request: async function <A, R>(args: BoostRequestArgs<A, R>) {
       try {
         let data: R | null | undefined;
         let errors: readonly GraphQLError[] | undefined;
@@ -56,28 +78,30 @@ export default function (
           errors = mutationPayload.errors;
         }
 
-        if (!!errors && !!errors.length) throw errors[0];
-        if (!data) throw new Error("Expected data, instead got invalid");
+        if (errors != null && errors.length > 0) {
+          throw extractGraphQLError(errors[0]);
+        }
+
+        if (data == null) {
+          throw new Error("Expected data, instead got invalid");
+        }
+
         return data;
-      } catch (e) {
-        if (
-          "networkError" in e &&
-          e.networkError != null &&
-          "result" in e.networkError &&
-          "errors" in e.networkError.result &&
-          e.networkError.result.errors instanceof Array
-        ) {
-          const [{ message }] = e.networkError.result.errors;
-          throw new Error(message);
-        }
+      } catch (error) {
+        /** Remove the "GraphQL error: " prefix */
+        const [, messageWithoutPrefix = error.message] =
+          error.message.match(/GraphQL error:\s(.*)/) || [];
 
-        if ("graphQLErrors" in e && e.graphQLErrors instanceof Array) {
-          const [{ message = "" } = {}] = e.graphQLErrors;
-          throw new Error(message);
-        }
-
-        throw e;
+        error = new Error(messageWithoutPrefix);
+        for (const interceptor of errorInterceptors) interceptor(error);
+        throw error;
       }
     },
+    useErrorInterceptor: function (interceptor: typeof errorInterceptors[0]) {
+      errorInterceptors.push(interceptor);
+      return boostClient;
+    },
   };
+
+  return boostClient;
 }
