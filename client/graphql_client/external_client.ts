@@ -22,7 +22,21 @@ export {
   setContext,
 };
 
-export type BoostRequestArgs<A, R> = MutationOptions<R, A> | QueryOptions<A>;
+export interface ExternalGraphQLRequestContext {
+  readonly headers?: Readonly<Record<string, string>>;
+}
+
+export type ExternalGraphQLRequestArgs<A, R> = (
+  | Omit<MutationOptions<R, A>, "context">
+  | Omit<QueryOptions<A>, "context">
+) &
+  Readonly<{ context?: ExternalGraphQLRequestContext }>;
+
+export type ExternalGraphQLRequestInterceptor<A, R> = (
+  args: ExternalGraphQLRequestArgs<A, R>
+) =>
+  | Partial<Pick<typeof args, "context">>
+  | Promise<Pick<Partial<typeof args>, "context">>;
 
 export function extractGraphQLError(error: any): Error {
   if (
@@ -52,11 +66,17 @@ export default function (
     return new ApolloClient(boostOrOptions);
   })();
 
-  const errorInterceptors: ((error: Error) => void)[] = [];
+  const errorInterceptors: ((error: Error) => void | Promise<void>)[] = [];
+  const requestInterceptors: ExternalGraphQLRequestInterceptor<any, any>[] = [];
 
   const boostClient = {
-    request: async function <A, R>(args: BoostRequestArgs<A, R>) {
+    request: async function <A, R>(args: ExternalGraphQLRequestArgs<A, R>) {
       try {
+        for (const interceptor of requestInterceptors) {
+          const additionalArgs = await interceptor(args);
+          args = { ...args, ...additionalArgs };
+        }
+
         let data: R | null | undefined;
         let errors: readonly GraphQLError[] | undefined;
 
@@ -99,6 +119,12 @@ export default function (
     },
     useErrorInterceptor: function (interceptor: typeof errorInterceptors[0]) {
       errorInterceptors.push(interceptor);
+      return boostClient;
+    },
+    useRequestInterceptor: function (
+      interceptor: typeof requestInterceptors[0]
+    ) {
+      requestInterceptors.push(interceptor);
       return boostClient;
     },
   };

@@ -25,10 +25,12 @@ export type PromisifiedClient<C extends AnyClient> = {
   [x in keyof C]: Promisified<C[x]>;
 };
 
-export type BoostClient = ReturnType<
-  typeof import("../client/graphql_client/enhanced_boost")["default"]
+export type ExternalGraphQLClient = ReturnType<
+  typeof import("../client/graphql_client/external_client")["default"]
 >;
+
 export type InternalGraphQLClient = ReturnType<
   typeof import("../client/graphql_client/internal_client")["default"]
 >;
+
 export type Logger = ReturnType<typeof import("../client/logger")["default"]>;
