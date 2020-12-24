@@ -45,23 +45,31 @@ export function isShallowEqual<T>(
 }
 
 export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
-  return Object.entries(obj)
-    .filter(([, v]) => !!v)
-    .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {}) as Partial<T>;
+  const newObject: Partial<T> = {};
+
+  for (const key in obj) {
+    if (!obj[key]) continue;
+    newObject[key] = obj[key];
+  }
+
+  return newObject;
 }
 
-export function omitNull<T extends { [x: string]: any }>(
-  obj: T
-): Readonly<
-  {
-    [x in keyof T]: T[x] extends NonNullable<T[x]>
-      ? T[x]
-      : NonNullable<T[x]> | undefined;
+export function omitNull<T extends { [x: string]: any }>(obj: T) {
+  const newObject: Partial<T> = {};
+
+  for (const key in obj) {
+    if (obj[key] == null) continue;
+    newObject[key] = obj[key];
   }
-> {
-  return Object.entries(obj)
-    .filter(([, v]) => v != null)
-    .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {}) as any;
+
+  return newObject as Readonly<
+    {
+      [x in keyof T]: T[x] extends NonNullable<T[x]>
+        ? T[x]
+        : NonNullable<T[x]> | undefined;
+    }
+  >;
 }
 
 interface PickFunction {
@@ -90,10 +98,7 @@ export const pick = function <T, K extends keyof T>(
 export function requireAllTruthy<T>(
   args: T
 ): Readonly<{ [x in keyof T]: NonNullable<T[x]> }> {
-  Object.entries(args).forEach(([key, value]) => {
-    if (!value) throw new Error(`Falsy value ${key}`);
-  });
-
+  for (const key in args) if (!args[key]) throw new Error(`Falsy value ${key}`);
   return args as any;
 }
 
@@ -136,20 +141,22 @@ export function wrapClientWithBackoffRetry<C extends AnyClient>(
   client: C,
   options?: Parameters<typeof wrapFunctionWithRetry>[1]
 ) {
-  return Object.entries(client).reduce(
-    (acc, [k, v]) => ({
-      ...acc,
-      [k]: (() => {
-        if (v instanceof Function) {
-          return wrapFunctionWithRetry(
-            async (...args: readonly any[]) => v(...args),
-            options
-          );
-        } else {
-          return v;
-        }
-      })(),
-    }),
-    {}
-  ) as PromisifiedClient<C>;
+  const newClient: Record<string, any> = {};
+
+  for (const key in client) {
+    const fn = client[key];
+
+    newClient[key] = (() => {
+      if (fn instanceof Function) {
+        return wrapFunctionWithRetry(
+          async (...args: readonly any[]) => fn(...args),
+          options
+        );
+      } else {
+        return fn;
+      }
+    })();
+  }
+
+  return newClient as PromisifiedClient<C>;
 }

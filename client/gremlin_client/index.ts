@@ -47,10 +47,12 @@ const varargsProps = process.GraphTraversal.prototype.properties;
 
 process.GraphTraversal.prototype.properties = function (...args: any[]) {
   if (args.length === 1) {
-    const varargs = Object.entries(args[0]).reduce(
-      (acc, [k, v]) => [...acc, k, v],
-      [] as any[]
-    );
+    const varargs: any[] = [];
+
+    for (const key in args[0]) {
+      varargs.push(key);
+      varargs.push(args[0][key]);
+    }
 
     return varargsProps.bind(this)(...varargs);
   }
