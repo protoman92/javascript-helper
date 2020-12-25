@@ -67,5 +67,12 @@ describe("Flip exclusive flags", () => {
     expect(
       flipper({ allFlags: { a: true, b: true }, flagToSetTrue: "b" })
     ).toMatchSnapshot();
+
+    expect(
+      flipper({
+        allFlags: { a: true, b: true, c: true } as any,
+        flagToSetTrue: "a",
+      })
+    ).toMatchSnapshot();
   });
 });

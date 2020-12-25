@@ -21,7 +21,7 @@ interface FlipMutualExclusiveFlags {
     Mappers extends { [x in keyof Flags]: (flag: boolean) => any }
   >(
     args: WithMapperArgs<Flags, Mappers>
-  ): Readonly<{ [x in keyof Flags]: ReturnType<Mappers[x]> }>;
+  ): Readonly<{ [x in keyof Mappers]: ReturnType<Mappers[x]> }>;
   <
     Mappers extends Record<string, (flag: boolean) => any>,
     Flags extends { [x in keyof Mappers]: boolean }
@@ -49,7 +49,12 @@ export default (function () {
         value = false;
       }
 
-      if (mappers != null) value = mappers[key](value);
+      if (mappers != null) {
+        /** There are more keys in flags than there are in mappers */
+        if (mappers[key] == null) continue;
+        value = mappers[key](value);
+      }
+
       result[key] = value;
     }
 
