@@ -1,6 +1,8 @@
 import { backOff } from "exponential-backoff";
 import { shallowEqual } from "recompose";
 import { AnyClient, PromisifiedClient } from "../interface";
+import flipMutualExclusiveFlags from "./flip_exclusive_flags";
+export { flipMutualExclusiveFlags };
 
 export function analyzeError(err: any) {
   const {
