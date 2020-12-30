@@ -34,3 +34,6 @@ export type InternalGraphQLClient = ReturnType<
 >;
 
 export type Logger = ReturnType<typeof import("../client/logger")["default"]>;
+export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
+export type MapKey<M> = M extends Map<infer K, unknown> ? K : never;
+export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
