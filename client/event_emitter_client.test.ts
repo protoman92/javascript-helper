@@ -38,6 +38,18 @@ describe("Event emitter client", () => {
     expect(eventEmitter.getCallbackCount("test")).toEqual(0);
   });
 
+  it("Off all should remove all callbacks", () => {
+    // Setup
+    const callback = jest.fn();
+
+    // When
+    eventEmitter.on("test", callback);
+    eventEmitter.offAll();
+
+    // Then
+    expect(eventEmitter.getCallbackCount("test")).toEqual(0);
+  });
+
   it("Emitting with unsupported key should do nothing", () => {
     // Setup
     const callback = jest.fn();

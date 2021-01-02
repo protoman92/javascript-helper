@@ -9,6 +9,7 @@ export interface EventEmitterClient<
   getCallbackCount<K extends keyof CB>(key: K): number;
   on<K extends keyof CB>(key: K, callback: CB[K]): void;
   off<K extends keyof CB>(key: K, callback: CB[K]): void;
+  offAll(): void;
 }
 
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
