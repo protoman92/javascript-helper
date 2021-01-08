@@ -2,8 +2,14 @@ import { shallowEqual } from "recompose";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createOptionSet from "./option_set";
 import getAllPaginatedPages from "./paginate";
+import runOnce from "./run_once";
 export * from "./retry";
-export { createOptionSet, flipMutualExclusiveFlags, getAllPaginatedPages };
+export {
+  createOptionSet,
+  flipMutualExclusiveFlags,
+  getAllPaginatedPages,
+  runOnce,
+};
 
 export function analyzeError(err: any) {
   const {
