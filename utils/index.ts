@@ -3,12 +3,14 @@ import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createOptionSet from "./option_set";
 import getAllPaginatedPages from "./paginate";
 import runOnce from "./run_once";
+import underscoreIDKeys from "./underscore_id_key";
 export * from "./retry";
 export {
   createOptionSet,
   flipMutualExclusiveFlags,
   getAllPaginatedPages,
   runOnce,
+  underscoreIDKeys,
 };
 
 export function analyzeError(err: any) {
