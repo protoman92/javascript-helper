@@ -38,3 +38,10 @@ export type Logger = ReturnType<typeof import("../client/logger")["default"]>;
 export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
 export type MapKey<M> = M extends Map<infer K, unknown> ? K : never;
 export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
+
+export type NonNullableProps<
+  A extends { [x: string]: unknown },
+  K extends keyof A = keyof A
+> = Readonly<
+  { [x in keyof A]: x extends K ? Required<NonNullable<A[x]>> : A[x] }
+>;
