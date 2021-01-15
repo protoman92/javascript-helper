@@ -34,6 +34,11 @@ export type InternalGraphQLClient = ReturnType<
   typeof import("../client/graphql_client/internal_client")["default"]
 >;
 
+export interface LifecycleAware {
+  initialize(): Promise<void>;
+  deinitialize(): Promise<void>;
+}
+
 export type Logger = ReturnType<typeof import("../client/logger")["default"]>;
 export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
 export type MapKey<M> = M extends Map<infer K, unknown> ? K : never;
