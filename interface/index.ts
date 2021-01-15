@@ -1,3 +1,5 @@
+import { PeerConnection } from "../client/peer_client_factory";
+
 export type AnyClient = Readonly<{ [x: string]: (...args: any[]) => any }>;
 
 export interface EventEmitterClient<
@@ -40,6 +42,28 @@ export interface LifecycleAware {
 }
 
 export type Logger = ReturnType<typeof import("../client/logger")["default"]>;
+
+export interface MessageSender<T> {
+  sendMessage(message: T): void;
+}
+
+export namespace ManyToOnePeerClient {
+  export type Callbacks<SubscribeeData> = Readonly<{
+    connectionOpen: (conn: PeerConnection) => void;
+    outgoingConnectionUpdate: (count: number) => void;
+    retryCancel: () => void;
+    retryElapse: (elapsed: number) => void;
+    subscribeeDataReceive: (data: SubscribeeData) => void;
+  }>;
+}
+export interface ManyToOnePeerClient<SubscribeeData>
+  extends LifecycleAware,
+    Pick<
+      EventEmitterClient<ManyToOnePeerClient.Callbacks<SubscribeeData>>,
+      "callbacksType" | "off" | "on"
+    >,
+    MessageSender<SubscribeeData> {}
+
 export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
 export type MapKey<M> = M extends Map<infer K, unknown> ? K : never;
 export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
@@ -50,3 +74,9 @@ export type NonNullableProps<
 > = Readonly<
   { [x in keyof A]: x extends K ? Required<NonNullable<A[x]>> : A[x] }
 >;
+
+export type PeerClientFactory = ReturnType<
+  typeof import("../client/peer_client_factory")["default"]
+>;
+
+export type PeerClient = ReturnType<PeerClientFactory["newInstance"]>;
