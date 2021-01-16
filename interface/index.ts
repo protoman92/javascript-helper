@@ -80,3 +80,4 @@ export type PeerClientFactory = ReturnType<
 >;
 
 export type PeerClient = ReturnType<PeerClientFactory["newInstance"]>;
+export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
