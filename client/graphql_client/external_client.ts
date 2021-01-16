@@ -12,6 +12,7 @@ import { onError as createErrorLink } from "apollo-link-error";
 import { createHttpLink } from "apollo-link-http";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
+import { Resolvable } from "../../interface";
 export {
   ApolloClient,
   buildAxiosFetch,
@@ -34,9 +35,26 @@ export type ExternalGraphQLRequestArgs<A, R> = (
 
 export type ExternalGraphQLRequestInterceptor<A, R> = (
   args: ExternalGraphQLRequestArgs<A, R>
-) =>
-  | Partial<Pick<typeof args, "context">>
-  | Promise<Pick<Partial<typeof args>, "context">>;
+) => Resolvable<Pick<Partial<typeof args>, "context">>;
+
+export namespace ExternalGraphQLErrorInterceptorResult {
+  export interface Noop {
+    readonly type: "NOOP";
+  }
+
+  export interface Retry<A, R> {
+    readonly overrideRequest?: ExternalGraphQLRequestArgs<A, R>;
+    readonly type: "RETRY";
+  }
+}
+
+export type ExternalGraphQLErrorInterceptorResult<A, R> =
+  | ExternalGraphQLErrorInterceptorResult.Noop
+  | ExternalGraphQLErrorInterceptorResult.Retry<A, R>;
+
+export type ExternalGraphQLErrorInterceptor<A, R> = (
+  args: Readonly<{ error: Error; request: ExternalGraphQLRequestArgs<A, R> }>
+) => Resolvable<ExternalGraphQLErrorInterceptorResult<A, R>>;
 
 export function extractGraphQLError(error: any): Error {
   if (
@@ -66,36 +84,37 @@ export default function (
     return new ApolloClient(boostOrOptions);
   })();
 
-  const errorInterceptors: ((error: Error) => void | Promise<void>)[] = [];
+  const errorInterceptors: ExternalGraphQLErrorInterceptor<any, any>[] = [];
   const requestInterceptors: ExternalGraphQLRequestInterceptor<any, any>[] = [];
 
-  const boostClient = {
-    request: async function <A, R>(args: ExternalGraphQLRequestArgs<A, R>) {
+  const client = {
+    /**
+     * Send a GraphQL request without interceptors. This can be overriden
+     * to provide additional functionalities, such as retries.
+     */
+    requestWithoutInterceptors: async <A, R>(
+      args: ExternalGraphQLRequestArgs<A, R>
+    ) => {
       try {
-        for (const interceptor of requestInterceptors) {
-          const additionalArgs = await interceptor(args);
-          args = { ...args, ...additionalArgs };
-        }
-
         let data: R | null | undefined;
         let errors: readonly GraphQLError[] | undefined;
 
         if ("query" in args) {
-          const queryPayload = await apollo.query<R | null | undefined>({
+          const payload = await apollo.query<R | null | undefined>({
             fetchPolicy: "no-cache",
             ...args,
           });
 
-          data = queryPayload.data;
-          errors = queryPayload.errors;
+          data = payload.data;
+          errors = payload.errors;
         } else {
-          const mutationPayload = await apollo.mutate({
+          const payload = await apollo.mutate({
             fetchPolicy: "no-cache",
             ...args,
           });
 
-          data = mutationPayload.data;
-          errors = mutationPayload.errors;
+          data = payload.data;
+          errors = payload.errors;
         }
 
         if (errors != null && errors.length > 0) {
@@ -113,21 +132,47 @@ export default function (
           error.message.match(/GraphQL error:\s(.*)/) || [];
 
         error = new Error(messageWithoutPrefix);
-        for (const interceptor of errorInterceptors) interceptor(error);
         throw error;
       }
     },
-    useErrorInterceptor: function (interceptor: typeof errorInterceptors[0]) {
-      errorInterceptors.push(interceptor);
-      return boostClient;
+    /** Send a GraphQL request with interceptors */
+    request: async <A, R>(
+      args: ExternalGraphQLRequestArgs<A, R>
+    ): Promise<R> => {
+      try {
+        for (const interceptor of requestInterceptors) {
+          const additionalArgs = await interceptor(args);
+          args = { ...args, ...additionalArgs };
+        }
+
+        const result = await client.requestWithoutInterceptors(args);
+        return result;
+      } catch (error) {
+        for (const interceptor of errorInterceptors) {
+          const errorResult = await interceptor({ error, request: args });
+
+          switch (errorResult.type) {
+            case "NOOP":
+              continue;
+
+            case "RETRY":
+              const newArgs = errorResult.overrideRequest ?? args;
+              return client.request(newArgs);
+          }
+        }
+
+        throw error;
+      }
     },
-    useRequestInterceptor: function (
-      interceptor: typeof requestInterceptors[0]
-    ) {
+    useErrorInterceptor: (interceptor: typeof errorInterceptors[0]) => {
+      errorInterceptors.push(interceptor);
+      return client;
+    },
+    useRequestInterceptor: (interceptor: typeof requestInterceptors[0]) => {
       requestInterceptors.push(interceptor);
-      return boostClient;
+      return client;
     },
   };
 
-  return boostClient;
+  return client;
 }

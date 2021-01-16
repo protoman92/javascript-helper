@@ -24,9 +24,10 @@ export type Promisified<FN extends (...args: any[]) => any> = FN extends (
   ? FN
   : (...args: Parameters<FN>) => Promise<ReturnType<FN>>;
 
-export type PromisifiedClient<C extends AnyClient> = {
-  [x in keyof C]: Promisified<C[x]>;
-};
+export type PromisifiedClient<C extends AnyClient, K extends keyof C> = {
+  [x in keyof Pick<C, K>]: Promisified<C[x]>;
+} &
+  Omit<C, K>;
 
 export type ExternalGraphQLClient = ReturnType<
   typeof import("../client/graphql_client/external_client")["default"]

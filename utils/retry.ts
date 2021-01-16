@@ -11,13 +11,21 @@ export function wrapFunctionWithRetry<
  * This expects a key-value object client, and currently does not support class
  * instances.
  */
-export function wrapClientWithBackoffRetry<C extends AnyClient>(
-  client: C,
-  options?: Parameters<typeof wrapFunctionWithRetry>[1]
-) {
-  const newClient: Record<string, any> = {};
+export function wrapClientWithBackoffRetry<
+  C extends AnyClient,
+  K extends Extract<keyof C, string> = Extract<keyof C, string>
+>({
+  client,
+  keys = Object.keys(client) as K[],
+  options,
+}: Readonly<{
+  client: C;
+  keys?: K[];
+  options?: Parameters<typeof wrapFunctionWithRetry>[1];
+}>) {
+  const newClient: Record<string, any> = { ...client };
 
-  for (const key in client) {
+  for (const key of keys) {
     const fn = client[key];
 
     newClient[key] = (() => {
@@ -32,5 +40,5 @@ export function wrapClientWithBackoffRetry<C extends AnyClient>(
     })();
   }
 
-  return newClient as PromisifiedClient<C>;
+  return newClient as PromisifiedClient<C, K>;
 }
