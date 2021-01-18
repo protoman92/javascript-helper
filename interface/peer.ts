@@ -4,17 +4,21 @@ import { EventEmitterClient, LifecycleAware, Mappable, MessageSender } from ".";
 export type PeerConnection = DataConnection;
 
 declare namespace PeerEvent {
-  export interface Data<T> {
+  interface BaseEvent {
+    readonly peerID: string;
+  }
+
+  export interface Data<T> extends BaseEvent {
     readonly data: T;
     readonly type: "DATA";
   }
 
-  export interface Open {
+  export interface Open extends BaseEvent {
     readonly type: "OPEN";
   }
 }
 
-export type PeerEvent<T> = (PeerEvent.Data<T> | PeerEvent.Open) & Readonly<{}>;
+export type PeerEvent<T> = PeerEvent.Data<T> | PeerEvent.Open;
 
 export namespace PeerState {
   export interface PeerError {
@@ -45,6 +49,14 @@ export type PeerClientFactory = ReturnType<
 >;
 
 export namespace ManyToOnePeerClient {
+  interface ConnectionOpenArgs {
+    readonly connection: PeerConnection;
+  }
+
+  interface DataReceiveArgs<SubscribeeData> {
+    readonly data: SubscribeeData;
+  }
+
   namespace OutgoingConnectionUpdateArgs {
     interface BaseArgs {
       readonly allPeers: Readonly<{ id: string }>[];
@@ -65,12 +77,16 @@ export namespace ManyToOnePeerClient {
     | OutgoingConnectionUpdateArgs.PeerJoining
     | OutgoingConnectionUpdateArgs.PeerLeaving;
 
+  interface RetryElapseArgs {
+    readonly elapsed: number;
+  }
+
   export type Callbacks<SubscribeeData> = Readonly<{
-    connectionOpen: (conn: PeerConnection) => void;
+    connectionOpen: (args: ConnectionOpenArgs) => void;
+    dataReceive: (args: DataReceiveArgs<SubscribeeData>) => void;
     outgoingConnectionUpdate: (args: OutgoingConnectionUpdateArgs) => void;
     retryCancel: () => void;
-    retryElapse: (elapsed: number) => void;
-    subscribeeDataReceive: (data: SubscribeeData) => void;
+    retryElapse: (args: RetryElapseArgs) => void;
   }>;
 }
 

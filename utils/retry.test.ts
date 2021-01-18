@@ -34,7 +34,7 @@ describe("Wrap with retry", () => {
       },
     };
 
-    client = wrapClientWithBackoffRetry(client);
+    client = wrapClientWithBackoffRetry({ client });
 
     // When
     try {

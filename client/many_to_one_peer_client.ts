@@ -47,7 +47,7 @@ export default function <SubscribeeData>({
 
   const compositeSubscription: Subscription = new Subscription();
   const retryCancel$ = new Subject<void>();
-  let outgoingConnections: Map<string, PeerConnection> = new Map();
+  let peerConnections: Map<string, PeerConnection> = new Map();
   let peerID: string;
 
   if (args.type === "SUBSCRIBER") {
@@ -63,18 +63,18 @@ export default function <SubscribeeData>({
   );
 
   const onPeerEventReceive = (event: PeerEvent<SubscribeeData>) => {
-    if (args.type === "SUBSCRIBER" && event.type === "DATA") {
-      eventEmitter.emit("subscribeeDataReceive", event.data);
+    if (event.type === "DATA") {
+      eventEmitter.emit("dataReceive", { data: event.data });
     }
   };
 
   const onPeerOrConnectionError = (_error: Error) => {
-    eventEmitter.emit("retryElapse", 0);
+    eventEmitter.emit("retryElapse", { elapsed: 0 });
 
     const subscription = interval(1000)
       .pipe(take(retryDelay / 1000), takeUntil(retryCancel$))
       .subscribe(async (i) => {
-        eventEmitter.emit("retryElapse", (i + 1) * 1000);
+        eventEmitter.emit("retryElapse", { elapsed: (i + 1) * 1000 });
         if (i === retryDelay / 1000 - 1) await initialize();
       });
 
@@ -82,7 +82,7 @@ export default function <SubscribeeData>({
   };
 
   const deinitialize = async () => {
-    outgoingConnections = new Map();
+    peerConnections = new Map();
     compositeSubscription.unsubscribe();
     await peerClient.deinitialize();
   };
@@ -94,19 +94,19 @@ export default function <SubscribeeData>({
 
     if (args.type === "SUBSCRIBEE") {
       eventStream = peerClient.onPeerConnection().pipe(
-        mergeMap((conn) =>
-          peerClient.streamPeerEvents<SubscribeeData>(conn).pipe(
+        mergeMap((connection) =>
+          peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
             tap((event) => {
               switch (event.type) {
                 case "OPEN":
-                  eventEmitter.emit("connectionOpen", conn);
-                  outgoingConnections.set(conn.peer, conn);
+                  eventEmitter.emit("connectionOpen", { connection });
+                  peerConnections.set(connection.peer, connection);
 
                   eventEmitter.emit("outgoingConnectionUpdate", {
-                    allPeers: [...outgoingConnections.keys()].map((key) => ({
+                    allPeers: [...peerConnections.keys()].map((key) => ({
                       id: key,
                     })),
-                    joiningPeerID: conn.peer,
+                    joiningPeerID: connection.peer,
                     type: "PEER_JOINING",
                   });
 
@@ -117,13 +117,13 @@ export default function <SubscribeeData>({
               }
             }),
             finalize(() => {
-              outgoingConnections.delete(conn.peer);
+              peerConnections.delete(connection.peer);
 
               eventEmitter.emit("outgoingConnectionUpdate", {
-                allPeers: [...outgoingConnections.keys()].map((key) => ({
+                allPeers: [...peerConnections.keys()].map((key) => ({
                   id: key,
                 })),
-                leavingPeerID: conn.peer,
+                leavingPeerID: connection.peer,
                 type: "PEER_LEAVING",
               });
             })
@@ -134,6 +134,7 @@ export default function <SubscribeeData>({
       eventStream = peerClient
         .connectToPeer(args.subscribeeID, { reliable: true })
         .pipe(
+          tap((conn) => peerConnections.set(args.subscribeeID, conn)),
           mergeMap((conn) => peerClient.streamPeerEvents<SubscribeeData>(conn))
         );
     }
@@ -154,7 +155,7 @@ export default function <SubscribeeData>({
     deinitialize,
     initialize,
     sendMessage: (data: SubscribeeData) => {
-      for (const conn of Object.values(outgoingConnections)) conn.send(data);
+      for (const [, connection] of peerConnections) connection.send(data);
     },
   };
 

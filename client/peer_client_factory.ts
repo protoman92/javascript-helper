@@ -106,6 +106,8 @@ export default function ({
         },
         peerState$: () => stateSubject,
         streamPeerEvents: <T>(conn: PeerConnection) => {
+          const peerID = conn.peer;
+
           return new Observable<PeerEvent<T>>((obs) => {
             let dataListener: Parameters<typeof conn["on"]>[1] | undefined;
             let errListener: Parameters<typeof conn["on"]>[1];
@@ -116,11 +118,13 @@ export default function ({
             conn.on(
               "open",
               (openListener = () => {
-                obs.next({ type: "OPEN" });
+                obs.next({ peerID, type: "OPEN" });
 
                 conn.on(
                   "data",
-                  (dataListener = (data) => obs.next({ data, type: "DATA" }))
+                  (dataListener = (data) => {
+                    obs.next({ peerID, data, type: "DATA" });
+                  })
                 );
 
                 conn.on("close", (closeListener = () => obs.complete()));
