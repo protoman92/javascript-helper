@@ -2,11 +2,11 @@ import { interval, Observable, Subject, Subscription } from "rxjs";
 import { finalize, mergeMap, take, takeUntil, tap } from "rxjs/operators";
 import {
   ManyToOnePeerClient,
-  PeerClient,
   PeerClientFactory,
+  PeerConnection,
+  PeerEvent,
 } from "../interface";
 import createEventEmitterClient from "./event_emitter_client";
-import { PeerConnection, PeerEvent } from "./peer_client_factory";
 
 export namespace ManyToOnePeerClientArgs {
   interface BaseArgs {

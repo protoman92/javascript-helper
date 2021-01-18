@@ -1,30 +1,8 @@
 import Peer, { DataConnection } from "peerjs";
 import { BehaviorSubject, Observable } from "rxjs";
 import { filter, flatMap, map } from "rxjs/operators";
+import { PeerClient, PeerConnection, PeerEvent, PeerState } from "../interface";
 import { omitFalsy } from "../utils";
-
-export type PeerConnection = DataConnection;
-
-declare namespace PeerEvent {
-  export interface Data<T> {
-    readonly data: T;
-    readonly type: "data";
-  }
-
-  export interface Open {
-    readonly type: "open";
-  }
-}
-
-export type PeerEvent<T> = (PeerEvent.Data<T> | PeerEvent.Open) & Readonly<{}>;
-
-export namespace PeerState {
-  export interface Open {
-    readonly type: "open";
-  }
-}
-
-export type PeerState = PeerState.Open;
 
 interface PeerClientFactoryArgs {
   readonly env: string;
@@ -43,7 +21,7 @@ export default function ({
   port,
 }: PeerClientFactoryArgs) {
   return {
-    newInstance: (id: string) => {
+    newInstance: (id: string): PeerClient => {
       let peer: Peer;
       let stateSubject: BehaviorSubject<PeerState | undefined>;
       let closeListener: Parameters<typeof peer["on"]>[1];
@@ -54,8 +32,8 @@ export default function ({
         return stateSubject.pipe(filter((state) => state?.type === "open"));
       }
 
-      const peerInstance = {
-        connectToPeer: function (...args: Parameters<typeof peer["connect"]>) {
+      const peerClient: PeerClient = {
+        connectToPeer: (...args) => {
           return triggerStream().pipe(map(() => peer.connect(...args)));
         },
         deinitialize: async () => {
@@ -65,7 +43,7 @@ export default function ({
           peer?.destroy();
         },
         initialize: async () => {
-          peerInstance.deinitialize();
+          peerClient.deinitialize();
 
           peer = new Peer(
             id,
@@ -91,6 +69,7 @@ export default function ({
             (openListener = () => stateSubject.next({ type: "open" }))
           );
         },
+        map: (fn) => fn(peerClient),
         onPeerConnection: () => {
           return triggerStream().pipe(
             flatMap(
@@ -109,7 +88,7 @@ export default function ({
           );
         },
         peerState$: () => stateSubject,
-        streamPeerEvents: <T>(conn: DataConnection) => {
+        streamPeerEvents: <T>(conn: PeerConnection) => {
           return new Observable<PeerEvent<T>>((obs) => {
             let connDataListener: Parameters<typeof conn["on"]>[1] | undefined;
             let connErrListener: Parameters<typeof conn["on"]>[1];
@@ -167,7 +146,7 @@ export default function ({
         },
       };
 
-      return peerInstance;
+      return peerClient;
     },
   };
 }
