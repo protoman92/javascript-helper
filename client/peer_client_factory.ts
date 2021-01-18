@@ -124,8 +124,9 @@ export default function ({
 
                 conn.on(
                   "data",
-                  (connDataListener = (data) =>
-                    obs.next({ data, type: "data" }))
+                  (connDataListener = (data) => {
+                    obs.next({ data, type: "data" });
+                  })
                 );
 
                 conn.on("close", (connCloseListener = () => obs.complete()));
