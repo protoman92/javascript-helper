@@ -1,5 +1,28 @@
 import { PeerConnection } from "../client/peer_client_factory";
 
+export type Promised<T> = T extends Promise<infer U> ? U : T;
+export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
+export type MapKey<M> = M extends Map<infer K, unknown> ? K : never;
+
+export type MapFromObject<O> = O extends Record<infer K, infer V>
+  ? Map<K, V>
+  : never;
+
+export type MapToObject<M> = M extends Map<infer K, infer V>
+  ? Record<Extract<K, number | string | symbol>, V>
+  : never;
+
+export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
+
+export type NonNullableProps<
+  A extends { [x: string]: unknown },
+  K extends keyof A = keyof A
+> = Readonly<
+  { [x in keyof A]: x extends K ? Required<NonNullable<A[x]>> : A[x] }
+>;
+
+export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
+
 export type AnyClient = Readonly<{ [x: string]: (...args: any[]) => any }>;
 
 export interface EventEmitterClient<
@@ -15,8 +38,6 @@ export interface EventEmitterClient<
 }
 
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
-
-export type Promised<T> = T extends Promise<infer U> ? U : T;
 
 export type Promisified<FN extends (...args: any[]) => any> = FN extends (
   ...args: any[]
@@ -49,9 +70,29 @@ export interface MessageSender<T> {
 }
 
 export namespace ManyToOnePeerClient {
+  namespace OutgoingConnectionUpdateArgs {
+    interface BaseArgs {
+      readonly allPeers: Readonly<{ id: string }>[];
+    }
+
+    export interface PeerJoining extends BaseArgs {
+      readonly joiningPeerID: string;
+      readonly type: "PEER_JOINING";
+    }
+
+    export interface PeerLeaving extends BaseArgs {
+      readonly leavingPeerID: string;
+      readonly type: "PEER_LEAVING";
+    }
+  }
+
+  type OutgoingConnectionUpdateArgs =
+    | OutgoingConnectionUpdateArgs.PeerJoining
+    | OutgoingConnectionUpdateArgs.PeerLeaving;
+
   export type Callbacks<SubscribeeData> = Readonly<{
     connectionOpen: (conn: PeerConnection) => void;
-    outgoingConnectionUpdate: (count: number) => void;
+    outgoingConnectionUpdate: (args: OutgoingConnectionUpdateArgs) => void;
     retryCancel: () => void;
     retryElapse: (elapsed: number) => void;
     subscribeeDataReceive: (data: SubscribeeData) => void;
@@ -65,20 +106,8 @@ export interface ManyToOnePeerClient<SubscribeeData>
     >,
     MessageSender<SubscribeeData> {}
 
-export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
-export type MapKey<M> = M extends Map<infer K, unknown> ? K : never;
-export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
-
-export type NonNullableProps<
-  A extends { [x: string]: unknown },
-  K extends keyof A = keyof A
-> = Readonly<
-  { [x in keyof A]: x extends K ? Required<NonNullable<A[x]>> : A[x] }
->;
-
 export type PeerClientFactory = ReturnType<
   typeof import("../client/peer_client_factory")["default"]
 >;
 
 export type PeerClient = ReturnType<PeerClientFactory["newInstance"]>;
-export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;

@@ -46,7 +46,7 @@ export default function <SubscribeeData>({
 
   const compositeSubscription: Subscription = new Subscription();
   const retryCancel$ = new Subject<void>();
-  let outgoingConnections: { [x: string]: PeerConnection } = {};
+  let outgoingConnections: Map<string, PeerConnection> = new Map();
   let peerClient: PeerClient;
 
   const onPeerEventReceive = (event: PeerEvent<SubscribeeData>) => {
@@ -69,7 +69,7 @@ export default function <SubscribeeData>({
   };
 
   const deinitialize = async () => {
-    outgoingConnections = {};
+    outgoingConnections = new Map();
     compositeSubscription.unsubscribe();
     await peerClient?.deinitialize();
   };
@@ -103,9 +103,16 @@ export default function <SubscribeeData>({
               switch (event.type) {
                 case "open":
                   eventEmitter.emit("connectionOpen", conn);
-                  outgoingConnections[conn.peer] = conn;
-                  const count = Object.keys(outgoingConnections).length;
-                  eventEmitter.emit("outgoingConnectionUpdate", count);
+                  outgoingConnections.set(conn.peer, conn);
+
+                  eventEmitter.emit("outgoingConnectionUpdate", {
+                    allPeers: [...outgoingConnections.keys()].map((key) => ({
+                      id: key,
+                    })),
+                    joiningPeerID: conn.peer,
+                    type: "PEER_JOINING",
+                  });
+
                   break;
 
                 default:
@@ -113,9 +120,15 @@ export default function <SubscribeeData>({
               }
             }),
             finalize(() => {
-              delete outgoingConnections[conn.peer];
-              const count = Object.keys(outgoingConnections).length;
-              eventEmitter.emit("outgoingConnectionUpdate", count);
+              outgoingConnections.delete(conn.peer);
+
+              eventEmitter.emit("outgoingConnectionUpdate", {
+                allPeers: [...outgoingConnections.keys()].map((key) => ({
+                  id: key,
+                })),
+                leavingPeerID: conn.peer,
+                type: "PEER_LEAVING",
+              });
             })
           )
         )
