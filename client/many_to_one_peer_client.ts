@@ -63,7 +63,7 @@ export default function <SubscribeeData>({
   );
 
   const onPeerEventReceive = (event: PeerEvent<SubscribeeData>) => {
-    if (args.type === "SUBSCRIBER" && event.type === "data") {
+    if (args.type === "SUBSCRIBER" && event.type === "DATA") {
       eventEmitter.emit("subscribeeDataReceive", event.data);
     }
   };
@@ -98,7 +98,7 @@ export default function <SubscribeeData>({
           peerClient.streamPeerEvents<SubscribeeData>(conn).pipe(
             tap((event) => {
               switch (event.type) {
-                case "open":
+                case "OPEN":
                   eventEmitter.emit("connectionOpen", conn);
                   outgoingConnections.set(conn.peer, conn);
 

@@ -6,23 +6,29 @@ export type PeerConnection = DataConnection;
 declare namespace PeerEvent {
   export interface Data<T> {
     readonly data: T;
-    readonly type: "data";
+    readonly type: "DATA";
   }
 
   export interface Open {
-    readonly type: "open";
+    readonly type: "OPEN";
   }
 }
 
 export type PeerEvent<T> = (PeerEvent.Data<T> | PeerEvent.Open) & Readonly<{}>;
 
 export namespace PeerState {
-  export interface Open {
-    readonly type: "open";
+  export interface PeerError {
+    readonly error: Error;
+    readonly type: "ERROR";
+  }
+
+  export interface PeerOpen {
+    readonly peerID: string;
+    readonly type: "OPEN";
   }
 }
 
-export type PeerState = PeerState.Open;
+export type PeerState = PeerState.PeerError | PeerState.PeerOpen;
 
 export interface PeerClient extends LifecycleAware, Mappable {
   connectToPeer(

@@ -1,6 +1,6 @@
 import Peer, { DataConnection } from "peerjs";
 import { BehaviorSubject, Observable } from "rxjs";
-import { filter, flatMap, map } from "rxjs/operators";
+import { filter, map, switchMap } from "rxjs/operators";
 import { PeerClient, PeerConnection, PeerEvent, PeerState } from "../interface";
 import { omitFalsy } from "../utils";
 
@@ -24,22 +24,38 @@ export default function ({
     newInstance: (id: string): PeerClient => {
       let peer: Peer;
       let stateSubject: BehaviorSubject<PeerState | undefined>;
-      let closeListener: Parameters<typeof peer["on"]>[1];
-      let errListener: Parameters<typeof peer["on"]>[1];
-      let openListener: Parameters<typeof peer["on"]>[1];
 
-      function triggerStream() {
-        return stateSubject.pipe(filter((state) => state?.type === "open"));
+      function trigger$() {
+        return stateSubject.pipe(filter((state) => state?.type === "OPEN"));
+      }
+
+      function onPeerClose() {
+        stateSubject.complete();
+      }
+
+      function onPeerDisconnect() {
+        /** Workaround for peer.reconnect deleting previous id */
+        peer.id = id;
+        peer.reconnect();
+      }
+
+      function onPeerError(error: Error) {
+        stateSubject.next({ error, type: "ERROR" });
+      }
+
+      function onPeerOpen(peerID: string) {
+        stateSubject.next({ peerID, type: "OPEN" });
       }
 
       const peerClient: PeerClient = {
         connectToPeer: (...args) => {
-          return triggerStream().pipe(map(() => peer.connect(...args)));
+          return trigger$().pipe(map(() => peer.connect(...args)));
         },
         deinitialize: async () => {
-          peer?.off("close", closeListener);
-          peer?.off("error", errListener);
-          peer?.off("open", openListener);
+          peer?.off("close", onPeerClose);
+          peer?.off("disconnected", onPeerDisconnect);
+          peer?.off("error", onPeerError);
+          peer?.off("open", onPeerOpen);
           peer?.destroy();
         },
         initialize: async () => {
@@ -57,22 +73,23 @@ export default function ({
           );
 
           stateSubject = new BehaviorSubject<PeerState | undefined>(undefined);
-          peer.on("close", (closeListener = () => stateSubject.complete()));
+          peer.on("close", onPeerClose);
+          peer.on("disconnected", onPeerDisconnect);
 
-          peer.on(
-            "error",
-            (errListener = (error) => stateSubject.error(error))
-          );
+          /**
+           * If connection to the server is disrupted, an error event will be
+           * emitted. However, the connection will open again once the server
+           * is restored.
+           */
+          peer.on("error", onPeerError);
 
-          peer.on(
-            "open",
-            (openListener = () => stateSubject.next({ type: "open" }))
-          );
+          /** This event will trigger again if the server is restored */
+          peer.on("open", onPeerOpen);
         },
         map: (fn) => fn(peerClient),
         onPeerConnection: () => {
-          return triggerStream().pipe(
-            flatMap(
+          return trigger$().pipe(
+            switchMap(
               () =>
                 new Observable<DataConnection>((obs) => {
                   let connListener: Parameters<typeof peer["on"]>[1];
@@ -90,25 +107,23 @@ export default function ({
         peerState$: () => stateSubject,
         streamPeerEvents: <T>(conn: PeerConnection) => {
           return new Observable<PeerEvent<T>>((obs) => {
-            let connDataListener: Parameters<typeof conn["on"]>[1] | undefined;
-            let connErrListener: Parameters<typeof conn["on"]>[1];
-            let connCloseListener: Parameters<typeof conn["on"]>[1] | undefined;
-            let connOpenListener: Parameters<typeof conn["on"]>[1];
-            conn.on("error", (connErrListener = (error) => obs.error(error)));
+            let dataListener: Parameters<typeof conn["on"]>[1] | undefined;
+            let errListener: Parameters<typeof conn["on"]>[1];
+            let closeListener: Parameters<typeof conn["on"]>[1] | undefined;
+            let openListener: Parameters<typeof conn["on"]>[1];
+            conn.on("error", (errListener = (error) => obs.error(error)));
 
             conn.on(
               "open",
-              (connOpenListener = () => {
-                obs.next({ type: "open" });
+              (openListener = () => {
+                obs.next({ type: "OPEN" });
 
                 conn.on(
                   "data",
-                  (connDataListener = (data) => {
-                    obs.next({ data, type: "data" });
-                  })
+                  (dataListener = (data) => obs.next({ data, type: "DATA" }))
                 );
 
-                conn.on("close", (connCloseListener = () => obs.complete()));
+                conn.on("close", (closeListener = () => obs.complete()));
 
                 /**
                  * This callback will take about ~5 seconds to fire after the
@@ -125,15 +140,15 @@ export default function ({
             );
 
             return () => {
-              conn.off("error", connErrListener);
-              conn.off("open", connOpenListener);
+              conn.off("error", errListener);
+              conn.off("open", openListener);
 
-              if (connDataListener != null) {
-                conn.off("data", connDataListener);
+              if (dataListener != null) {
+                conn.off("data", dataListener);
               }
 
-              if (connCloseListener != null) {
-                conn.off("close", connCloseListener);
+              if (closeListener != null) {
+                conn.off("close", closeListener);
               }
 
               if (conn.peerConnection != null) {
