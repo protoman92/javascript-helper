@@ -62,13 +62,13 @@ export default function <SubscribeeData>({
     retryCancel$.subscribe(() => eventEmitter.emit("retryCancel"))
   );
 
-  const onPeerEventReceive = (event: PeerEvent<SubscribeeData>) => {
+  const onAllConnectionEventReceive = (event: PeerEvent<SubscribeeData>) => {
     if (event.type === "DATA") {
       eventEmitter.emit("dataReceive", { data: event.data });
     }
   };
 
-  const onPeerOrConnectionError = (_error: Error) => {
+  const onAllConnectionErrorReceive = (_error: Error) => {
     eventEmitter.emit("retryElapse", { elapsed: 0 });
 
     const subscription = interval(1000)
@@ -81,13 +81,49 @@ export default function <SubscribeeData>({
     compositeSubscription.add(subscription);
   };
 
-  const deinitialize = async () => {
+  function onSingleConnectionEventReceive(
+    connection: PeerConnection,
+    event: PeerEvent<SubscribeeData>
+  ) {
+    switch (event.type) {
+      case "OPEN":
+        eventEmitter.emit("connectionOpen", { connection });
+        peerConnections.set(connection.peer, connection);
+
+        eventEmitter.emit("outgoingConnectionUpdate", {
+          allPeers: [...peerConnections.keys()].map((key) => ({
+            id: key,
+          })),
+          joiningPeerID: connection.peer,
+          type: "PEER_JOINING",
+        });
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  function onSingleConnectionEventFinalize(connection: PeerConnection) {
+    peerConnections.delete(connection.peer);
+
+    eventEmitter.emit("outgoingConnectionUpdate", {
+      allPeers: [...peerConnections.keys()].map((key) => ({
+        id: key,
+      })),
+      leavingPeerID: connection.peer,
+      type: "PEER_LEAVING",
+    });
+  }
+
+  async function deinitialize() {
     peerConnections = new Map();
     compositeSubscription.unsubscribe();
     await peerClient.deinitialize();
-  };
+  }
 
-  const initialize = async () => {
+  async function initialize() {
     retryCancel$.next(undefined);
     await peerClient.initialize();
     let eventStream: Observable<PeerEvent<SubscribeeData>>;
@@ -96,37 +132,8 @@ export default function <SubscribeeData>({
       eventStream = peerClient.onPeerConnection().pipe(
         mergeMap((connection) =>
           peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
-            tap((event) => {
-              switch (event.type) {
-                case "OPEN":
-                  eventEmitter.emit("connectionOpen", { connection });
-                  peerConnections.set(connection.peer, connection);
-
-                  eventEmitter.emit("outgoingConnectionUpdate", {
-                    allPeers: [...peerConnections.keys()].map((key) => ({
-                      id: key,
-                    })),
-                    joiningPeerID: connection.peer,
-                    type: "PEER_JOINING",
-                  });
-
-                  break;
-
-                default:
-                  break;
-              }
-            }),
-            finalize(() => {
-              peerConnections.delete(connection.peer);
-
-              eventEmitter.emit("outgoingConnectionUpdate", {
-                allPeers: [...peerConnections.keys()].map((key) => ({
-                  id: key,
-                })),
-                leavingPeerID: connection.peer,
-                type: "PEER_LEAVING",
-              });
-            })
+            tap((event) => onSingleConnectionEventReceive(connection, event)),
+            finalize(() => onSingleConnectionEventFinalize(connection))
           )
         )
       );
@@ -134,18 +141,22 @@ export default function <SubscribeeData>({
       eventStream = peerClient
         .connectToPeer(args.subscribeeID, { reliable: true })
         .pipe(
-          tap((conn) => peerConnections.set(args.subscribeeID, conn)),
-          mergeMap((conn) => peerClient.streamPeerEvents<SubscribeeData>(conn))
+          mergeMap((connection) =>
+            peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
+              tap((event) => onSingleConnectionEventReceive(connection, event)),
+              finalize(() => onSingleConnectionEventFinalize(connection))
+            )
+          )
         );
     }
 
     const subscription = eventStream.subscribe(
-      onPeerEventReceive,
-      onPeerOrConnectionError
+      onAllConnectionEventReceive,
+      onAllConnectionErrorReceive
     );
 
     compositeSubscription.add(subscription);
-  };
+  }
 
   const manyToOneClient: ManyToOnePeerClient<SubscribeeData> = {
     ...(eventEmitter as Pick<
