@@ -4,6 +4,7 @@ import createOptionSet from "./option_set";
 import getAllPaginatedPages from "./paginate";
 import runOnce from "./run_once";
 import underscoreIDKeys from "./underscore_id_key";
+export * from "./boolean_predicate";
 export * from "./retry";
 export {
   createOptionSet,
