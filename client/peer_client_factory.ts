@@ -34,8 +34,6 @@ export default function ({
       }
 
       function onPeerDisconnect() {
-        /** Workaround for peer.reconnect deleting previous id */
-        peer.id = id;
         peer.reconnect();
       }
 

@@ -1,5 +1,21 @@
-import { interval, Observable, Subject, Subscription } from "rxjs";
-import { finalize, mergeMap, take, takeUntil, tap } from "rxjs/operators";
+import {
+  interval,
+  Observable,
+  race,
+  Subject,
+  Subscription,
+  throwError,
+  TimeoutError,
+  timer,
+} from "rxjs";
+import {
+  finalize,
+  mergeMap,
+  mergeMapTo,
+  take,
+  takeUntil,
+  tap,
+} from "rxjs/operators";
 import {
   ManyToOnePeerClient,
   PeerClientFactory,
@@ -20,6 +36,12 @@ export namespace ManyToOnePeerClientArgs {
   }
 
   export interface ForSubscriber extends BaseArgs {
+    /**
+     * Timeout duration for connection open event. If the subscriber subscribes
+     * to the target peer, it could be possible that the latter has not joined
+     * the peer pool yet. Timing out allows us to retry the connection.
+     */
+    readonly connectionOpenTimeout?: number;
     readonly subscriberID: string;
     readonly type: "SUBSCRIBER";
   }
@@ -29,7 +51,8 @@ export type ManyToOnePeerClientArgs =
   | ManyToOnePeerClientArgs.ForSubscribee
   | ManyToOnePeerClientArgs.ForSubscriber;
 
-const RETRY_DELAY_PEER_ERROR_DEFAULT = 5000;
+const DELAY_DEFAULT_RETRY_PEER_OR_CONNECTION_ERROR = 5000;
+const DELAY_DEFAULT_CONNECTION_OPEN_TIMEOUT = 1000;
 
 /**
  * This peer client assumes there is a subscribee that everyone else subscribes
@@ -38,7 +61,7 @@ const RETRY_DELAY_PEER_ERROR_DEFAULT = 5000;
  */
 export default function <SubscribeeData>({
   peerClientFactory,
-  retryDelay = RETRY_DELAY_PEER_ERROR_DEFAULT,
+  retryDelay = DELAY_DEFAULT_RETRY_PEER_OR_CONNECTION_ERROR,
   ...args
 }: ManyToOnePeerClientArgs) {
   const eventEmitter = createEventEmitterClient<
@@ -142,10 +165,23 @@ export default function <SubscribeeData>({
         .connectToPeer(args.subscribeeID, { reliable: true })
         .pipe(
           mergeMap((connection) =>
-            peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
-              tap((event) => onSingleConnectionEventReceive(connection, event)),
-              finalize(() => onSingleConnectionEventFinalize(connection))
-            )
+            race([
+              peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
+                tap((event) =>
+                  onSingleConnectionEventReceive(connection, event)
+                ),
+                finalize(() => onSingleConnectionEventFinalize(connection))
+              ),
+              /**
+               * We might face an inifinite waiting situation if the subscribee
+               * joins after the subscribers, so timing out here allows the
+               * subscribers to retry connecting.
+               */
+              timer(
+                args.connectionOpenTimeout ||
+                  DELAY_DEFAULT_CONNECTION_OPEN_TIMEOUT
+              ).pipe(mergeMapTo(throwError(TimeoutError))),
+            ])
           )
         );
     }
