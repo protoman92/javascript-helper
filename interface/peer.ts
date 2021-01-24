@@ -1,7 +1,9 @@
 import Peer, { DataConnection } from "peerjs";
 import { Observable } from "rxjs";
-import { EventEmitterClient, LifecycleAware, Mappable, MessageSender } from ".";
+import { EventEmitterClient, LifecycleAware, MessageSender } from ".";
 export type PeerConnection = DataConnection;
+
+export type PeerErrorType = "peer-unavailable";
 
 declare namespace PeerEvent {
   interface BaseEvent {
@@ -22,7 +24,7 @@ export type PeerEvent<T> = PeerEvent.Data<T> | PeerEvent.Open;
 
 export namespace PeerState {
   export interface PeerError {
-    readonly error: Error;
+    readonly error: Error & Readonly<{ type?: PeerErrorType }>;
     readonly type: "ERROR";
   }
 
@@ -30,11 +32,18 @@ export namespace PeerState {
     readonly peerID: string;
     readonly type: "OPEN";
   }
+
+  export interface PeerUnitialized {
+    readonly type: "UNITIALIZED";
+  }
 }
 
-export type PeerState = PeerState.PeerError | PeerState.PeerOpen;
+export type PeerState =
+  | PeerState.PeerError
+  | PeerState.PeerOpen
+  | PeerState.PeerUnitialized;
 
-export interface PeerClient extends LifecycleAware, Mappable {
+export interface PeerClient extends LifecycleAware {
   connectToPeer(
     ...args: Parameters<Peer["connect"]>
   ): Observable<PeerConnection>;
@@ -57,7 +66,7 @@ export namespace ManyToOnePeerClient {
     readonly data: SubscribeeData;
   }
 
-  namespace OutgoingConnectionUpdateArgs {
+  export namespace OutgoingConnectionUpdateArgs {
     interface BaseArgs {
       readonly allPeers: Readonly<{ id: string }>[];
     }
@@ -73,7 +82,7 @@ export namespace ManyToOnePeerClient {
     }
   }
 
-  type OutgoingConnectionUpdateArgs =
+  export type OutgoingConnectionUpdateArgs =
     | OutgoingConnectionUpdateArgs.PeerJoining
     | OutgoingConnectionUpdateArgs.PeerLeaving;
 

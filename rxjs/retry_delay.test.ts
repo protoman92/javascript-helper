@@ -12,8 +12,8 @@ describe("Retry delay operator", () => {
     scheduler.run(({ cold, expectObservable }) => {
       // Setup && When && Then
       expectObservable(
-        cold("#", {}).pipe(retryDelay({ delayMs: 1, retryCount: 3 }))
-      ).toBe("3ms #", {});
+        cold("#", {}).pipe(retryDelay({ delayMs: 1, retryCount: 5 }))
+      ).toBe("6ms #", {});
     });
   });
 });

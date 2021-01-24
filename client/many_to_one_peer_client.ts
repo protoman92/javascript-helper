@@ -1,8 +1,8 @@
 import {
-  interval,
+  concat,
+  defer,
   Observable,
   race,
-  Subject,
   Subscription,
   throwError,
   TimeoutError,
@@ -11,9 +11,9 @@ import {
 import {
   finalize,
   mergeMap,
-  mergeMapTo,
+  switchMap,
+  switchMapTo,
   take,
-  takeUntil,
   tap,
 } from "rxjs/operators";
 import {
@@ -22,6 +22,7 @@ import {
   PeerConnection,
   PeerEvent,
 } from "../interface";
+import { retryDelay } from "../rxjs";
 import createEventEmitterClient from "./event_emitter_client";
 
 export namespace ManyToOnePeerClientArgs {
@@ -51,7 +52,7 @@ export type ManyToOnePeerClientArgs =
   | ManyToOnePeerClientArgs.ForSubscribee
   | ManyToOnePeerClientArgs.ForSubscriber;
 
-const DELAY_DEFAULT_RETRY_PEER_OR_CONNECTION_ERROR = 5000;
+const DELAY_DEFAULT_RETRY_PEER_OR_CONNECTION_ERROR = 1000;
 const DELAY_DEFAULT_CONNECTION_OPEN_TIMEOUT = 1000;
 
 /**
@@ -61,7 +62,7 @@ const DELAY_DEFAULT_CONNECTION_OPEN_TIMEOUT = 1000;
  */
 export default function <SubscribeeData>({
   peerClientFactory,
-  retryDelay = DELAY_DEFAULT_RETRY_PEER_OR_CONNECTION_ERROR,
+  retryDelay: retryDelayMs = DELAY_DEFAULT_RETRY_PEER_OR_CONNECTION_ERROR,
   ...args
 }: ManyToOnePeerClientArgs) {
   const eventEmitter = createEventEmitterClient<
@@ -69,7 +70,6 @@ export default function <SubscribeeData>({
   >();
 
   const compositeSubscription: Subscription = new Subscription();
-  const retryCancel$ = new Subject<void>();
   let peerConnections: Map<string, PeerConnection> = new Map();
   let peerID: string;
 
@@ -81,27 +81,10 @@ export default function <SubscribeeData>({
 
   const peerClient = peerClientFactory.newInstance(peerID);
 
-  compositeSubscription.add(
-    retryCancel$.subscribe(() => eventEmitter.emit("retryCancel"))
-  );
-
   const onAllConnectionEventReceive = (event: PeerEvent<SubscribeeData>) => {
     if (event.type === "DATA") {
       eventEmitter.emit("dataReceive", { data: event.data });
     }
-  };
-
-  const onAllConnectionErrorReceive = (_error: Error) => {
-    eventEmitter.emit("retryElapse", { elapsed: 0 });
-
-    const subscription = interval(1000)
-      .pipe(take(retryDelay / 1000), takeUntil(retryCancel$))
-      .subscribe(async (i) => {
-        eventEmitter.emit("retryElapse", { elapsed: (i + 1) * 1000 });
-        if (i === retryDelay / 1000 - 1) await initialize();
-      });
-
-    compositeSubscription.add(subscription);
   };
 
   function onSingleConnectionEventReceive(
@@ -114,9 +97,7 @@ export default function <SubscribeeData>({
         peerConnections.set(connection.peer, connection);
 
         eventEmitter.emit("outgoingConnectionUpdate", {
-          allPeers: [...peerConnections.keys()].map((key) => ({
-            id: key,
-          })),
+          allPeers: [...peerConnections.keys()].map((id) => ({ id })),
           joiningPeerID: connection.peer,
           type: "PEER_JOINING",
         });
@@ -128,16 +109,14 @@ export default function <SubscribeeData>({
     }
   }
 
-  function onSingleConnectionEventFinalize(connection: PeerConnection) {
-    peerConnections.delete(connection.peer);
-
-    eventEmitter.emit("outgoingConnectionUpdate", {
-      allPeers: [...peerConnections.keys()].map((key) => ({
-        id: key,
-      })),
-      leavingPeerID: connection.peer,
-      type: "PEER_LEAVING",
-    });
+  function onSingleConnectionFinalize(connection: PeerConnection) {
+    if (peerConnections.delete(connection.peer)) {
+      eventEmitter.emit("outgoingConnectionUpdate", {
+        allPeers: [...peerConnections.keys()].map((id) => ({ id })),
+        leavingPeerID: connection.peer,
+        type: "PEER_LEAVING",
+      });
+    }
   }
 
   async function deinitialize() {
@@ -147,50 +126,63 @@ export default function <SubscribeeData>({
   }
 
   async function initialize() {
-    retryCancel$.next(undefined);
     await peerClient.initialize();
     let eventStream: Observable<PeerEvent<SubscribeeData>>;
 
     if (args.type === "SUBSCRIBEE") {
       eventStream = peerClient.onPeerConnection().pipe(
-        mergeMap((connection) =>
-          peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
-            tap((event) => onSingleConnectionEventReceive(connection, event)),
-            finalize(() => onSingleConnectionEventFinalize(connection))
+        mergeMap((conn) =>
+          peerClient.streamPeerEvents<SubscribeeData>(conn).pipe(
+            tap((event) => onSingleConnectionEventReceive(conn, event)),
+            finalize(() => onSingleConnectionFinalize(conn))
           )
         )
       );
     } else {
-      eventStream = peerClient
-        .connectToPeer(args.subscribeeID, { reliable: true })
-        .pipe(
-          mergeMap((connection) =>
-            race([
-              peerClient.streamPeerEvents<SubscribeeData>(connection).pipe(
-                tap((event) =>
-                  onSingleConnectionEventReceive(connection, event)
+      const {
+        connectionOpenTimeout = DELAY_DEFAULT_CONNECTION_OPEN_TIMEOUT,
+      } = args;
+
+      function connectToPeer(): Observable<PeerEvent<SubscribeeData>> {
+        return concat(
+          defer(() =>
+            peerClient.connectToPeer(args.subscribeeID, { reliable: true })
+          ).pipe(
+            switchMap((conn) =>
+              race([
+                peerClient
+                  .streamPeerEvents<SubscribeeData>(conn)
+                  .pipe(
+                    tap((event) => onSingleConnectionEventReceive(conn, event))
+                  ),
+                /**
+                 * We might face an inifinite wait situation if the subscribee
+                 * joins after the subscribers, so timing out here allows the
+                 * subscribers to retry connecting.
+                 */
+                timer(connectionOpenTimeout).pipe(
+                  take(1),
+                  switchMapTo(throwError(TimeoutError))
                 ),
-                finalize(() => onSingleConnectionEventFinalize(connection))
-              ),
-              /**
-               * We might face an inifinite waiting situation if the subscribee
-               * joins after the subscribers, so timing out here allows the
-               * subscribers to retry connecting.
-               */
-              timer(
-                args.connectionOpenTimeout ||
-                  DELAY_DEFAULT_CONNECTION_OPEN_TIMEOUT
-              ).pipe(mergeMapTo(throwError(TimeoutError))),
-            ])
+              ]).pipe(finalize(() => onSingleConnectionFinalize(conn)))
+            ),
+            retryDelay({ delayMs: retryDelayMs, retryCount: Infinity })
+          ),
+          /**
+           * Even when the connection closes and the previous stream completes,
+           * retry again to handle case where the peer reloads their browser,
+           * after which they would reasonably expect to be reconnected.
+           */
+          defer(() =>
+            timer(retryDelayMs).pipe(take(1), switchMapTo(connectToPeer()))
           )
         );
+      }
+
+      eventStream = connectToPeer();
     }
 
-    const subscription = eventStream.subscribe(
-      onAllConnectionEventReceive,
-      onAllConnectionErrorReceive
-    );
-
+    const subscription = eventStream.subscribe(onAllConnectionEventReceive);
     compositeSubscription.add(subscription);
   }
 

@@ -1,6 +1,5 @@
 import Peer, { DataConnection } from "peerjs";
-import { BehaviorSubject, Observable } from "rxjs";
-import { filter, map, switchMap } from "rxjs/operators";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { PeerClient, PeerConnection, PeerEvent, PeerState } from "../interface";
 import { omitFalsy } from "../utils";
 
@@ -10,8 +9,9 @@ interface PeerClientFactoryArgs {
   readonly port?: number;
   readonly key?: string;
   readonly path?: string;
-  readonly retryDelay?: number;
 }
+
+const PEER_STATE_UNITIALIZED: PeerState = { type: "UNITIALIZED" };
 
 export default function ({
   env,
@@ -22,12 +22,18 @@ export default function ({
 }: PeerClientFactoryArgs) {
   return {
     newInstance: (id: string): PeerClient => {
-      let peer: Peer;
-      let stateSubject: BehaviorSubject<PeerState | undefined>;
+      const peer = new Peer(
+        id,
+        omitFalsy({
+          host,
+          key,
+          path,
+          port,
+          debug: env === "production" ? undefined : undefined,
+        })
+      );
 
-      function trigger$() {
-        return stateSubject.pipe(filter((state) => state?.type === "OPEN"));
-      }
+      const stateSubject = new BehaviorSubject(PEER_STATE_UNITIALIZED);
 
       function onPeerClose() {
         stateSubject.complete();
@@ -37,8 +43,19 @@ export default function ({
         peer.reconnect();
       }
 
-      function onPeerError(error: Error) {
-        stateSubject.next({ error, type: "ERROR" });
+      function onPeerError(error: PeerState.PeerError["error"]) {
+        switch (error.type) {
+          /**
+           * Do not error out peer state if this error is encountered, since
+           * it is retryable.
+           */
+          case "peer-unavailable":
+            break;
+
+          default:
+            stateSubject.next({ error, type: "ERROR" });
+            break;
+        }
       }
 
       function onPeerOpen(peerID: string) {
@@ -47,30 +64,17 @@ export default function ({
 
       const peerClient: PeerClient = {
         connectToPeer: (...args) => {
-          return trigger$().pipe(map(() => peer.connect(...args)));
+          return of(peer.connect(...args));
         },
         deinitialize: async () => {
-          peer?.off("close", onPeerClose);
-          peer?.off("disconnected", onPeerDisconnect);
-          peer?.off("error", onPeerError);
-          peer?.off("open", onPeerOpen);
-          peer?.destroy();
+          peer.off("close", onPeerClose);
+          peer.off("disconnected", onPeerDisconnect);
+          peer.off("error", onPeerError);
+          peer.off("open", onPeerOpen);
+          peer.disconnect();
+          peer.destroy();
         },
         initialize: async () => {
-          peerClient.deinitialize();
-
-          peer = new Peer(
-            id,
-            omitFalsy({
-              host,
-              key,
-              path,
-              port,
-              debug: env === "production" ? undefined : undefined,
-            })
-          );
-
-          stateSubject = new BehaviorSubject<PeerState | undefined>(undefined);
           peer.on("close", onPeerClose);
           peer.on("disconnected", onPeerDisconnect);
 
@@ -83,75 +87,63 @@ export default function ({
 
           /** This event will trigger again if the server is restored */
           peer.on("open", onPeerOpen);
+
+          peer.disconnect();
+          peer.reconnect();
         },
-        map: (fn) => fn(peerClient),
         onPeerConnection: () => {
-          return trigger$().pipe(
-            switchMap(
-              () =>
-                new Observable<DataConnection>((obs) => {
-                  let connListener: Parameters<typeof peer["on"]>[1];
+          return new Observable<DataConnection>((obs) => {
+            function onConnection(conn: PeerConnection) {
+              obs.next(conn);
+            }
 
-                  peer.on(
-                    "connection",
-                    (connListener = (conn) => obs.next(conn))
-                  );
-
-                  return () => peer.off("connection", connListener);
-                })
-            )
-          );
+            peer.on("connection", onConnection);
+            return () => peer.off("connection", onConnection);
+          });
         },
         peerState$: () => stateSubject,
         streamPeerEvents: <T>(conn: PeerConnection) => {
           const peerID = conn.peer;
 
           return new Observable<PeerEvent<T>>((obs) => {
-            let dataListener: Parameters<typeof conn["on"]>[1] | undefined;
-            let errListener: Parameters<typeof conn["on"]>[1];
-            let closeListener: Parameters<typeof conn["on"]>[1] | undefined;
-            let openListener: Parameters<typeof conn["on"]>[1];
-            conn.on("error", (errListener = (error) => obs.error(error)));
+            function onClose() {
+              obs.complete();
+            }
 
-            conn.on(
-              "open",
-              (openListener = () => {
-                obs.next({ peerID, type: "OPEN" });
+            function onData(data: T) {
+              obs.next({ data, peerID, type: "DATA" });
+            }
 
-                conn.on(
-                  "data",
-                  (dataListener = (data) => {
-                    obs.next({ peerID, data, type: "DATA" });
-                  })
-                );
+            function onError(error: Error) {
+              obs.error(error);
+            }
 
-                conn.on("close", (closeListener = () => obs.complete()));
+            function onOpen() {
+              obs.next({ peerID, type: "OPEN" });
+              conn.on("data", onData);
+              conn.on("close", onClose);
 
-                /**
-                 * This callback will take about ~5 seconds to fire after the
-                 * peer has been disconnected. It does not matter which callback
-                 * calls first, this or 'close', but the end result is the same:
-                 * stream completes.
-                 */
-                conn.peerConnection.oniceconnectionstatechange = function () {
-                  if (this.iceConnectionState === "disconnected") {
-                    obs.complete();
-                  }
-                };
-              })
-            );
+              /**
+               * This callback will take about ~5 seconds to fire after the
+               * peer has been disconnected. It does not matter which callback
+               * calls first, this or 'close', but the end result is the same:
+               * stream completes.
+               */
+              conn.peerConnection.oniceconnectionstatechange = function () {
+                if (this.iceConnectionState === "disconnected") {
+                  obs.complete();
+                }
+              };
+            }
+
+            conn.on("error", onError);
+            conn.on("open", onOpen);
 
             return () => {
-              conn.off("error", errListener);
-              conn.off("open", openListener);
-
-              if (dataListener != null) {
-                conn.off("data", dataListener);
-              }
-
-              if (closeListener != null) {
-                conn.off("close", closeListener);
-              }
+              conn.off("error", onError);
+              conn.off("open", onOpen);
+              conn.off("data", onData);
+              conn.off("close", onClose);
 
               if (conn.peerConnection != null) {
                 conn.peerConnection.onconnectionstatechange = null;

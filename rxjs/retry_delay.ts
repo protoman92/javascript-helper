@@ -1,5 +1,5 @@
-import { MonoTypeOperatorFunction } from "rxjs";
-import { delay, retryWhen, scan, tap } from "rxjs/operators";
+import { iif, MonoTypeOperatorFunction, throwError, timer } from "rxjs";
+import { concatMap, retryWhen, take } from "rxjs/operators";
 
 export default function <A>({
   delayMs,
@@ -9,16 +9,13 @@ export default function <A>({
     source.pipe(
       retryWhen((errors) =>
         errors.pipe(
-          scan((acc, error) => ({ count: acc.count + 1, error }), {
-            count: 0,
-            error: undefined as any,
-          }),
-          tap((current) => {
-            if (current.count > retryCount) {
-              throw current.error;
-            }
-          }),
-          delay(delayMs)
+          concatMap((error, index) =>
+            iif(
+              () => index > retryCount,
+              throwError(error),
+              timer(delayMs).pipe(take(1))
+            )
+          )
         )
       )
     );
