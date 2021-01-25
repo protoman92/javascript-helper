@@ -1,3 +1,4 @@
+import { DocumentNode, GraphQLArgs } from "graphql";
 import { Mapper, Promisified } from "./essentials";
 export * from "./essentials";
 export * from "./peer";
@@ -31,9 +32,23 @@ export type ExternalGraphQLClient = ReturnType<
   typeof import("../client/graphql_client/external_client")["default"]
 >;
 
-export type InternalGraphQLClient = ReturnType<
-  typeof import("../client/graphql_client/internal_client")["default"]
->;
+export namespace InternalGraphQLClient {
+  export interface RequestArgs<Context, A>
+    extends Omit<
+      GraphQLArgs,
+      "contextValue" | "schema" | "source" | "variableValues"
+    > {
+    readonly contextValue?: Context;
+    readonly document: DocumentNode;
+    readonly variables: A;
+  }
+}
+
+export interface InternalGraphQLClient<Context> {
+  request<A, R>(
+    args: InternalGraphQLClient.RequestArgs<Context, A>
+  ): Promise<R>;
+}
 
 export interface LifecycleAware {
   initialize(): Promise<void>;

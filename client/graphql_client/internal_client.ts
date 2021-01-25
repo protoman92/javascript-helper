@@ -1,16 +1,19 @@
-import { DocumentNode, graphql, GraphQLArgs, GraphQLSchema } from "graphql";
+import { graphql, GraphQLSchema } from "graphql";
+import { InternalGraphQLClient } from "../../interface";
 
-export default function ({
+export default function <Context>({
   defaultContextValues = {},
   schemaFn,
-}: Readonly<{ defaultContextValues?: object; schemaFn: () => GraphQLSchema }>) {
-  return {
-    request: async function <A, R>({
-      contextValue = {},
+}: Readonly<{
+  defaultContextValues?: Partial<Context>;
+  schemaFn: () => GraphQLSchema;
+}>) {
+  const client: InternalGraphQLClient<Context> = {
+    request: async <A, R>({
+      contextValue,
       document,
       ...args
-    }: Omit<GraphQLArgs, "schema" | "source" | "variableValues"> &
-      Readonly<{ document: DocumentNode; variables: A }>) {
+    }: InternalGraphQLClient.RequestArgs<Context, A>) => {
       const requestContext = { ...defaultContextValues, ...contextValue };
 
       const { data, errors } = await graphql<R>({
@@ -25,4 +28,6 @@ export default function ({
       return data!;
     },
   };
+
+  return client;
 }
