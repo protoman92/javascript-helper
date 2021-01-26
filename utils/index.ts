@@ -2,11 +2,13 @@ import { shallowEqual } from "recompose";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createOptionSet from "./option_set";
 import getAllPaginatedPages from "./paginate";
+import applyPolyfills from "./polyfills";
 import runOnce from "./run_once";
 import underscoreIDKeys from "./underscore_id_key";
 export * from "./boolean_predicate";
 export * from "./retry";
 export {
+  applyPolyfills,
   createOptionSet,
   flipMutualExclusiveFlags,
   getAllPaginatedPages,
