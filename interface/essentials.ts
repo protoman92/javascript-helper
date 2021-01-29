@@ -14,11 +14,9 @@ export type MapToObject<M> = M extends Map<infer K, infer V>
 export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
 
 export type NonNullableProps<
-  A extends Record<number | string | symbol, unknown>,
+  A extends Record<number | string | symbol, any>,
   K extends keyof A = keyof A
-> = Readonly<
-  { [x in keyof A]: x extends K ? Required<NonNullable<A[x]>> : A[x] }
->;
+> = Required<{ [x in K]: NonNullable<A[x]> }> & Omit<A, K>;
 
 export type Promisified<FN extends (...args: any[]) => any> = FN extends (
   ...args: any[]

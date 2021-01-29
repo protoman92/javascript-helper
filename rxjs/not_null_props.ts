@@ -20,7 +20,7 @@ export default function <
 
         return true;
       }),
-      map((item) => item as NonNullableProps<A, K>)
+      map((item) => (item as unknown) as NonNullableProps<A, K>)
     );
 
   return _;
