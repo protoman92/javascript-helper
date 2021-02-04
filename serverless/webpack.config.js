@@ -5,15 +5,21 @@ const WebpackShellPlugin = require("webpack-shell-plugin");
  * @typedef Args
  * @property {string} dirname
  * @property {'server' | 'serverless'} infrastructure
+ * @property {string} [overrideServerEntry]
  * @property {typeof import('serverless-webpack')} slsw
  * @param {Args} args
  * @return {import('webpack').Configuration}
  */
-module.exports = function ({ dirname, infrastructure, slsw }) {
+module.exports = function ({
+  dirname,
+  infrastructure,
+  overrideServerEntry,
+  slsw,
+}) {
   switch (infrastructure) {
     case "server":
       return {
-        entry: path.join(dirname, "index.ts"),
+        entry: overrideServerEntry || path.join(dirname, "index.ts"),
         target: "node",
         mode: "development",
         output: { path: path.join(dirname, "build"), filename: "index.js" },
