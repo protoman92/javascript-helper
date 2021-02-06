@@ -2,15 +2,19 @@ const path = require("path");
 const WebpackShellPlugin = require("webpack-shell-plugin");
 
 /**
+ * Use this webpack config to ensure we can use server and serverless
+ * infrastructures interchangeably during development/deployment.
  * @typedef Args
- * @property {string} dirname
- * @property {'server' | 'serverless'} infrastructure
- * @property {string} [overrideServerEntry]
- * @property {typeof import('serverless-webpack')} slsw
+ * @property {boolean} [buildOnly] whether the server should be run upon build end.
+ * @property {string} dirname the current project directory.
+ * @property {'server' | 'serverless'} infrastructure the server infrastructure.
+ * @property {string} [overrideServerEntry] entry for server infrastructure.
+ * @property {typeof import('serverless-webpack')} slsw serverless config.
  * @param {Args} args
  * @return {import('webpack').Configuration}
  */
 module.exports = function ({
+  buildOnly,
   dirname,
   infrastructure,
   overrideServerEntry,
@@ -24,9 +28,18 @@ module.exports = function ({
         mode: "development",
         output: { path: path.join(dirname, "build"), filename: "index.js" },
         plugins: [
-          new WebpackShellPlugin({
-            onBuildEnd: [["yarn", "nodemon"].join(" ")],
-          }),
+          ...(buildOnly
+            ? []
+            : /**
+               * This is triggered only once after the first build finishes,
+               * even in watch mode, so we use nodemon to watch for built file
+               * changes.
+               */
+              [
+                new WebpackShellPlugin({
+                  onBuildEnd: [["yarn", "nodemon"].join(" ")],
+                }),
+              ]),
         ],
         resolve: {
           alias: {

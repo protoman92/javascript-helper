@@ -13,15 +13,17 @@ function requireEnvVars(envVars, ...keys) {
 
 /**
  * @typedef ConstructEnvVarsArgs
- * @property {{[x: string]: unknown}} [additionalEnv]
- * @property {string} dirname
- * @property {readonly string[]} requiredKeys
- * @property {string} stage
+ * @property {{[x: string]: unknown}} [additionalEnv] additional env variables that may not be found in the .env file.
+ * @property {string} dirname the current directory.
+ * @property {readonly string[]} [optionalKeys] the keys that may be present in the final env.
+ * @property {readonly string[]} requiredKeys the keys that must be present in the final env.
+ * @property {string} stage the stage with which we shall find the correct .env file.
  * @param {ConstructEnvVarsArgs} arg0
  */
 exports.constructEnvVars = function ({
   additionalEnv = {},
   dirname,
+  optionalKeys = [],
   requiredKeys,
   stage,
 }) {
@@ -45,19 +47,21 @@ exports.constructEnvVars = function ({
   })();
 
   /** @type {{[x: string]: unknown}} */
-  let extraEnv = {
-    ...dotenv.config({ path: path.join(dirname, `.env.${stage}`) }).parsed,
-    NODE_ENV,
-  };
+  let extraEnv = { NODE_ENV };
 
-  switch (process.env.PIPELINE) {
-    case "CI":
-      for (const key of requiredKeys) extraEnv[key] = process.env[key];
-      break;
-
-    default:
-      break;
+  for (const key of [...optionalKeys, ...requiredKeys]) {
+    if (!!process.env[key]) extraEnv[key] = process.env[key];
   }
+
+  /** @type {{[x: string]: unknown}} */
+  extraEnv = {
+    ...extraEnv,
+    ...dotenv.config({
+      encoding: "utf-8",
+      debug: true,
+      path: path.join(dirname, `.env.${stage}`),
+    }).parsed,
+  };
 
   extraEnv = { ...extraEnv, ...additionalEnv };
   requireEnvVars(extraEnv, ...requiredKeys);
