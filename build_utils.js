@@ -1,4 +1,7 @@
+const { SharedIniFileCredentials } = require("aws-sdk");
 const dotenv = require("dotenv");
+const fs = require("fs");
+const os = require("os");
 const path = require("path");
 
 /**
@@ -66,4 +69,15 @@ exports.constructEnvVars = function ({
   extraEnv = { ...extraEnv, ...additionalEnv };
   requireEnvVars(extraEnv, ...requiredKeys);
   return extraEnv;
+};
+
+/**
+ * @typedef GetAWSCredentialsArgs
+ * @property {string} profile
+ * @param {GetAWSCredentialsArgs} arg0
+ * @returns {SharedIniFileCredentials}
+ */
+exports.getLocalAWSCredentials = function ({ profile }) {
+  const credentials = new SharedIniFileCredentials({ profile });
+  return credentials;
 };
