@@ -124,6 +124,13 @@ export function requireNotNull<T>(
   return obj;
 }
 
+export function requireNull<T>(
+  obj: T | null | undefined,
+  message = "Expected non-null value"
+) {
+  if (obj != null) throw new Error(message);
+}
+
 export function toArray<T>(elemOrArray: T | T[]): readonly T[] {
   if (elemOrArray instanceof Array) return elemOrArray;
   return [elemOrArray];
