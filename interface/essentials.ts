@@ -1,3 +1,5 @@
+import { GenericAsyncFunction, GenericFunction } from ".";
+
 export type Promised<T> = T extends Promise<infer U> ? U : T;
 export type Mapper<T1, T2 = T1> = (args: T1) => T2;
 export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
@@ -18,9 +20,9 @@ export type NonNullableProps<
   K extends keyof A = keyof A
 > = Required<{ [x in K]: NonNullable<A[x]> }> & Omit<A, K>;
 
-export type Promisified<FN extends (...args: any[]) => any> = FN extends (
-  ...args: any[]
-) => Promise<any>
+export type Promisified<
+  FN extends GenericFunction
+> = FN extends GenericAsyncFunction
   ? FN
   : (...args: Parameters<FN>) => Promise<ReturnType<FN>>;
 
