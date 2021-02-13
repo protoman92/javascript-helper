@@ -1,5 +1,10 @@
 import { GenericAsyncFunction, GenericFunction } from ".";
 
+export type ArrayToMap<
+  T extends any[] | readonly any[],
+  TKey extends keyof T[number]
+> = Map<T[number][TKey], T[number]>;
+
 export type Promised<T> = T extends Promise<infer U> ? U : T;
 export type Mapper<T1, T2 = T1> = (args: T1) => T2;
 export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
