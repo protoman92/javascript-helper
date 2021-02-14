@@ -193,7 +193,7 @@ export default function <SubscribeeData>({
     >),
     deinitialize,
     initialize,
-    sendMessage: (data: SubscribeeData) => {
+    sendMessage: (data) => {
       for (const [, connection] of peerConnections) connection.send(data);
     },
   };

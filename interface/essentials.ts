@@ -32,3 +32,4 @@ export type Promisified<
   : (...args: Parameters<FN>) => Promise<ReturnType<FN>>;
 
 export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
+export type SetToArray<T> = T extends Set<infer V> ? V[] : never;

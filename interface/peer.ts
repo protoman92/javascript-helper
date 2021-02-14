@@ -57,6 +57,19 @@ export type PeerClientFactory = ReturnType<
   typeof import("../client/peer_client_factory")["default"]
 >;
 
+/**
+ * Since peer messages cannot handle native types such as Map/Set, we need to
+ * find a way to convert them into compatible objects. For e.g., Map should be
+ * converted to Object, Set should be converted to Array.
+ */
+export type PeerMessageCompatible<T> = T extends Map<infer K, infer V>
+  ? { [x in Extract<K, number | string>]: PeerMessageCompatible<V> }
+  : T extends Set<infer V>
+  ? PeerMessageCompatible<V>[]
+  : T extends { [x: number]: any; [y: string]: any }
+  ? { [x in keyof T]: PeerMessageCompatible<T[x]> }
+  : T;
+
 export namespace ManyToOnePeerClient {
   interface ConnectionOpenArgs {
     readonly connection: PeerConnection;
@@ -105,4 +118,4 @@ export interface ManyToOnePeerClient<SubscribeeData>
       EventEmitterClient<ManyToOnePeerClient.Callbacks<SubscribeeData>>,
       "callbacksType" | "off" | "on"
     >,
-    MessageSender<SubscribeeData> {}
+    MessageSender<PeerMessageCompatible<SubscribeeData>> {}

@@ -6,6 +6,7 @@ import applyPolyfills from "./polyfills";
 import runOnce from "./run_once";
 import underscoreIDKeys from "./underscore_id_key";
 export * from "./boolean_predicate";
+export * from "./peer";
 export * from "./retry";
 export {
   applyPolyfills,
