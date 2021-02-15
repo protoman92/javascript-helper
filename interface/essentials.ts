@@ -1,5 +1,7 @@
 import { GenericAsyncFunction, GenericFunction } from ".";
 
+export type ArrayOrSingle<T> = T | T[] | readonly T[];
+
 export type ArrayToMap<
   T extends any[] | readonly any[],
   TKey extends keyof T[number]
@@ -31,5 +33,6 @@ export type Promisified<
   ? FN
   : (...args: Parameters<FN>) => Promise<ReturnType<FN>>;
 
+export type Returnable<T> = T | (() => T);
 export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
