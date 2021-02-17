@@ -27,6 +27,9 @@ export type NonNullableProps<
   K extends keyof A = keyof A
 > = Required<{ [x in K]: NonNullable<A[x]> }> & Omit<A, K>;
 
+export type Nullable<T> = T | null;
+export type NullableProps<T> = { [x in keyof T]: Nullable<T[x]> };
+
 export type Promisified<
   FN extends GenericFunction
 > = FN extends GenericAsyncFunction

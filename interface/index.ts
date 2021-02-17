@@ -19,7 +19,6 @@ export interface EventEmitterClient<
 
 export type GenericFunction = (...args: any[]) => any;
 export type GenericAsyncFunction = (...args: any[]) => Promise<any>;
-
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
 
 export interface Mappable {
