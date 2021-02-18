@@ -5,16 +5,23 @@ const readline = require("readline");
 
 /**
  * @typedef Args
- * @property {string} dirname
+ * @property {string} [credentialFileName]
+ * @property {string} credentialPath
  * @property {string[]} scopes
+ * @property {string} [tokenFileName]
  * @param {Args} args
  */
-module.exports = async function ({ dirname, scopes }) {
-  const TOKEN_PATH = path.join(dirname, "credential", "google_token.json");
+module.exports = async function ({
+  credentialFileName = "google_credentials.json",
+  credentialPath,
+  scopes,
+  tokenFileName = "google_token.json",
+}) {
+  const TOKEN_PATH = path.join(credentialPath, tokenFileName);
 
   // Load client secrets from a local file.
   const credentialsContent = await fs.readFile(
-    path.join(dirname, "credential", "google_credentials.json")
+    path.join(credentialPath, credentialFileName)
   );
 
   const credentials = JSON.parse(credentialsContent.toString("utf-8"));
