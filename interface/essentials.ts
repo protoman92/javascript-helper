@@ -29,6 +29,7 @@ export type NonNullableProps<
 
 export type Nullable<T> = T | null;
 export type NullableProps<T> = { [x in keyof T]: Nullable<T[x]> };
+export type ObjectValue<O> = O extends Record<any, infer V> ? V : never;
 
 export type Promisified<
   FN extends GenericFunction

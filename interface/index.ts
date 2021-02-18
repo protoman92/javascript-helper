@@ -1,6 +1,7 @@
 import { DocumentNode, GraphQLArgs } from "graphql";
 import { Mapper, Promisified } from "./essentials";
 export * from "./essentials";
+export * from "./i18n";
 export * from "./peer";
 
 export type AnyClient = Readonly<{ [x: string]: (...args: any[]) => any }>;
@@ -19,6 +20,7 @@ export interface EventEmitterClient<
 
 export type GenericFunction = (...args: any[]) => any;
 export type GenericAsyncFunction = (...args: any[]) => Promise<any>;
+export type GenericObject = { [x: string]: unknown };
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
 
 export interface Mappable {
