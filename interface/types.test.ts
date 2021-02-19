@@ -22,27 +22,43 @@ describe("Essential types", () => {
 describe("i18n types", () => {
   it("Should have correct t methods", async () => {
     // Setup
-    type Translation = { a: { b: { c: string } }; b: { c: string } };
-    type Client = I18N<Translation>;
+    type LocaleContent = { a: { b: { c: string } }; b: { c: string } };
+    type Client = I18N<LocaleContent>;
 
     // When
-    const translation = { a: { b: { c: "1" } }, b: { c: "2" } };
+    const localeContent = { a: { b: { c: "1" } }, b: { c: "2" } };
 
     const client: Client = {
-      t: (...keys: readonly string[]) => {
-        let currentObject: I18N.Translation = translation;
+      t: (...keys: readonly (object | string)[]) => {
+        let currentObject: I18N.LocaleContent = localeContent;
+
+        if (
+          keys.length === 1 &&
+          typeof keys[0] === "string" &&
+          keys[0].includes(".")
+        ) {
+          keys = keys[0].split(".");
+        }
+
+        let replacement: object | undefined;
+
+        if (typeof keys[keys.length - 1] === "object") {
+          replacement = keys[keys.length - 1] as object;
+        }
 
         for (const key of keys) {
-          if (key in currentObject) {
+          if (typeof key === "object") {
+            throw new Error("Wrong key");
+          } else if (key in currentObject) {
             const childObject = currentObject[key];
 
             if (typeof childObject === "object") {
               currentObject = childObject;
             } else {
-              return childObject;
+              return `${childObject}${JSON.stringify(replacement)}`;
             }
           } else {
-            return key;
+            return `${key}${JSON.stringify(replacement)}`;
           }
         }
 
@@ -50,10 +66,13 @@ describe("i18n types", () => {
       },
     } as any;
 
+    const replacement = { x: 1, y: 2, z: 3 };
+
     // Then
-    expect(client.t("a", "b", "c")).toMatchSnapshot("1");
-    expect(client.t("b", "c")).toMatchSnapshot();
-    expect(client.t("whatever")).toMatchSnapshot();
+    expect(client.t("a", "b", "c", replacement)).toMatchSnapshot();
+    expect(client.t("b", "c", replacement)).toMatchSnapshot();
+    expect(client.t("a.b.c", replacement)).toMatchSnapshot();
+    expect(client.t("whatever", replacement)).toMatchSnapshot();
   });
 });
 
