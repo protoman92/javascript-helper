@@ -1,4 +1,4 @@
-import { getClassName } from "./utils";
+import { getClassName } from ".";
 
 describe("React utilities", () => {
   it("Get class name should work", async () => {

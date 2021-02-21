@@ -59,6 +59,20 @@ export function isShallowEqual<T>(
   return shallowEqual(lhs as any, rhs as any);
 }
 
+export function isType<T, K extends keyof T = keyof T>(
+  object: unknown,
+  ...keys: K[]
+): object is T {
+  if (typeof object !== "object" || object == null) return false;
+
+  for (const key of keys) {
+    if (key in object) continue;
+    return false;
+  }
+
+  return true;
+}
+
 export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
   const newObject: Partial<T> = {};
 
