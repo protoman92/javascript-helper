@@ -7,7 +7,10 @@ export { defaultFieldResolver, GraphQLSchema } from "graphql";
 export { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 export { GraphQLJSONObject } from "graphql-type-json";
 export { gql, GraphQLJSON };
-export type ContextFunction<InCtx, OutCtx> = (ctx: InCtx) => Promise<OutCtx>;
+
+export type ContextFunction<InCtx, OutCtx> = (
+  ctx: InCtx
+) => Promise<Partial<OutCtx>>;
 
 /**
  * Combines several context functions together into one function that takes

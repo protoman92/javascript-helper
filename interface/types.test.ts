@@ -29,6 +29,7 @@ describe("i18n types", () => {
     const localeContent = { a: { b: { c: "1" } }, b: { c: "2" } };
 
     const client: Client = {
+      k: (...keys: readonly string[]) => keys.join("."),
       t: (...keys: readonly (object | string)[]) => {
         let currentObject: I18N.LocaleContent = localeContent;
 
@@ -40,10 +41,10 @@ describe("i18n types", () => {
           keys = keys[0].split(".");
         }
 
-        let replacement: object | undefined;
+        let options: I18N.Options | undefined;
 
         if (typeof keys[keys.length - 1] === "object") {
-          replacement = keys[keys.length - 1] as object;
+          options = keys[keys.length - 1] as I18N.Options;
         }
 
         for (const key of keys) {
@@ -55,10 +56,10 @@ describe("i18n types", () => {
             if (typeof childObject === "object") {
               currentObject = childObject;
             } else {
-              return `${childObject}${JSON.stringify(replacement)}`;
+              return `${childObject}${JSON.stringify(options)}`;
             }
           } else {
-            return `${key}${JSON.stringify(replacement)}`;
+            return `${key}${JSON.stringify(options)}`;
           }
         }
 
@@ -67,12 +68,15 @@ describe("i18n types", () => {
     } as any;
 
     const replacement = { x: 1, y: 2, z: 3 };
+    const options = { replacement };
 
     // Then
-    expect(client.t("a", "b", "c", replacement)).toMatchSnapshot();
-    expect(client.t("b", "c", replacement)).toMatchSnapshot();
-    expect(client.t("a.b.c", replacement)).toMatchSnapshot();
-    expect(client.t("whatever", replacement)).toMatchSnapshot();
+    expect(client.k("a", "b", "c")).toEqual(["a", "b", "c"]);
+    expect(client.t("a", "b", "c", options)).toMatchSnapshot();
+    expect(client.t("b", "c", options)).toMatchSnapshot();
+    expect(client.t("a.b.c", options)).toMatchSnapshot();
+    expect(client.t("whatever", options)).toMatchSnapshot();
+    expect(client.t("a", "b", "c")).toMatchSnapshot();
   });
 });
 

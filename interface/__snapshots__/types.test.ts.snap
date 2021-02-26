@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`i18n types Should have correct t methods 1`] = `"1{\\"x\\":1,\\"y\\":2,\\"z\\":3}"`;
+exports[`i18n types Should have correct t methods 1`] = `"1{\\"replacement\\":{\\"x\\":1,\\"y\\":2,\\"z\\":3}}"`;
 
-exports[`i18n types Should have correct t methods 2`] = `"2{\\"x\\":1,\\"y\\":2,\\"z\\":3}"`;
+exports[`i18n types Should have correct t methods 2`] = `"2{\\"replacement\\":{\\"x\\":1,\\"y\\":2,\\"z\\":3}}"`;
 
-exports[`i18n types Should have correct t methods 3`] = `"a.b.c{\\"x\\":1,\\"y\\":2,\\"z\\":3}"`;
+exports[`i18n types Should have correct t methods 3`] = `"a.b.c{\\"replacement\\":{\\"x\\":1,\\"y\\":2,\\"z\\":3}}"`;
 
-exports[`i18n types Should have correct t methods 4`] = `"whatever{\\"x\\":1,\\"y\\":2,\\"z\\":3}"`;
+exports[`i18n types Should have correct t methods 4`] = `"whatever{\\"replacement\\":{\\"x\\":1,\\"y\\":2,\\"z\\":3}}"`;
