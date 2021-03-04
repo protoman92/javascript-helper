@@ -29,7 +29,7 @@ describe("i18n types", () => {
     const localeContent = { a: { b: { c: "1" } }, b: { c: "2" } };
 
     const client: Client = {
-      k: (...keys: readonly string[]) => keys.join("."),
+      k: (...keys: readonly string[]) => keys,
       t: (...keys: readonly (object | string)[]) => {
         let currentObject: I18N.LocaleContent = localeContent;
 
