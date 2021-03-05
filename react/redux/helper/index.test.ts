@@ -1,4 +1,4 @@
-import { combineReducers, createSettablePropertyHelper } from "./helper";
+import { combineReducers, createSettablePropertyHelper } from ".";
 
 describe("Redux helpers", () => {
   it("Settable property helper should work correctly", async () => {
@@ -15,9 +15,9 @@ describe("Redux helpers", () => {
     });
 
     // When && Then
-    state = helper.reducer(state, helper.actionCreators[0]("New value"));
-    expect(state?.property).toEqual("New value");
-    state = helper.reducer(state!, helper.actionCreators[1]);
+    state = helper.reducer(state, helper.actionCreators.Set_property("NV"));
+    expect(state?.property).toEqual("NV");
+    state = helper.reducer(state!, helper.actionCreators.Delete_property);
     expect(state?.property).toBeUndefined();
     expect(helper.reducer(state!, {} as any)).toBeUndefined();
   });
