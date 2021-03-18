@@ -42,8 +42,10 @@ exports.constructEnvVars = function ({
 
       case "dev":
       case "development":
-      default:
         return "development";
+
+      default:
+        return stage;
     }
   })();
 

@@ -1,6 +1,11 @@
 import { connect } from "react-redux";
-import { ComponentEnhancer, shallowEqual, shouldUpdate } from "recompose";
-import { compose, Dispatch } from "redux";
+import {
+  ComponentEnhancer,
+  compose,
+  shallowEqual,
+  shouldUpdate,
+} from "recompose";
+import { Dispatch } from "redux";
 export * from "./read_file";
 
 export function getClassName(

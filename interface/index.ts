@@ -4,7 +4,10 @@ import { Mapper, Promisified } from "./essentials";
 export * from "./essentials";
 export * from "./i18n";
 export * from "./peer";
-export { IResolvers as GraphQLResolvers, DocumentNode as GraphQLDocumentNode };
+export type {
+  IResolvers as GraphQLResolvers,
+  DocumentNode as GraphQLDocumentNode,
+};
 
 export type AnyClient = Readonly<{ [x: string]: (...args: any[]) => any }>;
 
