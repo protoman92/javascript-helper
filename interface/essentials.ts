@@ -1,3 +1,4 @@
+import { DeepPartial } from "ts-essentials";
 import { GenericAsyncFunction, GenericFunction } from ".";
 
 export type ArrayOrSingle<T> = T | T[] | readonly T[];
@@ -40,3 +41,9 @@ export type Promisified<
 export type Returnable<T> = T | (() => T);
 export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
+
+export type WithDeepPartialReturn<FN extends (...args: any[]) => any> = (
+  ...args: Parameters<FN>
+) => ReturnType<FN> extends Promise<infer T>
+  ? Promise<DeepPartial<T>>
+  : DeepPartial<ReturnType<FN>>;
