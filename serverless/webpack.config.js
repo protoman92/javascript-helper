@@ -2,22 +2,23 @@ const path = require("path");
 const WebpackShellPlugin = require("webpack-shell-plugin");
 
 /**
+ * @typedef ServerOverrides
+ * @property {string} [entry]
+ * @property {boolean} [buildOnly] whether the server should be run upon build end.
  * Use this webpack config to ensure we can use server and serverless
  * infrastructures interchangeably during development/deployment.
  * @typedef Args
- * @property {boolean} [buildOnly] whether the server should be run upon build end.
  * @property {string} dirname the current project directory.
  * @property {'server' | 'serverless'} infrastructure the server infrastructure.
- * @property {string} [overrideServerEntry] entry for server infrastructure.
+ * @property {ServerOverrides} [serverOverrides] overriding config for server infrastructure.
  * @property {typeof import('serverless-webpack')} slsw serverless config.
  * @param {Args} args
  * @return {import('webpack').Configuration}
  */
 module.exports = function ({
-  buildOnly,
   dirname,
   infrastructure,
-  overrideServerEntry,
+  serverOverrides: { buildOnly, entry: overrideServerEntry } = {},
   slsw,
 }) {
   switch (infrastructure) {
