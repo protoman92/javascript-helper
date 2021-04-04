@@ -146,6 +146,14 @@ export function requireNull<T>(
   if (obj != null) throw new Error(message);
 }
 
+export function stripLeadingSlash(str: string) {
+  while (str.startsWith("/")) {
+    str = str.slice(1);
+  }
+
+  return str;
+}
+
 export function toArray<T>(elemOrArray: T | T[]): readonly T[] {
   if (elemOrArray instanceof Array) return elemOrArray;
   return [elemOrArray];
