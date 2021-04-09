@@ -1,13 +1,14 @@
 import Peer, { DataConnection } from "peerjs";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { PeerClient, PeerConnection, PeerEvent, PeerState } from "../interface";
-import { omitFalsy } from "../utils";
+import { omitNull } from "../utils";
 
 interface PeerClientFactoryArgs {
   readonly env: string;
   readonly host?: string;
   readonly port?: number;
   readonly key?: string;
+  readonly secure?: boolean;
   readonly path?: string;
 }
 
@@ -19,16 +20,18 @@ export default function ({
   key,
   path,
   port,
+  secure,
 }: PeerClientFactoryArgs) {
   return {
     newInstance: (id: string): PeerClient => {
       const peer = new Peer(
         id,
-        omitFalsy({
+        omitNull({
           host,
           key,
           path,
           port,
+          secure,
           debug: env === "production" ? undefined : undefined,
         })
       );
