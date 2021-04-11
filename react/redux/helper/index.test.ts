@@ -22,6 +22,33 @@ describe("Redux helpers", () => {
     expect(helper.reducer(state!, {} as any)).toBeUndefined();
   });
 
+  it("Settable property helper for array state should work correctly", async () => {
+    // Setup
+    interface State {
+      property?: string[];
+    }
+
+    let state: State | undefined = { property: [] };
+
+    const helper = createSettablePropertyHelper<State, "property", "PREFIX">({
+      actionPrefix: "PREFIX",
+      stateKey: "property",
+    });
+
+    // When && Then
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Array_push_property("some-value-2")
+    );
+
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Array_unshift_property("some-value-1")
+    );
+
+    expect(state?.property).toEqual(["some-value-1", "some-value-2"]);
+  });
+
   it("Combining reducers should work", () => {
     // Setup
     interface State {
