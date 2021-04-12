@@ -19,11 +19,13 @@ type ArrayPushAction<
     }>
   : NoopAction<ActionPrefix>;
 
-type ArrayReplaceAction_Arguments<ArrayElement> = { value: ArrayElement } & (
-  | { index: number }
-  | { predicate: (currentValue: ArrayElement, index: number) => boolean }
-  | { propertyToCheckEquality: keyof ArrayElement }
-);
+type ArrayReplaceAction_Arguments<ArrayElement> = Readonly<
+  { value: ArrayElement } & (
+    | { index: number }
+    | { predicate: (currentValue: ArrayElement, index: number) => boolean }
+    | { propertyToCheckEquality: keyof ArrayElement }
+  )
+>;
 
 type ArrayReplaceAction<
   State,
@@ -48,6 +50,16 @@ type ArrayUnshiftAction<
     }>
   : NoopAction<ActionPrefix>;
 
+type BooleanToggleAction<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = State[StateKey] extends Neverable<boolean>
+  ? Readonly<{
+      type: `${ActionPrefix}_boolean_toggle_${Extract<StateKey, string>}`;
+    }>
+  : NoopAction<ActionPrefix>;
+
 type DeleteAction<
   State,
   StateKey extends keyof State,
@@ -69,23 +81,31 @@ type SettablePropertyHelper<
   ActionPrefix extends string
 > = {
   actionCreators: Readonly<
-    (State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
+    (State[StateKey] extends Neverable<boolean>
       ? {
-          [x in `Array_push_${Extract<StateKey, string>}`]: (
-            value: ArrayElement
-          ) => ArrayPushAction<State, StateKey, ActionPrefix>;
-        } &
-          {
-            [x in `Array_replace_${Extract<StateKey, string>}`]: (
-              args: ArrayReplaceAction_Arguments<ArrayElement>
-            ) => ArrayReplaceAction<State, StateKey, ActionPrefix>;
-          } &
-          {
-            [x in `Array_unshift_${Extract<StateKey, string>}`]: (
-              value: ArrayElement
-            ) => ArrayUnshiftAction<State, StateKey, ActionPrefix>;
-          }
+          [x in `Boolean_toggle_${Extract<
+            StateKey,
+            string
+          >}`]: BooleanToggleAction<State, StateKey, ActionPrefix>;
+        }
       : {}) &
+      (State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
+        ? {
+            [x in `Array_push_${Extract<StateKey, string>}`]: (
+              value: ArrayElement
+            ) => ArrayPushAction<State, StateKey, ActionPrefix>;
+          } &
+            {
+              [x in `Array_replace_${Extract<StateKey, string>}`]: (
+                args: ArrayReplaceAction_Arguments<ArrayElement>
+              ) => ArrayReplaceAction<State, StateKey, ActionPrefix>;
+            } &
+            {
+              [x in `Array_unshift_${Extract<StateKey, string>}`]: (
+                value: ArrayElement
+              ) => ArrayUnshiftAction<State, StateKey, ActionPrefix>;
+            }
+        : {}) &
       {
         [x in `Delete_${Extract<StateKey, string>}`]: DeleteAction<
           State,
@@ -130,6 +150,9 @@ export function createSettablePropertyHelper<
           ? ArrayElement
           : undefined
       ) => ({ value, type: `${actionPrefix}_array_unshift_${stateKey}` }),
+      [`Boolean_toggle_${stateKey}`]: {
+        type: `${actionPrefix}_boolean_toggle_${stateKey}`,
+      },
       [`Delete_${stateKey}`]: { type: `${actionPrefix}_delete_${stateKey}` },
       [`Set_${stateKey}`]: (value: State[StateKey]) => ({
         value,
@@ -199,6 +222,10 @@ export function createSettablePropertyHelper<
 
         arrayStateValue.unshift(action.value);
         return { ...state, [stateKey]: arrayStateValue };
+      }
+
+      if (action.type === `${actionPrefix}_boolean_toggle_${stateKey}`) {
+        return { ...state, [stateKey]: !state[stateKey] };
       }
 
       if (

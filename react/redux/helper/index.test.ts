@@ -87,6 +87,36 @@ describe("Redux helpers", () => {
     ]);
   });
 
+  it("Settable property helper for boolean state should work correctly", async () => {
+    // Setup
+    interface State {
+      property?: boolean | null;
+    }
+
+    let state: State | undefined = {};
+
+    const helper = createSettablePropertyHelper<State, "property", "PREFIX">({
+      actionPrefix: "PREFIX",
+      stateKey: "property",
+    });
+
+    // When && Then 1
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Boolean_toggle_property
+    );
+
+    expect(state?.property).toEqual(true);
+
+    // When && Then 2
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Boolean_toggle_property
+    );
+
+    expect(state?.property).toEqual(false);
+  });
+
   it("Combining reducers should work", () => {
     // Setup
     interface State {
