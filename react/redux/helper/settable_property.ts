@@ -2,26 +2,46 @@ import { Action } from "redux";
 import { ReducerWithOptionalReturn } from ".";
 import { Neverable } from "../../../interface";
 
+type CompatibleArray<T> = T[] | readonly T[];
+
 type NoopAction<ActionPrefix extends string> = Readonly<{
-  type: `${ActionPrefix}_Noop`;
+  type: `${ActionPrefix}_noop`;
 }>;
 
 type ArrayPushAction<
   State,
   StateKey extends keyof State,
   ActionPrefix extends string
-> = State[StateKey] extends Neverable<Array<infer ArrayElement>>
+> = State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
   ? Readonly<{
       type: `${ActionPrefix}_array_push_${Extract<StateKey, string>}`;
       value: ArrayElement;
     }>
   : NoopAction<ActionPrefix>;
 
+type ArrayReplaceAction_Arguments<ArrayElement> = { value: ArrayElement } & (
+  | { index: number }
+  | { predicate: (currentValue: ArrayElement, index: number) => boolean }
+  | { propertyToCheckEquality: keyof ArrayElement }
+);
+
+type ArrayReplaceAction<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
+  ? Readonly<
+      {
+        type: `${ActionPrefix}_array_replace_${Extract<StateKey, string>}`;
+      } & ArrayReplaceAction_Arguments<ArrayElement>
+    >
+  : NoopAction<ActionPrefix>;
+
 type ArrayUnshiftAction<
   State,
   StateKey extends keyof State,
   ActionPrefix extends string
-> = State[StateKey] extends Neverable<Array<infer ArrayElement>>
+> = State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
   ? Readonly<{
       type: `${ActionPrefix}_array_unshift_${Extract<StateKey, string>}`;
       value: ArrayElement;
@@ -49,12 +69,17 @@ type SettablePropertyHelper<
   ActionPrefix extends string
 > = {
   actionCreators: Readonly<
-    (State[StateKey] extends Neverable<Array<infer ArrayElement>>
+    (State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
       ? {
           [x in `Array_push_${Extract<StateKey, string>}`]: (
             value: ArrayElement
           ) => ArrayPushAction<State, StateKey, ActionPrefix>;
         } &
+          {
+            [x in `Array_replace_${Extract<StateKey, string>}`]: (
+              args: ArrayReplaceAction_Arguments<ArrayElement>
+            ) => ArrayReplaceAction<State, StateKey, ActionPrefix>;
+          } &
           {
             [x in `Array_unshift_${Extract<StateKey, string>}`]: (
               value: ArrayElement
@@ -91,12 +116,17 @@ export function createSettablePropertyHelper<
   return ({
     actionCreators: {
       [`Array_push_${stateKey}`]: (
-        value: State[StateKey] extends Array<infer ArrayElement>
+        value: State[StateKey] extends CompatibleArray<infer ArrayElement>
           ? ArrayElement
           : undefined
       ) => ({ value, type: `${actionPrefix}_array_push_${stateKey}` }),
+      [`Array_replace_${stateKey}`]: (
+        args: State[StateKey] extends CompatibleArray<infer ArrayElement>
+          ? ArrayReplaceAction_Arguments<ArrayElement>
+          : undefined
+      ) => ({ ...args, type: `${actionPrefix}_array_replace_${stateKey}` }),
       [`Array_unshift_${stateKey}`]: (
-        value: State[StateKey] extends Array<infer ArrayElement>
+        value: State[StateKey] extends CompatibleArray<infer ArrayElement>
           ? ArrayElement
           : undefined
       ) => ({ value, type: `${actionPrefix}_array_unshift_${stateKey}` }),
@@ -110,6 +140,7 @@ export function createSettablePropertyHelper<
       state: State,
       action:
         | ArrayPushAction<State, StateKey, ActionPrefix>
+        | ArrayReplaceAction<State, StateKey, ActionPrefix>
         | ArrayUnshiftAction<State, StateKey, ActionPrefix>
         | DeleteAction<State, StateKey, ActionPrefix>
         | SetAction<State, StateKey, ActionPrefix>
@@ -123,6 +154,38 @@ export function createSettablePropertyHelper<
         ];
 
         arrayStateValue.push(action.value);
+        return { ...state, [stateKey]: arrayStateValue };
+      }
+
+      if (
+        action.type === `${actionPrefix}_array_replace_${stateKey}` &&
+        "value" in action
+      ) {
+        const valueToReplace = action.value;
+
+        const arrayStateValue = [
+          ...(((state[stateKey] as unknown) as unknown[]) || []),
+        ];
+
+        let index = -1;
+        let findIndexFunction: ((currentValue: any) => boolean) | undefined;
+
+        if ("index" in action) {
+          index = (action as any).index;
+        } else if ("predicate" in action) {
+          findIndexFunction = (action as any).predicate;
+        } else if ("propertyToCheckEquality" in action) {
+          const propertyKey = (action as any).propertyToCheckEquality;
+
+          findIndexFunction = (currentValue) =>
+            currentValue[propertyKey] === (valueToReplace as any)[propertyKey];
+        }
+
+        if (findIndexFunction != null) {
+          index = arrayStateValue.findIndex(findIndexFunction);
+        }
+
+        if (index !== -1) arrayStateValue[index] = action.value;
         return { ...state, [stateKey]: arrayStateValue };
       }
 

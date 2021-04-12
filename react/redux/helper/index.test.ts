@@ -25,28 +25,66 @@ describe("Redux helpers", () => {
   it("Settable property helper for array state should work correctly", async () => {
     // Setup
     interface State {
-      property?: string[];
+      nonArray?: boolean;
+      property?: readonly { a: string; b?: string }[];
     }
 
-    let state: State | undefined = { property: [] };
+    let state: State | undefined = {};
 
     const helper = createSettablePropertyHelper<State, "property", "PREFIX">({
       actionPrefix: "PREFIX",
       stateKey: "property",
     });
 
-    // When && Then
+    // When && Then 1
     state = helper.reducer(
       state!,
-      helper.actionCreators.Array_push_property("some-value-2")
+      helper.actionCreators.Array_push_property({
+        a: "some-value-2",
+        b: "checkable",
+      })
     );
 
     state = helper.reducer(
       state!,
-      helper.actionCreators.Array_unshift_property("some-value-1")
+      helper.actionCreators.Array_unshift_property({ a: "some-value-1" })
     );
 
-    expect(state?.property).toEqual(["some-value-1", "some-value-2"]);
+    expect(state?.property).toEqual([
+      { a: "some-value-1" },
+      { a: "some-value-2", b: "checkable" },
+    ]);
+
+    // When && Then 2
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Array_replace_property({
+        propertyToCheckEquality: "b",
+        value: { a: "some-value-3", b: "checkable" },
+      })
+    );
+
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Array_replace_property({
+        predicate: (...[, index]) => index === 0,
+        value: { a: "some-value-4" },
+      })
+    );
+
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Array_replace_property({
+        index: 2,
+        value: { a: "some-value-5" },
+      })
+    );
+
+    expect(state?.property).toEqual([
+      { a: "some-value-4" },
+      { a: "some-value-3", b: "checkable" },
+      { a: "some-value-5" },
+    ]);
   });
 
   it("Combining reducers should work", () => {
