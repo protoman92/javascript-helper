@@ -115,6 +115,22 @@ describe("Redux helpers", () => {
     );
 
     expect(state?.property).toEqual(false);
+
+    // When && Then 3
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Boolean_set_true_property
+    );
+
+    expect(state?.property).toEqual(true);
+
+    // When && Then 4
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Boolean_set_false_property
+    );
+
+    expect(state?.property).toEqual(false);
   });
 
   it("Combining reducers should work", () => {

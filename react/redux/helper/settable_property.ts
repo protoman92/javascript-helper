@@ -60,6 +60,26 @@ type BooleanToggleAction<
     }>
   : NoopAction<ActionPrefix>;
 
+type BooleanSetFalseAction<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = State[StateKey] extends Neverable<boolean>
+  ? Readonly<{
+      type: `${ActionPrefix}_boolean_set_true_${Extract<StateKey, string>}`;
+    }>
+  : NoopAction<ActionPrefix>;
+
+type BooleanSetTrueAction<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = State[StateKey] extends Neverable<boolean>
+  ? Readonly<{
+      type: `${ActionPrefix}_boolean_set_false_${Extract<StateKey, string>}`;
+    }>
+  : NoopAction<ActionPrefix>;
+
 type DeleteAction<
   State,
   StateKey extends keyof State,
@@ -83,11 +103,23 @@ type SettablePropertyHelper<
   actionCreators: Readonly<
     (State[StateKey] extends Neverable<boolean>
       ? {
-          [x in `Boolean_toggle_${Extract<
+          [x in `Boolean_set_false_${Extract<
             StateKey,
             string
-          >}`]: BooleanToggleAction<State, StateKey, ActionPrefix>;
-        }
+          >}`]: BooleanSetFalseAction<State, StateKey, ActionPrefix>;
+        } &
+          {
+            [x in `Boolean_set_true_${Extract<
+              StateKey,
+              string
+            >}`]: BooleanSetTrueAction<State, StateKey, ActionPrefix>;
+          } &
+          {
+            [x in `Boolean_toggle_${Extract<
+              StateKey,
+              string
+            >}`]: BooleanToggleAction<State, StateKey, ActionPrefix>;
+          }
       : {}) &
       (State[StateKey] extends Neverable<CompatibleArray<infer ArrayElement>>
         ? {
@@ -150,6 +182,12 @@ export function createSettablePropertyHelper<
           ? ArrayElement
           : undefined
       ) => ({ value, type: `${actionPrefix}_array_unshift_${stateKey}` }),
+      [`Boolean_set_false_${stateKey}`]: {
+        type: `${actionPrefix}_boolean_set_false_${stateKey}`,
+      },
+      [`Boolean_set_true_${stateKey}`]: {
+        type: `${actionPrefix}_boolean_set_true_${stateKey}`,
+      },
       [`Boolean_toggle_${stateKey}`]: {
         type: `${actionPrefix}_boolean_toggle_${stateKey}`,
       },
@@ -165,6 +203,9 @@ export function createSettablePropertyHelper<
         | ArrayPushAction<State, StateKey, ActionPrefix>
         | ArrayReplaceAction<State, StateKey, ActionPrefix>
         | ArrayUnshiftAction<State, StateKey, ActionPrefix>
+        | BooleanSetFalseAction<State, StateKey, ActionPrefix>
+        | BooleanSetTrueAction<State, StateKey, ActionPrefix>
+        | BooleanToggleAction<State, StateKey, ActionPrefix>
         | DeleteAction<State, StateKey, ActionPrefix>
         | SetAction<State, StateKey, ActionPrefix>
     ) => {
@@ -222,6 +263,14 @@ export function createSettablePropertyHelper<
 
         arrayStateValue.unshift(action.value);
         return { ...state, [stateKey]: arrayStateValue };
+      }
+
+      if (action.type === `${actionPrefix}_boolean_set_true_${stateKey}`) {
+        return { ...state, [stateKey]: true };
+      }
+
+      if (action.type === `${actionPrefix}_boolean_set_false_${stateKey}`) {
+        return { ...state, [stateKey]: false };
       }
 
       if (action.type === `${actionPrefix}_boolean_toggle_${stateKey}`) {
