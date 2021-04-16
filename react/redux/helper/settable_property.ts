@@ -154,43 +154,75 @@ type SettablePropertyHelper<
   reducer: ReducerWithOptionalReturn<State, Action>;
 };
 
+type CreateSettablePropertyHelperArgs<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = Readonly<
+  {
+    actionPrefix: ActionPrefix;
+    stateKey: StateKey;
+  } & (State[StateKey] extends Neverable<CompatibleArray<unknown>>
+    ? { propertyType: typeof TYPE_PROPERTY_ARRAY }
+    : State[StateKey] extends Neverable<boolean>
+    ? { propertyType: typeof TYPE_PROPERTY_BOOLEAN }
+    : { propertyType?: undefined })
+>;
+
+/** Use these property types to avoid adding unnecessary action creators */
+const TYPE_PROPERTY_ARRAY = "ARRAY";
+const TYPE_PROPERTY_BOOLEAN = "BOOLEAN";
+
 export function createSettablePropertyHelper<
   State,
   StateKey extends keyof State,
   ActionPrefix extends string
 >({
   actionPrefix,
+  propertyType,
   stateKey,
-}: Readonly<{
-  actionPrefix: ActionPrefix;
-  stateKey: StateKey;
-}>): SettablePropertyHelper<State, StateKey, ActionPrefix> {
+}: CreateSettablePropertyHelperArgs<
+  State,
+  StateKey,
+  ActionPrefix
+>): SettablePropertyHelper<State, StateKey, ActionPrefix> {
   return ({
     actionCreators: {
-      [`Array_push_${stateKey}`]: (
-        value: State[StateKey] extends CompatibleArray<infer ArrayElement>
-          ? ArrayElement
-          : undefined
-      ) => ({ value, type: `${actionPrefix}_array_push_${stateKey}` }),
-      [`Array_replace_${stateKey}`]: (
-        args: State[StateKey] extends CompatibleArray<infer ArrayElement>
-          ? ArrayReplaceAction_Arguments<ArrayElement>
-          : undefined
-      ) => ({ ...args, type: `${actionPrefix}_array_replace_${stateKey}` }),
-      [`Array_unshift_${stateKey}`]: (
-        value: State[StateKey] extends CompatibleArray<infer ArrayElement>
-          ? ArrayElement
-          : undefined
-      ) => ({ value, type: `${actionPrefix}_array_unshift_${stateKey}` }),
-      [`Boolean_set_false_${stateKey}`]: {
-        type: `${actionPrefix}_boolean_set_false_${stateKey}`,
-      },
-      [`Boolean_set_true_${stateKey}`]: {
-        type: `${actionPrefix}_boolean_set_true_${stateKey}`,
-      },
-      [`Boolean_toggle_${stateKey}`]: {
-        type: `${actionPrefix}_boolean_toggle_${stateKey}`,
-      },
+      ...(propertyType === TYPE_PROPERTY_ARRAY
+        ? {
+            [`Array_push_${stateKey}`]: (
+              value: State[StateKey] extends CompatibleArray<infer ArrayElement>
+                ? ArrayElement
+                : undefined
+            ) => ({ value, type: `${actionPrefix}_array_push_${stateKey}` }),
+            [`Array_replace_${stateKey}`]: (
+              args: State[StateKey] extends CompatibleArray<infer ArrayElement>
+                ? ArrayReplaceAction_Arguments<ArrayElement>
+                : undefined
+            ) => ({
+              ...args,
+              type: `${actionPrefix}_array_replace_${stateKey}`,
+            }),
+            [`Array_unshift_${stateKey}`]: (
+              value: State[StateKey] extends CompatibleArray<infer ArrayElement>
+                ? ArrayElement
+                : undefined
+            ) => ({ value, type: `${actionPrefix}_array_unshift_${stateKey}` }),
+          }
+        : {}),
+      ...(propertyType === TYPE_PROPERTY_BOOLEAN
+        ? {
+            [`Boolean_set_false_${stateKey}`]: {
+              type: `${actionPrefix}_boolean_set_false_${stateKey}`,
+            },
+            [`Boolean_set_true_${stateKey}`]: {
+              type: `${actionPrefix}_boolean_set_true_${stateKey}`,
+            },
+            [`Boolean_toggle_${stateKey}`]: {
+              type: `${actionPrefix}_boolean_toggle_${stateKey}`,
+            },
+          }
+        : {}),
       [`Delete_${stateKey}`]: { type: `${actionPrefix}_delete_${stateKey}` },
       [`Set_${stateKey}`]: (value: State[StateKey]) => ({
         value,

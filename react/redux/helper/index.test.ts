@@ -33,6 +33,7 @@ describe("Redux helpers", () => {
 
     const helper = createSettablePropertyHelper<State, "property", "PREFIX">({
       actionPrefix: "PREFIX",
+      propertyType: "ARRAY",
       stateKey: "property",
     });
 
@@ -97,6 +98,7 @@ describe("Redux helpers", () => {
 
     const helper = createSettablePropertyHelper<State, "property", "PREFIX">({
       actionPrefix: "PREFIX",
+      propertyType: "BOOLEAN",
       stateKey: "property",
     });
 
