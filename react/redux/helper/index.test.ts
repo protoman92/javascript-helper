@@ -135,6 +135,37 @@ describe("Redux helpers", () => {
     expect(state?.property).toEqual(false);
   });
 
+  it("Settable property helper for object state should work correctly", async () => {
+    // Setup
+    interface State {
+      property?: { a: string; b?: string };
+    }
+
+    let state: State | undefined = {};
+
+    const helper = createSettablePropertyHelper<State, "property", "PREFIX">({
+      actionPrefix: "PREFIX",
+      propertyType: "OBJECT",
+      stateKey: "property",
+    });
+
+    // When && Then 1
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Object_set_property_property("a", "some-value-a")
+    );
+
+    expect(state?.property).toEqual({ a: "some-value-a" });
+
+    // When && Then 2
+    state = helper.reducer(
+      state!,
+      helper.actionCreators.Object_delete_property_property("a")
+    );
+
+    expect(state?.property).toEqual({});
+  });
+
   it("Combining reducers should work", () => {
     // Setup
     interface State {

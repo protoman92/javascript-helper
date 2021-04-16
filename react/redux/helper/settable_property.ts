@@ -3,6 +3,7 @@ import { ReducerWithOptionalReturn } from ".";
 import { Neverable } from "../../../interface";
 
 type CompatibleArray<T> = T[] | readonly T[];
+type CompatibleObject<K extends string, V> = { [x in Extract<K, string>]: V };
 
 type NoopAction<ActionPrefix extends string> = Readonly<{
   type: `${ActionPrefix}_noop`;
@@ -86,6 +87,32 @@ type DeleteAction<
   ActionPrefix extends string
 > = Readonly<{ type: `${ActionPrefix}_delete_${Extract<StateKey, string>}` }>;
 
+type ObjectDeletePropertyAction<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = State[StateKey] extends CompatibleObject<infer K, unknown>
+  ? Readonly<{
+      key: K;
+      type: `${ActionPrefix}_object_delete_property_${Extract<
+        StateKey,
+        string
+      >}`;
+    }>
+  : NoopAction<ActionPrefix>;
+
+type ObjectSetPropertyAction<
+  State,
+  StateKey extends keyof State,
+  ActionPrefix extends string
+> = State[StateKey] extends CompatibleObject<infer K, infer V>
+  ? Readonly<{
+      key: K;
+      type: `${ActionPrefix}_object_set_property_${Extract<StateKey, string>}`;
+      value: V;
+    }>
+  : NoopAction<ActionPrefix>;
+
 type SetAction<
   State,
   StateKey extends keyof State,
@@ -138,6 +165,25 @@ type SettablePropertyHelper<
               ) => ArrayUnshiftAction<State, StateKey, ActionPrefix>;
             }
         : {}) &
+      (State[StateKey] extends Neverable<infer O>
+        ? O extends CompatibleObject<string, unknown>
+          ? {
+              [x in `Object_delete_property_${Extract<StateKey, string>}`]: <
+                K extends keyof O
+              >(
+                key: K
+              ) => ObjectDeletePropertyAction<State, StateKey, ActionPrefix>;
+            } &
+              {
+                [x in `Object_set_property_${Extract<StateKey, string>}`]: <
+                  K extends keyof O
+                >(
+                  key: K,
+                  value: O[K]
+                ) => ObjectSetPropertyAction<State, StateKey, ActionPrefix>;
+              }
+          : {}
+        : {}) &
       {
         [x in `Delete_${Extract<StateKey, string>}`]: DeleteAction<
           State,
@@ -166,12 +212,22 @@ type CreateSettablePropertyHelperArgs<
     ? { propertyType: typeof TYPE_PROPERTY_ARRAY }
     : State[StateKey] extends Neverable<boolean>
     ? { propertyType: typeof TYPE_PROPERTY_BOOLEAN }
+    : State[StateKey] extends Neverable<CompatibleObject<string, unknown>>
+    ? { propertyType: typeof TYPE_PROPERTY_OBJECT }
     : { propertyType?: undefined })
 >;
 
 /** Use these property types to avoid adding unnecessary action creators */
 const TYPE_PROPERTY_ARRAY = "ARRAY";
 const TYPE_PROPERTY_BOOLEAN = "BOOLEAN";
+const TYPE_PROPERTY_OBJECT = "OBJECT";
+
+function isOfType<T extends { type: string }>(
+  obj: Readonly<{ type: string }>,
+  typeToCheck: string
+): obj is Exclude<T, NoopAction<string>> {
+  return obj["type"] === typeToCheck;
+}
 
 export function createSettablePropertyHelper<
   State,
@@ -223,27 +279,34 @@ export function createSettablePropertyHelper<
             },
           }
         : {}),
+      ...(propertyType === TYPE_PROPERTY_OBJECT
+        ? {
+            [`Object_delete_property_${stateKey}`]: (key: string) => ({
+              key,
+              type: `${actionPrefix}_object_delete_property_${stateKey}`,
+            }),
+            [`Object_set_property_${stateKey}`]: (
+              key: string,
+              value: unknown
+            ) => ({
+              key,
+              value,
+              type: `${actionPrefix}_object_set_property_${stateKey}`,
+            }),
+          }
+        : {}),
       [`Delete_${stateKey}`]: { type: `${actionPrefix}_delete_${stateKey}` },
       [`Set_${stateKey}`]: (value: State[StateKey]) => ({
         value,
         type: `${actionPrefix}_set_${stateKey}`,
       }),
     },
-    reducer: (
-      state: State,
-      action:
-        | ArrayPushAction<State, StateKey, ActionPrefix>
-        | ArrayReplaceAction<State, StateKey, ActionPrefix>
-        | ArrayUnshiftAction<State, StateKey, ActionPrefix>
-        | BooleanSetFalseAction<State, StateKey, ActionPrefix>
-        | BooleanSetTrueAction<State, StateKey, ActionPrefix>
-        | BooleanToggleAction<State, StateKey, ActionPrefix>
-        | DeleteAction<State, StateKey, ActionPrefix>
-        | SetAction<State, StateKey, ActionPrefix>
-    ) => {
+    reducer: (state: State, action: Action) => {
       if (
-        action.type === `${actionPrefix}_array_push_${stateKey}` &&
-        "value" in action
+        isOfType<ArrayPushAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_array_push_${stateKey}`
+        )
       ) {
         const arrayStateValue = [
           ...(((state[stateKey] as unknown) as unknown[]) || []),
@@ -254,8 +317,10 @@ export function createSettablePropertyHelper<
       }
 
       if (
-        action.type === `${actionPrefix}_array_replace_${stateKey}` &&
-        "value" in action
+        isOfType<ArrayReplaceAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_array_replace_${stateKey}`
+        )
       ) {
         const valueToReplace = action.value;
 
@@ -286,8 +351,10 @@ export function createSettablePropertyHelper<
       }
 
       if (
-        action.type === `${actionPrefix}_array_unshift_${stateKey}` &&
-        "value" in action
+        isOfType<ArrayUnshiftAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_array_unshift_${stateKey}`
+        )
       ) {
         const arrayStateValue = [
           ...(((state[stateKey] as unknown) as unknown[]) || []),
@@ -297,26 +364,70 @@ export function createSettablePropertyHelper<
         return { ...state, [stateKey]: arrayStateValue };
       }
 
-      if (action.type === `${actionPrefix}_boolean_set_true_${stateKey}`) {
+      if (
+        isOfType<BooleanSetTrueAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_boolean_set_true_${stateKey}`
+        )
+      ) {
         return { ...state, [stateKey]: true };
       }
 
-      if (action.type === `${actionPrefix}_boolean_set_false_${stateKey}`) {
+      if (
+        isOfType<BooleanSetFalseAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_boolean_set_false_${stateKey}`
+        )
+      ) {
         return { ...state, [stateKey]: false };
       }
 
-      if (action.type === `${actionPrefix}_boolean_toggle_${stateKey}`) {
+      if (
+        isOfType<BooleanToggleAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_boolean_toggle_${stateKey}`
+        )
+      ) {
         return { ...state, [stateKey]: !state[stateKey] };
       }
 
       if (
-        action.type === `${actionPrefix}_set_${stateKey}` &&
-        "value" in action
+        isOfType<ObjectDeletePropertyAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_object_delete_property_${stateKey}`
+        )
+      ) {
+        const objectStateValue = { ...(state[stateKey] || {}) } as any;
+        delete objectStateValue[action.key];
+        return { ...state, [stateKey]: objectStateValue };
+      }
+
+      if (
+        isOfType<ObjectSetPropertyAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_object_set_property_${stateKey}`
+        )
+      ) {
+        const objectStateValue = { ...(state[stateKey] || {}) } as any;
+        objectStateValue[action.key] = action.value;
+        return { ...state, [stateKey]: objectStateValue };
+      }
+
+      if (
+        isOfType<SetAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_set_${stateKey}`
+        )
       ) {
         return { ...state, [stateKey]: action.value };
       }
 
-      if (action.type === `${actionPrefix}_delete_${stateKey}`) {
+      if (
+        isOfType<DeleteAction<State, StateKey, ActionPrefix>>(
+          action,
+          `${actionPrefix}_delete_${stateKey}`
+        )
+      ) {
         return { ...state, [stateKey]: undefined };
       }
 
