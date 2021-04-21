@@ -39,7 +39,9 @@ export type Promisified<
   ? FN
   : (...args: Parameters<FN>) => Promise<ReturnType<FN>>;
 
-export type Returnable<T> = T | (() => T);
+export type Returnable<T, Args extends unknown[] = []> =
+  | T
+  | ((...args: Args) => T);
 export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
 
