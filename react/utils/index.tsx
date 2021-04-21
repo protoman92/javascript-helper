@@ -8,20 +8,6 @@ import {
 import { Dispatch } from "redux";
 export * from "./read_file";
 
-export function getClassName(
-  ...classNames: readonly (false | null | string | undefined)[]
-) {
-  let finalClassName = "";
-
-  for (const className of classNames) {
-    if (typeof className === "string") {
-      finalClassName = finalClassName.concat(" ", className);
-    }
-  }
-
-  return finalClassName.trim();
-}
-
 /**
  * Connect store props with a mapper function. The target component must have
  * a store property and an optional dispatch property.
