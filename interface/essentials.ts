@@ -42,6 +42,7 @@ export type Promisified<
 export type Returnable<T, Args extends unknown[] = []> =
   | T
   | ((...args: Args) => T);
+
 export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
 

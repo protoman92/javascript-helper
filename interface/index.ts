@@ -1,6 +1,6 @@
 import { IResolvers } from "apollo-server-express";
 import { DocumentNode, GraphQLArgs } from "graphql";
-import { Mapper, Promised, Promisified, Resolvable } from "./essentials";
+import { Promised, Promisified, Resolvable } from "./essentials";
 export * from "./essentials";
 export * from "./i18n";
 export * from "./peer";
@@ -50,10 +50,6 @@ export interface InterceptorRegistry<FN extends GenericAsyncFunction> {
 }
 
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
-
-export interface Mappable {
-  map<T>(fn: Mapper<this, T>): T;
-}
 
 export type PromisifiedClient<C extends AnyClient, K extends keyof C> = {
   [x in keyof Pick<C, K>]: Promisified<C[x]>;
