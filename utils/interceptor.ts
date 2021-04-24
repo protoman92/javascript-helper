@@ -1,31 +1,36 @@
-import { GenericAsyncFunction, Resolvable } from "../interface";
+import {
+  GenericAsyncFunction,
+  InterceptorRegistry,
+  Resolvable,
+} from "../interface";
 
-type Interceptor<FN extends GenericAsyncFunction> = (
+type InterceptorResultCombiner<FN extends GenericAsyncFunction> = (
   args: Readonly<{
     originalArguments: Parameters<FN>;
-    previousResult: ReturnType<FN> | undefined;
+    nextResult: InterceptorRegistry.InterceptorResult<FN>;
+    previousResult: InterceptorRegistry.InterceptorResult<FN>;
   }>
-) => ReturnType<FN>;
+) => InterceptorRegistry.InterceptorResult<FN>;
 
 type InterceptorRegistryArgs<
   FN extends GenericAsyncFunction
 > = FN extends GenericAsyncFunction<infer T>
   ? T extends Resolvable<void>
     ? { resultCombiner?: undefined }
-    : { resultCombiner: (previousResult: T, currentResult: T) => Resolvable<T> }
+    : { resultCombiner: InterceptorResultCombiner<FN> }
   : {};
 
 export default function <FN extends GenericAsyncFunction>({
-  resultCombiner = () => {},
-}: InterceptorRegistryArgs<FN>) {
-  const interceptors: Interceptor<FN>[] = [];
+  resultCombiner = (() => {}) as any,
+}: InterceptorRegistryArgs<FN>): InterceptorRegistry<FN> {
+  const interceptors: InterceptorRegistry.Interceptor<FN>[] = [];
 
   return {
-    addInterceptor: (interceptor: Interceptor<FN>) => {
+    addInterceptor: (interceptor) => {
       interceptors.push(interceptor);
     },
-    intercept: async (...originalArguments: Parameters<FN>) => {
-      let currentResult: ReturnType<FN> | undefined;
+    intercept: async (...originalArguments) => {
+      let currentResult: InterceptorRegistry.InterceptorResult<FN> | undefined;
 
       for (const interceptor of interceptors) {
         const nextResult = await interceptor({
@@ -36,7 +41,11 @@ export default function <FN extends GenericAsyncFunction>({
         if (currentResult == null) {
           currentResult = nextResult;
         } else {
-          currentResult = await resultCombiner(currentResult, nextResult);
+          currentResult = await resultCombiner({
+            originalArguments,
+            nextResult,
+            previousResult: currentResult,
+          });
         }
       }
 
@@ -44,7 +53,7 @@ export default function <FN extends GenericAsyncFunction>({
     },
     /** Only use this for typechecking - never to produce any result */
     interceptorType: (() => {}) as FN,
-    removeInterceptor: (interceptor: Interceptor<FN>) => {
+    removeInterceptor: (interceptor) => {
       const index = interceptors.findIndex((i) => i === interceptor);
       if (index < 0) return;
       interceptors.splice(index, 1);

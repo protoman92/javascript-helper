@@ -1,6 +1,6 @@
 import { IResolvers } from "apollo-server-express";
 import { DocumentNode, GraphQLArgs } from "graphql";
-import { Mapper, Promisified, Resolvable } from "./essentials";
+import { Mapper, Promised, Promisified, Resolvable } from "./essentials";
 export * from "./essentials";
 export * from "./i18n";
 export * from "./peer";
@@ -26,6 +26,29 @@ export interface EventEmitterClient<
 export type GenericFunction = (...args: any[]) => any;
 export type GenericAsyncFunction<T = any> = (...args: any[]) => Resolvable<T>;
 export type GenericObject = { [x: string]: unknown };
+
+export namespace InterceptorRegistry {
+  export type InterceptorResult<FN extends GenericAsyncFunction> = Partial<
+    Promised<ReturnType<FN>>
+  >;
+
+  export type Interceptor<FN extends GenericAsyncFunction> = (
+    args: Readonly<{
+      originalArguments: Parameters<FN>;
+      previousResult: Partial<Promised<ReturnType<FN>>> | undefined;
+    }>
+  ) => Resolvable<InterceptorResult<FN>>;
+}
+
+export interface InterceptorRegistry<FN extends GenericAsyncFunction> {
+  addInterceptor(interceptor: InterceptorRegistry.Interceptor<FN>): void;
+  intercept(
+    ...args: Parameters<FN>
+  ): Promise<InterceptorRegistry.InterceptorResult<FN> | undefined>;
+  interceptorType: FN;
+  removeInterceptor(interceptor: InterceptorRegistry.Interceptor<FN>): void;
+}
+
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
 
 export interface Mappable {

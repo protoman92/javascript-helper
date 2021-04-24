@@ -4,7 +4,8 @@ describe("Generic interceptor", () => {
   it("Add and remove interceptors should work", async () => {
     // Setup
     const registry = createInterceptorRegistry<(...args: any[]) => number>({
-      resultCombiner: (...args) => args.reduce((acc, v = 0) => acc + v, 0),
+      resultCombiner: ({ nextResult, previousResult }) =>
+        previousResult + nextResult,
     });
 
     const intercept1 = jest.fn();
