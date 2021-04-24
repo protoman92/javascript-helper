@@ -1,5 +1,6 @@
 import { shallowEqual } from "recompose";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
+import createInterceptorRegistry from "./interceptor";
 import createOptionSet from "./option_set";
 import getAllPaginatedPages from "./paginate";
 import applyPolyfills from "./polyfills";
@@ -10,6 +11,7 @@ export * from "./peer";
 export * from "./retry";
 export {
   applyPolyfills,
+  createInterceptorRegistry,
   createOptionSet,
   flipMutualExclusiveFlags,
   getAllPaginatedPages,

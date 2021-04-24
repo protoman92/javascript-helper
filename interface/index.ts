@@ -1,6 +1,6 @@
 import { IResolvers } from "apollo-server-express";
 import { DocumentNode, GraphQLArgs } from "graphql";
-import { Mapper, Promisified } from "./essentials";
+import { Mapper, Promisified, Resolvable } from "./essentials";
 export * from "./essentials";
 export * from "./i18n";
 export * from "./peer";
@@ -24,7 +24,7 @@ export interface EventEmitterClient<
 }
 
 export type GenericFunction = (...args: any[]) => any;
-export type GenericAsyncFunction = (...args: any[]) => Promise<any>;
+export type GenericAsyncFunction<T = any> = (...args: any[]) => Resolvable<T>;
 export type GenericObject = { [x: string]: unknown };
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
 
