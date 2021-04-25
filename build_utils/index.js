@@ -1,6 +1,4 @@
 const { SharedIniFileCredentials } = require("aws-sdk");
-const dotenv = require("dotenv");
-const path = require("path");
 
 /**
  * @param {{[x: string]: unknown}} envVars
@@ -14,57 +12,22 @@ function requireEnvVars(envVars, ...keys) {
 
 /**
  * @typedef ConstructEnvVarsArgs
- * @property {{[x: string]: unknown}} [additionalEnv] additional env variables that may not be found in the .env file.
- * @property {string} dirname the current directory.
- * @property {readonly string[]} [optionalKeys] the keys that may be present in the final env.
- * @property {readonly string[]} requiredKeys the keys that must be present in the final env.
- * @property {string} stage the stage with which we shall find the correct .env file.
+ * @property {{[x: string]: unknown}} [additionalEnv] Additional env variables that may not be found in the current env.
+ * @property {readonly string[]} [optionalKeys] The keys that may be present in the final env.
+ * @property {readonly string[]} requiredKeys The keys that must be present in the final env.
  * @param {ConstructEnvVarsArgs} arg0
  */
 exports.constructEnvVars = function ({
   additionalEnv = {},
-  dirname,
   optionalKeys = [],
   requiredKeys,
-  stage,
 }) {
-  const NODE_ENV = (() => {
-    switch (stage) {
-      case "prod":
-      case "production":
-        return "production";
-
-      case "local":
-        return "local";
-
-      case "test":
-        return "test";
-
-      case "dev":
-      case "development":
-        return "development";
-
-      default:
-        return stage;
-    }
-  })();
-
   /** @type {{[x: string]: unknown}} */
-  let extraEnv = { NODE_ENV };
+  let extraEnv = {};
 
   for (const key of [...optionalKeys, ...requiredKeys]) {
     if (!!process.env[key]) extraEnv[key] = process.env[key];
   }
-
-  /** @type {{[x: string]: unknown}} */
-  extraEnv = {
-    ...extraEnv,
-    ...dotenv.config({
-      encoding: "utf-8",
-      debug: true,
-      path: path.join(dirname, `.env.${stage}`),
-    }).parsed,
-  };
 
   extraEnv = { ...extraEnv, ...additionalEnv };
   requireEnvVars(extraEnv, ...requiredKeys);
