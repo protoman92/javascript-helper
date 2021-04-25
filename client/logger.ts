@@ -18,7 +18,7 @@ export default function () {
     }>) {
       const { message: errorMessage, ...analyzedError } = analyzeError(error);
       message = `${message}: ${errorMessage}`;
-      logger.error({ ...meta, ...analyzedError, message });
+      logger.error({ ...meta, ...analyzedError, error, message });
     },
     i: async function ({
       message,
