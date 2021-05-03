@@ -1,4 +1,5 @@
 import { shallowEqual } from "recompose";
+import { Resolvable, Returnable } from "../interface";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createInterceptorRegistry from "./interceptor";
 import createOptionSet from "./option_set";
@@ -146,6 +147,20 @@ export function requireNull<T>(
   message = "Expected non-null value"
 ) {
   if (obj != null) throw new Error(message);
+}
+
+export function wrapResolvable<T>(
+  resolvable: Resolvable<T>
+): Extract<typeof resolvable, Promise<T>> {
+  if (resolvable instanceof Promise) return resolvable;
+  return Promise.resolve(resolvable);
+}
+
+export function wrapReturnable<T, Args extends unknown[] = []>(
+  returnable: Returnable<T, Args>
+): Extract<typeof returnable, Function> {
+  if (returnable instanceof Function) return returnable;
+  return () => returnable;
 }
 
 export function stripLeadingSlash(str: string) {

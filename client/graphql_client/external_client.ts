@@ -12,7 +12,8 @@ import { onError as createErrorLink } from "apollo-link-error";
 import { createHttpLink } from "apollo-link-http";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
-import { Resolvable } from "../../interface";
+import { Resolvable, Returnable } from "../../interface";
+import { requireNotNull, wrapResolvable, wrapReturnable } from "../../utils";
 export {
   ApolloClient,
   buildAxiosFetch,
@@ -28,7 +29,7 @@ export interface ExternalGraphQLRequestContext {
 }
 
 export type ExternalGraphQLRequestArgs<A, R> = (
-  | Omit<MutationOptions<R, A>, "context">
+  | Omit<MutationOptions<R, A>, "context" | "fetchPolicy">
   | Omit<QueryOptions<A>, "context">
 ) &
   Readonly<{ context?: ExternalGraphQLRequestContext }>;
@@ -76,18 +77,25 @@ export function extractGraphQLError(error: any): Error {
   return error;
 }
 
-export default function (
-  boostOrOptions: ApolloClient<unknown> | ApolloClientOptions<unknown>
+export default function <Cache = unknown>(
+  clientOrOptions: Returnable<
+    Resolvable<ApolloClient<Cache> | ApolloClientOptions<Cache>>
+  >
 ) {
-  const apollo = (() => {
-    if (boostOrOptions instanceof ApolloClient) return boostOrOptions;
-    return new ApolloClient(boostOrOptions);
+  const asyncClient = (() => {
+    const _ = wrapReturnable(clientOrOptions)();
+    if (_ instanceof ApolloClient) return wrapResolvable(_);
+    return wrapResolvable(_).then((options) => new ApolloClient(options));
   })();
 
   const errorInterceptors: ExternalGraphQLErrorInterceptor<any, any>[] = [];
   const requestInterceptors: ExternalGraphQLRequestInterceptor<any, any>[] = [];
 
   const client = {
+    /** Only use this for type-checking */
+    errorInterceptorType: ((() => {}) as unknown) as typeof errorInterceptors[number],
+    /** Only use this for type-checking */
+    requestInterceptorType: ((() => {}) as unknown) as typeof requestInterceptors[number],
     /**
      * Send a GraphQL request without interceptors. This can be overriden
      * to provide additional functionalities, such as retries.
@@ -96,11 +104,12 @@ export default function (
       args: ExternalGraphQLRequestArgs<A, R>
     ) => {
       try {
+        const client = await asyncClient;
         let data: R | null | undefined;
         let errors: readonly GraphQLError[] | undefined;
 
         if ("query" in args) {
-          const payload = await apollo.query<R | null | undefined>({
+          const payload = await client.query({
             fetchPolicy: "no-cache",
             ...args,
           });
@@ -108,11 +117,7 @@ export default function (
           data = payload.data;
           errors = payload.errors;
         } else {
-          const payload = await apollo.mutate({
-            fetchPolicy: "no-cache",
-            ...args,
-          });
-
+          const payload = await client.mutate(args);
           data = payload.data;
           errors = payload.errors;
         }
@@ -121,11 +126,7 @@ export default function (
           throw extractGraphQLError(errors[0]);
         }
 
-        if (data == null) {
-          throw new Error("Expected data, instead got invalid");
-        }
-
-        return data;
+        return requireNotNull(data);
       } catch (error) {
         /** Remove the "GraphQL error: " prefix */
         const [, messageWithoutPrefix = error.message] =
