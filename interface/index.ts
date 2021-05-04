@@ -9,8 +9,6 @@ export type {
   DocumentNode as GraphQLDocumentNode,
 };
 
-export type AnyClient = Readonly<{ [x: string]: (...args: any[]) => any }>;
-
 export interface EventEmitterClient<
   CB extends { [x: string]: (...args: any[]) => void }
 > {
@@ -51,8 +49,10 @@ export interface InterceptorRegistry<FN extends GenericAsyncFunction> {
 
 export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
 
-export type PromisifiedClient<C extends AnyClient, K extends keyof C> = {
-  [x in keyof Pick<C, K>]: Promisified<C[x]>;
+export type PromisifiedClient<C extends GenericObject, K extends keyof C> = {
+  [x in keyof Pick<C, K>]: C[x] extends GenericFunction
+    ? Promisified<C[x]>
+    : C[x];
 } &
   Omit<C, K>;
 

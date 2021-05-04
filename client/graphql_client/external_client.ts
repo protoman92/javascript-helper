@@ -2,6 +2,7 @@ import {
   ApolloClient,
   ApolloClientOptions,
   createHttpLink,
+  gql,
   InMemoryCache,
   MutationOptions,
   QueryOptions,
@@ -11,7 +12,6 @@ import { onError as createErrorLink } from "@apollo/client/link/error";
 // @ts-ignore
 import { buildAxiosFetch } from "@lifeomic/axios-fetch";
 import { GraphQLError } from "graphql";
-import gql from "graphql-tag";
 import { Resolvable, Returnable } from "../../interface";
 import { requireNotNull, wrapResolvable, wrapReturnable } from "../../utils";
 export {
@@ -24,21 +24,21 @@ export {
   setContext,
 };
 
-export interface ExternalGraphQLRequestContext {
+interface ExternalGraphQLRequestContext {
   readonly headers?: Readonly<Record<string, string>>;
 }
 
-export type ExternalGraphQLRequestArgs<A, R> = (
+type ExternalGraphQLRequestArgs<A, R> = (
   | Omit<MutationOptions<R, A>, "context" | "fetchPolicy">
   | Omit<QueryOptions<A>, "context">
 ) &
   Readonly<{ context?: ExternalGraphQLRequestContext }>;
 
-export type ExternalGraphQLRequestInterceptor<A, R> = (
+type ExternalGraphQLRequestInterceptor<A, R> = (
   args: ExternalGraphQLRequestArgs<A, R>
 ) => Resolvable<Pick<Partial<typeof args>, "context">>;
 
-export namespace ExternalGraphQLErrorInterceptorResult {
+namespace ExternalGraphQLErrorInterceptorResult {
   export interface Noop {
     readonly type: "NOOP";
   }
@@ -49,11 +49,11 @@ export namespace ExternalGraphQLErrorInterceptorResult {
   }
 }
 
-export type ExternalGraphQLErrorInterceptorResult<A, R> =
+type ExternalGraphQLErrorInterceptorResult<A, R> =
   | ExternalGraphQLErrorInterceptorResult.Noop
   | ExternalGraphQLErrorInterceptorResult.Retry<A, R>;
 
-export type ExternalGraphQLErrorInterceptor<A, R> = (
+type ExternalGraphQLErrorInterceptor<A, R> = (
   args: Readonly<{ error: Error; request: ExternalGraphQLRequestArgs<A, R> }>
 ) => Resolvable<ExternalGraphQLErrorInterceptorResult<A, R>>;
 
@@ -95,6 +95,8 @@ export default function <Cache = unknown>(
     clearCache: () => asyncClient.then((client) => client.clearStore()),
     /** Only use this for type-checking */
     errorInterceptorType: ((() => {}) as unknown) as typeof errorInterceptors[number],
+    /** Only use this for type-checking */
+    requestArgsType: {} as ExternalGraphQLRequestArgs<any, any>,
     /** Only use this for type-checking */
     requestInterceptorType: ((() => {}) as unknown) as typeof requestInterceptors[number],
     /**

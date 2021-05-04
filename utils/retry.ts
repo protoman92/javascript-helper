@@ -1,5 +1,5 @@
 import { backOff } from "exponential-backoff";
-import { AnyClient, PromisifiedClient } from "../interface";
+import { GenericObject, PromisifiedClient } from "../interface";
 
 export function wrapFunctionWithRetry<
   FN extends (...args: any[]) => Promise<any>
@@ -12,7 +12,7 @@ export function wrapFunctionWithRetry<
  * instances.
  */
 export function wrapClientWithBackoffRetry<
-  C extends AnyClient,
+  C extends GenericObject,
   K extends Extract<keyof C, string> = Extract<keyof C, string>
 >({
   client,

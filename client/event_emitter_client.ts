@@ -1,10 +1,12 @@
-import { AnyClient, EventEmitterClient } from "../interface";
+import { EventEmitterClient } from "../interface";
 
 /**
  * Provide a common interface for event emittance, with on/off for registering
  * event callbacks.
  */
-export default function <CB extends AnyClient>() {
+export default function <
+  CB extends { [x: string]: (...args: any[]) => void }
+>() {
   let callbacks: Partial<{ [x in keyof CB]: CB[x][] }> = {};
 
   const client: EventEmitterClient<CB> = {
