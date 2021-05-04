@@ -92,6 +92,7 @@ export default function <Cache = unknown>(
   const requestInterceptors: ExternalGraphQLRequestInterceptor<any, any>[] = [];
 
   const client = {
+    clearCache: () => asyncClient.then((client) => client.clearStore()),
     /** Only use this for type-checking */
     errorInterceptorType: ((() => {}) as unknown) as typeof errorInterceptors[number],
     /** Only use this for type-checking */
