@@ -1,15 +1,15 @@
-// @ts-ignore
-import { buildAxiosFetch } from "@lifeomic/axios-fetch";
 import {
   ApolloClient,
   ApolloClientOptions,
+  createHttpLink,
   InMemoryCache,
   MutationOptions,
   QueryOptions,
-} from "apollo-boost";
-import { setContext } from "apollo-link-context";
-import { onError as createErrorLink } from "apollo-link-error";
-import { createHttpLink } from "apollo-link-http";
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { onError as createErrorLink } from "@apollo/client/link/error";
+// @ts-ignore
+import { buildAxiosFetch } from "@lifeomic/axios-fetch";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import { Resolvable, Returnable } from "../../interface";
