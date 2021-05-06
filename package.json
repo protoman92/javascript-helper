@@ -17,7 +17,6 @@
     "graphql-type-json": "0.3.2",
     "gremlin": "3.4.8",
     "lodash-es": "*",
-    "object.entries": "1.1.3",
     "react-beautiful-dnd": "13.0.0",
     "serverless": "1.71.1",
     "serverless-http": "2.4.1",
