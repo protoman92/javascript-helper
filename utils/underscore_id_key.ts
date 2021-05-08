@@ -1,4 +1,8 @@
-type WithUnderscoredIDKey<T> = T extends { id: any }
+type WithUnderscoredIDKey<T> = T extends
+  | Array<infer T1>
+  | ReadonlyArray<infer T1>
+  ? Array<WithUnderscoredIDKey<T1>>
+  : T extends { id: any }
   ? { [x in keyof Omit<T, "id">]: WithUnderscoredIDKey<T[x]> } & {
       _id: T["id"];
     }
