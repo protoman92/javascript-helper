@@ -7,7 +7,12 @@ import { GenericAsyncFunction, Promised } from "../interface";
  */
 export default function <FN extends GenericAsyncFunction>(
   fn: FN,
-  callback: (args: Promised<ReturnType<FN>>) => void
+  callback: (
+    args: Readonly<
+      | { error?: undefined; result: Promised<ReturnType<FN>> }
+      | { error: Error; result?: undefined }
+    >
+  ) => void
 ): (...args: Parameters<FN>) => void {
   let cancelFunction: (() => void) | undefined;
 
@@ -19,9 +24,14 @@ export default function <FN extends GenericAsyncFunction>(
       isCancelled = true;
     };
 
-    return wrapResolvable(fn(...args)).then((result) => {
-      if (isCancelled) return;
-      callback(result);
-    });
+    return wrapResolvable(fn(...args))
+      .then((result) => {
+        if (isCancelled) return;
+        callback({ result });
+      })
+      .catch((error) => {
+        if (isCancelled) return;
+        callback({ error });
+      });
   };
 }
