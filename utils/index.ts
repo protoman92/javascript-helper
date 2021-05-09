@@ -1,4 +1,5 @@
 import { shallowEqual } from "recompose";
+import { DeepPartial } from "ts-essentials";
 import { Resolvable, Returnable } from "../interface";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createInterceptorRegistry from "./interceptor";
@@ -74,6 +75,10 @@ export function isType<T, K extends keyof T = keyof T>(
   }
 
   return true;
+}
+
+export function mockSomething<T>(override: DeepPartial<T>): T {
+  return override as T;
 }
 
 export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
