@@ -5,11 +5,13 @@ import createInterceptorRegistry from "./interceptor";
 import createOptionSet from "./option_set";
 import getAllPaginatedPages from "./paginate";
 import runOnce from "./run_once";
+import createSwitchAsyncFunction from "./switch_async";
 import underscoreIDKeys from "./underscore_id_key";
 export * from "./boolean_predicate";
 export * from "./peer";
 export * from "./retry";
 export {
+  createSwitchAsyncFunction,
   createInterceptorRegistry,
   createOptionSet,
   flipMutualExclusiveFlags,
@@ -147,9 +149,7 @@ export function requireNull<T>(
   if (obj != null) throw new Error(message);
 }
 
-export function wrapResolvable<T>(
-  resolvable: Resolvable<T>
-): Extract<typeof resolvable, Promise<T>> {
+export function wrapResolvable<T>(resolvable: Resolvable<T>): Promise<T> {
   if (resolvable instanceof Promise) return resolvable;
   return Promise.resolve(resolvable);
 }
