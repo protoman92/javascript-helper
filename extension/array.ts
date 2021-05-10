@@ -6,9 +6,13 @@ interface Indexable<T> {
   first(): T | undefined;
 }
 
+interface SetConvertible<T> {
+  toSet(): Set<T>;
+}
+
 declare global {
-  interface ReadonlyArray<T> extends Indexable<T> {}
-  interface Array<T> extends Indexable<T> {}
+  interface ReadonlyArray<T> extends Indexable<T>, SetConvertible<T> {}
+  interface Array<T> extends Indexable<T>, SetConvertible<T> {}
 }
 
 Array.prototype.elementAtIndex = function (index) {
@@ -17,4 +21,8 @@ Array.prototype.elementAtIndex = function (index) {
 
 Array.prototype.first = function () {
   return this.elementAtIndex(0);
+};
+
+Array.prototype.toSet = function () {
+  return new Set(this);
 };
