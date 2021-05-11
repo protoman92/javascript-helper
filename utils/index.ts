@@ -1,6 +1,6 @@
 import { shallowEqual } from "recompose";
 import { DeepPartial } from "ts-essentials";
-import { Resolvable, Returnable } from "../interface";
+import { ArrayOrSingle, Resolvable, Returnable } from "../interface";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createInterceptorRegistry from "./interceptor";
 import createOptionSet from "./option_set";
@@ -174,10 +174,14 @@ export function stripLeadingSlash(str: string) {
   return str;
 }
 
-export function toArray<T>(elemOrArray: T | T[]): readonly T[] {
+interface ToArray {
+  <T>(elemOrArray: ArrayOrSingle<T>): T[];
+}
+
+export const toArray = ((elemOrArray: ArrayOrSingle<any>) => {
   if (elemOrArray instanceof Array) return elemOrArray;
   return [elemOrArray];
-}
+}) as ToArray;
 
 export function swapArrayIndexes<T>(
   array: T[] | readonly T[],
