@@ -1,6 +1,8 @@
 import {
   ApolloClient,
   ApolloClientOptions,
+  ApolloLink,
+  concat,
   createHttpLink,
   gql,
   InMemoryCache,
@@ -16,7 +18,9 @@ import { Resolvable, Returnable } from "../../interface";
 import { requireNotNull, wrapResolvable, wrapReturnable } from "../../utils";
 export {
   ApolloClient,
+  ApolloLink,
   buildAxiosFetch,
+  concat,
   createErrorLink,
   createHttpLink,
   gql,
