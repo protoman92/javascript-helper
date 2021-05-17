@@ -45,6 +45,7 @@ export type Returnable<T, Args extends unknown[] = []> =
 
 export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
+export type SetValue<T> = T extends Set<infer V> ? V : never;
 
 export type WithDeepPartialReturn<FN extends (...args: any[]) => any> = (
   ...args: Parameters<FN>
