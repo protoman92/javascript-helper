@@ -69,26 +69,27 @@ export function deepClone<T>(
 ) => (...revivers: readonly DeepCloneReviver[]) => T {
   return (...replacers) => {
     return (...revivers) => {
-      return JSON.parse(
-        JSON.stringify(obj, (key, value) => {
-          let replacedValue = value;
+      const stringified = JSON.stringify(obj, (key, value) => {
+        let replacedValue = value;
 
-          for (const replacer of replacers) {
-            replacedValue = replacer(key, replacedValue);
-          }
-
-          return replacedValue;
-        }),
-        (key, value) => {
-          let revivedValue = value;
-
-          for (const reviver of revivers) {
-            revivedValue = reviver(key, revivedValue);
-          }
-
-          return revivedValue;
+        for (const replacer of replacers) {
+          replacedValue = replacer(key, replacedValue);
         }
-      );
+
+        return replacedValue;
+      });
+
+      if (stringified === undefined) return undefined;
+
+      return JSON.parse(stringified, (key, value) => {
+        let revivedValue = value;
+
+        for (const reviver of revivers) {
+          revivedValue = reviver(key, revivedValue);
+        }
+
+        return revivedValue;
+      });
     };
   };
 }
