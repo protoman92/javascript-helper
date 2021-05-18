@@ -9,6 +9,9 @@ export type {
   DocumentNode as GraphQLDocumentNode,
 };
 
+export type DeepCloneReplacer = (key: string, value: unknown) => unknown;
+export type DeepCloneReviver = (key: string, value: unknown) => unknown;
+
 export interface EventEmitterClient<
   CB extends { [x: string]: (...args: any[]) => void }
 > {

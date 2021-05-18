@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`General utilities Deep clone should work correctly 1`] = `
+Object {
+  "a": Object {
+    "b": Object {
+      "c": Object {
+        "d": "10",
+        "e": "10",
+      },
+    },
+  },
+}
+`;

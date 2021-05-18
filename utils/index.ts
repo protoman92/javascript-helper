@@ -1,6 +1,12 @@
 import { shallowEqual } from "recompose";
 import { DeepPartial } from "ts-essentials";
-import { ArrayOrSingle, Resolvable, Returnable } from "../interface";
+import {
+  ArrayOrSingle,
+  DeepCloneReplacer,
+  DeepCloneReviver,
+  Resolvable,
+  Returnable,
+} from "../interface";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createInterceptorRegistry from "./interceptor";
 import createOptionSet from "./option_set";
@@ -54,6 +60,37 @@ export async function asyncTimeout(timeout: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
+}
+
+export function deepClone<T>(
+  obj: T
+): (
+  ...replacers: readonly DeepCloneReplacer[]
+) => (...revivers: readonly DeepCloneReviver[]) => T {
+  return (...replacers) => {
+    return (...revivers) => {
+      return JSON.parse(
+        JSON.stringify(obj, (key, value) => {
+          let replacedValue = value;
+
+          for (const replacer of replacers) {
+            replacedValue = replacer(key, replacedValue);
+          }
+
+          return replacedValue;
+        }),
+        (key, value) => {
+          let revivedValue = value;
+
+          for (const reviver of revivers) {
+            revivedValue = reviver(key, revivedValue);
+          }
+
+          return revivedValue;
+        }
+      );
+    };
+  };
 }
 
 export function isShallowEqual<T>(
