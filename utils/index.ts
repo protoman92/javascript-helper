@@ -66,7 +66,9 @@ export function deepClone<T>(
   obj: T
 ): (
   ...replacers: readonly DeepCloneReplacer[]
-) => (...revivers: readonly DeepCloneReviver[]) => T {
+) => (
+  ...revivers: readonly DeepCloneReviver[]
+) => undefined extends T ? T | undefined : T {
   return (...replacers) => {
     return (...revivers) => {
       const stringified = JSON.stringify(obj, (key, value) => {
