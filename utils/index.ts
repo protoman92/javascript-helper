@@ -1,5 +1,5 @@
 import { shallowEqual } from "recompose";
-import { DeepPartial } from "ts-essentials";
+import { DeepPartial, StrictOmit } from "ts-essentials";
 import {
   ArrayOrSingle,
   DeepCloneReplacer,
@@ -117,6 +117,21 @@ export function isType<T, K extends keyof T = keyof T>(
 
 export function mockSomething<T>(override: DeepPartial<T>): T {
   return override as T;
+}
+
+export function omit<T, K extends keyof T>(
+  obj: T,
+  ...keys: readonly K[]
+): StrictOmit<T, K> {
+  const objClone: Partial<T> = {};
+  const keySet = new Set<keyof T>(keys);
+
+  for (const objKey in obj) {
+    if (keySet.has(objKey as keyof T)) continue;
+    objClone[objKey] = obj[objKey];
+  }
+
+  return objClone as StrictOmit<T, K>;
 }
 
 export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
