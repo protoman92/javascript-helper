@@ -1,5 +1,12 @@
 import {} from "util";
 
+interface CompactMappable<T> {
+  compactMap(): NonNullable<T>[];
+  compactMap<T2>(
+    mapper: (element: T) => T2 | null | undefined
+  ): NonNullable<T2>[];
+}
+
 interface HasMergeableElements<T> {
   mergeElements: () => T extends Record<string, any> ? T : never;
 }
@@ -16,15 +23,31 @@ interface SetConvertible<T> {
 
 declare global {
   interface ReadonlyArray<T>
-    extends HasMergeableElements<T>,
+    extends CompactMappable<T>,
+      HasMergeableElements<T>,
       Indexable<T>,
       SetConvertible<T> {}
 
   interface Array<T>
-    extends HasMergeableElements<T>,
+    extends CompactMappable<T>,
+      HasMergeableElements<T>,
       Indexable<T>,
       SetConvertible<T> {}
 }
+
+Array.prototype.compactMap = function (
+  mapper: (element: any) => any = (element) => element
+) {
+  const cloned: any[] = [];
+
+  for (const element of this) {
+    const mapped = mapper(element);
+    if (mapped == null) continue;
+    cloned.push(mapped);
+  }
+
+  return cloned;
+};
 
 Array.prototype.elementAtIndex = function (index) {
   return this[index];
