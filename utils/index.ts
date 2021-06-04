@@ -121,7 +121,7 @@ export function mockSomething<T>(override: DeepPartial<T>): T {
   return override as T;
 }
 
-export function omit<T, K extends keyof T>(
+export function omit<T extends object, K extends keyof T>(
   obj: T,
   ...keys: readonly K[]
 ): StrictOmit<T, K> {
@@ -135,6 +135,42 @@ export function omit<T, K extends keyof T>(
 
   return objClone as StrictOmit<T, K>;
 }
+
+export const omitDeep = (() => {
+  function isObject(obj: any): obj is {} {
+    return Object.prototype.toString.call(obj) === "[object Object]";
+  }
+
+  return <T>(obj: T, ...keys: string[]): T => {
+    if (obj == null) return obj;
+
+    if (Array.isArray(obj)) {
+      return obj.map((element) => omitDeep(element, ...keys)) as any;
+    }
+
+    if (obj instanceof Map) {
+      return new Map(
+        [...obj.entries()].map(([key, value]) => [
+          key,
+          omitDeep(value, ...keys),
+        ])
+      ) as any;
+    }
+
+    if (obj instanceof Set) {
+      return new Set(omitDeep([...obj.values()], ...keys)) as any;
+    }
+
+    if (!isObject(obj)) return obj;
+    const objClone: any = omit<any, any>(obj, ...keys);
+
+    for (const key in objClone) {
+      objClone[key] = omitDeep(objClone[key], ...keys);
+    }
+
+    return objClone;
+  };
+})();
 
 export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
   const newObject: Partial<T> = {};

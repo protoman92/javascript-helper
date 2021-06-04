@@ -15,7 +15,12 @@ import { onError as createErrorLink } from "@apollo/client/link/error";
 import { buildAxiosFetch } from "@lifeomic/axios-fetch";
 import { GraphQLError } from "graphql";
 import { Resolvable, Returnable } from "../../interface";
-import { requireNotNull, wrapResolvable, wrapReturnable } from "../../utils";
+import {
+  omitDeep,
+  requireNotNull,
+  wrapResolvable,
+  wrapReturnable,
+} from "../../utils";
 export {
   ApolloClient,
   ApolloLink,
@@ -107,24 +112,32 @@ export default function <Cache = unknown>(
      * Send a GraphQL request without interceptors. This can be overriden
      * to provide additional functionalities, such as retries.
      */
-    requestWithoutInterceptors: async <A, R>(
-      args: ExternalGraphQLRequestArgs<A, R>
-    ) => {
+    requestWithoutInterceptors: async <A, R>({
+      variables,
+      ...args
+    }: ExternalGraphQLRequestArgs<A, R>) => {
       try {
         const client = await asyncClient;
         let data: R | null | undefined;
         let errors: readonly GraphQLError[] | undefined;
 
+        /**
+         * Remove __typename from input variables, otherwise a 400 may be
+         * thrown, like 'Field "__typename" is not defined by type...'.
+         */
+        variables = omitDeep(variables, "__typename");
+
         if ("query" in args) {
           const payload = await client.query({
             fetchPolicy: "no-cache",
             ...args,
+            variables,
           });
 
           data = payload.data;
           errors = payload.errors;
         } else {
-          const payload = await client.mutate(args);
+          const payload = await client.mutate({ ...args, variables });
           data = payload.data;
           errors = payload.errors;
         }
