@@ -1,3 +1,5 @@
+import { GraphQLScalarType } from "graphql";
+import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import gql from "graphql-tag";
 import GraphQLJSON from "graphql-type-json";
 export { makeExecutableSchema } from "@graphql-tools/schema";
@@ -7,6 +9,16 @@ export { defaultFieldResolver, GraphQLSchema } from "graphql";
 export { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 export { GraphQLJSONObject } from "graphql-type-json";
 export { gql, GraphQLJSON };
+
+export const GraphQLDateInput = new GraphQLScalarType({
+  ...GraphQLDate.toConfig(),
+  name: "DateInput",
+});
+
+export const GraphQLDateTimeInput = new GraphQLScalarType({
+  ...GraphQLDateTime.toConfig(),
+  name: "DateTimeInput",
+});
 
 export type ContextFunction<InCtx, OutCtx> = (
   ctx: InCtx
