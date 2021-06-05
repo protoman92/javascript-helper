@@ -15,6 +15,7 @@ interface Indexable<T> {
   /** Get the element at a particular index. This method can return undefined */
   elementAtIndex(index: number): T | undefined;
   first(): T | undefined;
+  last(): T | undefined;
 }
 
 interface SetConvertible<T> {
@@ -55,6 +56,11 @@ Array.prototype.elementAtIndex = function (index) {
 
 Array.prototype.first = function () {
   return this.elementAtIndex(0);
+};
+
+Array.prototype.last = function () {
+  if (this.length === 0) return undefined;
+  return this[this.length - 1];
 };
 
 Array.prototype.mergeElements = function () {
