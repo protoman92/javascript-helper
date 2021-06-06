@@ -37,7 +37,7 @@ interface ExternalGraphQLRequestContext {
   readonly headers?: Readonly<Record<string, string>>;
 }
 
-type ExternalGraphQLRequestArgs<A, R> = (
+export type ExternalGraphQLRequestArgs<A, R> = (
   | Omit<MutationOptions<R, A>, "context" | "fetchPolicy">
   | Omit<QueryOptions<A>, "context">
 ) &
