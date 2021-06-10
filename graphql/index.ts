@@ -41,3 +41,23 @@ export function combineContextFunctions<InCtx, OutCtx>(
     return ctx;
   };
 }
+
+export type ResponseFormatter<Context> = NonNullable<
+  import("apollo-server-core/src/graphqlOptions").GraphQLServerOptions<Context>["formatResponse"]
+>;
+
+/**
+ * Combine several format response functions together into one function that
+ * performs the formatting in serial order.
+ */
+export function combineResponseFormatters<Context>(
+  ...fns: readonly ResponseFormatter<Context>[]
+): ResponseFormatter<Context> {
+  return (...[response, ...args]) => {
+    for (const fn of fns) {
+      response = fn(response, ...args) ?? response;
+    }
+
+    return response;
+  };
+}
