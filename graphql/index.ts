@@ -1,7 +1,9 @@
+import { ApolloServerPlugin } from "apollo-server-plugin-base";
 import { GraphQLScalarType } from "graphql";
 import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import gql from "graphql-tag";
 import GraphQLJSON from "graphql-type-json";
+import { Returnable } from "../interface";
 export { makeExecutableSchema } from "@graphql-tools/schema";
 export { getDirectives, MapperKind, mapSchema } from "@graphql-tools/utils";
 export { ApolloServer, toApolloError } from "apollo-server-express";
@@ -9,6 +11,10 @@ export { defaultFieldResolver, GraphQLSchema } from "graphql";
 export { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 export { GraphQLJSONObject } from "graphql-type-json";
 export { gql, GraphQLJSON };
+
+export type ApolloServerPluginDefinition<Context> = Returnable<
+  ApolloServerPlugin<Context>
+>;
 
 export const GraphQLDateInput = new GraphQLScalarType({
   ...GraphQLDate.toConfig(),
