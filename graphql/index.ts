@@ -1,8 +1,10 @@
 import { ApolloServerPlugin } from "apollo-server-plugin-base";
+import { addTypenameToDocument } from "apollo-utilities";
 import { GraphQLScalarType } from "graphql";
 import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import gql from "graphql-tag";
 import GraphQLJSON from "graphql-type-json";
+import { Writable } from "ts-essentials";
 import { Returnable } from "../interface";
 export { makeExecutableSchema } from "@graphql-tools/schema";
 export { getDirectives, MapperKind, mapSchema } from "@graphql-tools/utils";
@@ -25,6 +27,20 @@ export const GraphQLDateTimeInput = new GraphQLScalarType({
   ...GraphQLDateTime.toConfig(),
   name: "DateTimeInput",
 });
+
+export const addTypenameToDocumentApolloPlugin: ApolloServerPluginDefinition<any> = {
+  requestDidStart: () => {
+    return {
+      didResolveOperation: (request) => {
+        if (request.document != null) {
+          (request as Writable<typeof request>)[
+            "document"
+          ] = addTypenameToDocument(request.document);
+        }
+      },
+    };
+  },
+};
 
 export type ContextFunction<InCtx, OutCtx> = (
   ctx: InCtx
