@@ -5,7 +5,7 @@ import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import gql from "graphql-tag";
 import GraphQLJSON from "graphql-type-json";
 import { Writable } from "ts-essentials";
-import { Returnable } from "../interface";
+import { Resolvable, Returnable } from "../interface";
 export { makeExecutableSchema } from "@graphql-tools/schema";
 export { getDirectives, MapperKind, mapSchema } from "@graphql-tools/utils";
 export { ApolloServer, toApolloError } from "apollo-server-express";
@@ -41,6 +41,52 @@ export const addTypenameToDocumentApolloPlugin: ApolloServerPluginDefinition<any
     };
   },
 };
+
+/**
+ * Prevent aliasing so that malicious users cannot use it to bypass
+ * willSendResponse plugin.
+ */
+export function createPreventFieldAliasesPlugin({
+  filterFields,
+  onAliasError,
+}: Readonly<{
+  filterFields: (args: Readonly<{ fieldName: string }>) => boolean;
+  onAliasError?: (args: Readonly<{ error: Error }>) => Resolvable<void>;
+}>): ApolloServerPluginDefinition<any> {
+  const ERROR_MARKER_CONTEXT = "__CannotAliasFieldErrorMessage";
+
+  return {
+    requestDidStart: () => ({
+      executionDidStart: ({ context }) => ({
+        willResolveField: ({ info }) => {
+          const shouldPreventAliases = filterFields({
+            fieldName: info.fieldName,
+          });
+
+          if (
+            shouldPreventAliases &&
+            info.fieldNodes.some(({ alias }) => !!alias?.value)
+          ) {
+            const errorMessage = `Cannot alias field ${info.fieldName}`;
+            context[ERROR_MARKER_CONTEXT] = errorMessage;
+            throw new Error(errorMessage);
+          }
+        },
+      }),
+      /**
+       * Even though we've thrown an error above, we need to throw an error
+       * again here to completely block the request. Otherwise, the client may
+       * still receive the data shape (albeit with null values).
+       */
+      willSendResponse: async ({ context, response }) => {
+        if (response.errors == null || !context[ERROR_MARKER_CONTEXT]) return;
+        const error = new Error(context[ERROR_MARKER_CONTEXT]);
+        if (onAliasError != null) await onAliasError({ error });
+        throw error;
+      },
+    }),
+  };
+}
 
 export type ContextFunction<InCtx, OutCtx> = (
   ctx: InCtx
