@@ -230,6 +230,22 @@ export function requireAllTruthy<T>(
   return args as any;
 }
 
+export function requireFalse(
+  value: boolean | null | undefined,
+  message = "Expected false value"
+): false {
+  if (value === false) throw new Error(message);
+  return false;
+}
+
+export function requireTrue(
+  value: boolean | null | undefined,
+  message = "Expected true value"
+): true {
+  if (value === true) throw new Error(message);
+  return true;
+}
+
 export function requireNotNull<T>(
   obj: T | null | undefined,
   message = "Expected non-null value"
