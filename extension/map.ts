@@ -2,9 +2,9 @@ import {} from "util";
 
 declare global {
   interface Map<K, V> {
-    keyArray(): readonly K[];
+    keyArray():  K[];
     map<V2>(mapper: (value: V) => V2): Map<K, V2>;
-    valueArray(): readonly V[];
+    valueArray():  V[];
   }
 }
 

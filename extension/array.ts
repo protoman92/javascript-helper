@@ -1,3 +1,4 @@
+import { uniqWith } from "lodash-es";
 import {} from "util";
 
 interface CompactMappable<T> {
@@ -22,18 +23,24 @@ interface SetConvertible<T> {
   toSet(): Set<T>;
 }
 
+interface UniqueConvertible<T> {
+  unique(comparator?: (lhs: T, rhs: T) => boolean): T[];
+}
+
 declare global {
   interface ReadonlyArray<T>
     extends CompactMappable<T>,
       HasMergeableElements<T>,
       Indexable<T>,
-      SetConvertible<T> {}
+      SetConvertible<T>,
+      UniqueConvertible<T> {}
 
   interface Array<T>
     extends CompactMappable<T>,
       HasMergeableElements<T>,
       Indexable<T>,
-      SetConvertible<T> {}
+      SetConvertible<T>,
+      UniqueConvertible<T> {}
 }
 
 Array.prototype.compactMap = function (
@@ -75,4 +82,8 @@ Array.prototype.mergeElements = function () {
 
 Array.prototype.toSet = function () {
   return new Set(this);
+};
+
+Array.prototype.unique = function (comparator) {
+  return uniqWith(this, comparator);
 };
