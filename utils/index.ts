@@ -219,7 +219,7 @@ export const pick = function <T, K extends keyof T>(
     return objOrArr.map((obj) => pick(obj, ...keys));
   }
 
-  return keys.reduce((args, k) => ({ ...args, [k]: objOrArr[k] }), {});
+  return keys.reduce((acc, k) => Object.assign(acc, { [k]: objOrArr[k] }), {});
 } as PickFunction;
 
 /** Request all values of an object to be truthy, and throw an error otherwise */
