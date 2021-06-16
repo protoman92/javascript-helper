@@ -47,6 +47,10 @@ export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
 export type SetValue<T> = T extends Set<infer V> ? V : never;
 
+export type UndefinableProps<T extends object> = {
+  [K in keyof T]: T[K] | undefined;
+};
+
 export type WithDeepPartialReturn<FN extends (...args: any[]) => any> = (
   ...args: Parameters<FN>
 ) => ReturnType<FN> extends Promise<infer T>
