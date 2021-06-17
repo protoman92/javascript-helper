@@ -47,6 +47,13 @@ export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
 export type SetValue<T> = T extends Set<infer V> ? V : never;
 
+export interface Stack<T> {
+  peek(): T | undefined;
+  pop(): T | undefined;
+  push(element: T): number;
+  toArray(): T[];
+}
+
 export type UndefinableProps<T extends object> = {
   [K in keyof T]: T[K] | undefined;
 };
