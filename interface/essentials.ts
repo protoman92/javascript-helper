@@ -55,7 +55,7 @@ export interface Stack<T> {
 }
 
 export type UndefinableProps<T extends object> = {
-  [K in keyof T]: T[K] | undefined;
+  [K in keyof Required<T>]: T[K] | undefined;
 };
 
 export type WithDeepPartialReturn<FN extends (...args: any[]) => any> = (
