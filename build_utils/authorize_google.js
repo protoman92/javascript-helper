@@ -1,30 +1,30 @@
+/// <reference path="./interface.d.ts" />
 const fs = require("fs-extra");
 const { google } = require("googleapis");
 const path = require("path");
 const readline = require("readline");
 
-/**
- * @typedef Args
- * @property {string} [credentialFileName]
- * @property {string} credentialPath
- * @property {string[]} scopes
- * @property {string} [tokenFileName]
- * @param {Args} args
- */
+/** @param {AuthorizeGoogleArgs} args */
 module.exports = async function ({
   credentialFileName = "google_credentials.json",
-  credentialPath,
+  credentialPath = "",
+  credentialString: originalCredentialString = "",
   scopes,
+  tokenString: originalTokenString = "",
   tokenFileName = "google_token.json",
+  tokenPath = credentialPath,
 }) {
-  const TOKEN_PATH = path.join(credentialPath, tokenFileName);
+  const TOKEN_PATH = path.join(tokenPath, tokenFileName);
+  let credentialString = originalCredentialString;
 
-  // Load client secrets from a local file.
-  const credentialsContent = await fs.readFile(
-    path.join(credentialPath, credentialFileName)
-  );
+  if (!credentialString) {
+    // Load client secrets from a local file.
+    credentialString = await fs
+      .readFile(path.join(credentialPath, credentialFileName))
+      .then((c) => c.toString("utf-8"));
+  }
 
-  const credentials = JSON.parse(credentialsContent.toString("utf-8"));
+  const credentials = JSON.parse(credentialString);
   const { client_secret, client_id, redirect_uris } = credentials.web;
 
   const oAuth2Client = new google.auth.OAuth2(
@@ -37,8 +37,15 @@ module.exports = async function ({
   let tokens;
 
   try {
-    const tokenString = await fs.readFile(TOKEN_PATH);
-    tokens = JSON.parse(tokenString.toString("utf-8"));
+    let tokenString = originalTokenString;
+
+    if (!tokenString) {
+      tokenString = await fs
+        .readFile(path.join(credentialPath, tokenFileName))
+        .then((t) => t.toString("utf-8"));
+    }
+
+    tokens = JSON.parse(tokenString);
 
     switch (true) {
       case !!tokens.refresh_token:
@@ -69,8 +76,15 @@ module.exports = async function ({
 
         try {
           const { tokens } = await oAuth2Client.getToken(code);
-          // Store the token to disk for later program executions
-          await fs.writeFile(TOKEN_PATH, JSON.stringify(tokens));
+
+          if (!originalTokenString) {
+            /**
+             * If the token file does not exist already, store the token to
+             * disk for later program executions
+             */
+            await fs.writeFile(TOKEN_PATH, JSON.stringify(tokens));
+          }
+
           resolve(tokens);
         } catch (e) {
           reject(e);
