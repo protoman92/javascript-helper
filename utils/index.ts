@@ -56,9 +56,9 @@ export function analyzeError(err: any) {
   return { config, status, message: errorMessage };
 }
 
-export async function asyncTimeout(timeout: number) {
+export async function asyncTimeout(timeout: number, global = window) {
   return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
+    global.setTimeout(resolve, timeout);
   });
 }
 
