@@ -12,11 +12,11 @@ export function mockSomeParameters<FN extends (...args: any[]) => any>(
 }
 
 interface MockMap {
-  <K, V>(...args: DeepPartial<[K, V][]>): Map<K, V>;
-
   <M extends Map<any, any> | null | undefined>(
     ...args: DeepPartial<[MapKey<M>, MapValue<M>]>[]
   ): NonNullable<M>;
+
+  <K, V>(...args: DeepPartial<[K, V][]>): Map<K, V>;
 }
 
 export const mockMap: MockMap = (...args: any[]) => new Map(args as any);

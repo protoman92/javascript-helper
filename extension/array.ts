@@ -1,46 +1,23 @@
 import { uniqWith } from "lodash-es";
 import {} from "util";
 
-interface CompactMappable<T> {
+interface ExtensibleArray<T> extends ArrayLike<T> {
   compactMap(): NonNullable<T>[];
   compactMap<T2>(
     mapper: (element: T) => T2 | null | undefined
   ): NonNullable<T2>[];
-}
-
-interface HasMergeableElements<T> {
   mergeElements: () => T extends Record<string, any> ? T : never;
-}
-
-interface Indexable<T> {
   /** Get the element at a particular index. This method can return undefined */
   elementAtIndex(index: number): T | undefined;
   first(): T | undefined;
   last(): T | undefined;
-}
-
-interface SetConvertible<T> {
   toSet(): Set<T>;
-}
-
-interface UniqueConvertible<T> {
   unique(comparator?: (lhs: T, rhs: T) => boolean): T[];
 }
 
 declare global {
-  interface ReadonlyArray<T>
-    extends CompactMappable<T>,
-      HasMergeableElements<T>,
-      Indexable<T>,
-      SetConvertible<T>,
-      UniqueConvertible<T> {}
-
-  interface Array<T>
-    extends CompactMappable<T>,
-      HasMergeableElements<T>,
-      Indexable<T>,
-      SetConvertible<T>,
-      UniqueConvertible<T> {}
+  interface ReadonlyArray<T> extends ExtensibleArray<T> {}
+  interface Array<T> extends ExtensibleArray<T> {}
 }
 
 Array.prototype.compactMap = function (

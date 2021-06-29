@@ -56,10 +56,26 @@ export function analyzeError(err: any) {
   return { config, status, message: errorMessage };
 }
 
-export async function asyncTimeout(timeout: number, global = window) {
-  return new Promise((resolve) => {
-    global.setTimeout(resolve, timeout);
-  });
+export async function asyncTimeout(
+  timeout: number,
+  g?: typeof global | typeof window
+) {
+  let g2 = g;
+
+  if (g2 == null) {
+    try {
+      g2 = window;
+    } catch {}
+  }
+
+  if (g2 == null) {
+    try {
+      g2 = global;
+    } catch {}
+  }
+
+  if (g2 == null) throw new Error("setTimeout is not defined");
+  return new Promise((resolve) => g2!.setTimeout(resolve, timeout));
 }
 
 export function deepClone<T>(
@@ -289,6 +305,10 @@ export const toArray = ((elemOrArray: ArrayOrSingle<any>) => {
   if (elemOrArray instanceof Array) return elemOrArray;
   return [elemOrArray];
 }) as ToArray;
+
+export function tuple<T1, T2>(element1: T1, element2: T2): [T1, T2] {
+  return [element1, element2];
+}
 
 export function swapArrayIndexes<T>(
   array: T[] | readonly T[],
