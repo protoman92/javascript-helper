@@ -2,11 +2,16 @@ import {} from "util";
 
 declare global {
   interface Map<K, V> {
-    keyArray():  K[];
+    entryArray(): [K, V][];
+    keyArray(): K[];
     map<V2>(mapper: (value: V) => V2): Map<K, V2>;
-    valueArray():  V[];
+    valueArray(): V[];
   }
 }
+
+Map.prototype.entryArray = function () {
+  return [...this.entries()];
+};
 
 Map.prototype.keyArray = function () {
   return [...this.keys()];

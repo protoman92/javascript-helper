@@ -11,6 +11,7 @@ interface ExtensibleArray<T> extends ArrayLike<T> {
   elementAtIndex(index: number): T | undefined;
   first(): T | undefined;
   last(): T | undefined;
+  tap(fn: (element: T) => void): this;
   toSet(): Set<T>;
   unique(comparator?: (lhs: T, rhs: T) => boolean): T[];
 }
@@ -55,6 +56,11 @@ Array.prototype.mergeElements = function () {
   }
 
   return merged;
+};
+
+Array.prototype.tap = function (fn) {
+  for (const element of this) fn(element);
+  return this;
 };
 
 Array.prototype.toSet = function () {
