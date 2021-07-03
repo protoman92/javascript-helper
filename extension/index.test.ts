@@ -25,4 +25,14 @@ describe("Array extensions", () => {
     // When
     expect(arr.mergeElements()).toEqual({ a: 1, b: 2, c: 3 });
   });
+
+  it("toMap should work", () => {
+    // Setup
+    const arr = [{ a: 1 }, { a: 2 }, { a: 3 }];
+
+    // When && Then
+    expect(arr.toMap("a")).toMatchSnapshot();
+    expect(arr.toMap(({ a }) => a)).toMatchSnapshot();
+    expect(arr.toMap(({ a }) => `${a}`)).toMatchSnapshot();
+  });
 });

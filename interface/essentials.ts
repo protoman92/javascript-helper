@@ -1,7 +1,7 @@
 import { DeepPartial } from "ts-essentials";
 import { GenericAsyncFunction, GenericFunction } from ".";
 
-export type ArrayOrSingle<T> = T | T[];
+export type ArrayOrSingle<T> = T | T[] | readonly T[];
 
 export type ArrayToMap<
   T extends any[] | readonly any[],

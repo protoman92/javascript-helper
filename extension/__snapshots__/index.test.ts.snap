@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Array extensions toMap should work 1`] = `
+Map {
+  1 => Object {
+    "a": 1,
+  },
+  2 => Object {
+    "a": 2,
+  },
+  3 => Object {
+    "a": 3,
+  },
+}
+`;
+
+exports[`Array extensions toMap should work 2`] = `
+Map {
+  1 => Object {
+    "a": 1,
+  },
+  2 => Object {
+    "a": 2,
+  },
+  3 => Object {
+    "a": 3,
+  },
+}
+`;
+
+exports[`Array extensions toMap should work 3`] = `
+Map {
+  "1" => Object {
+    "a": 1,
+  },
+  "2" => Object {
+    "a": 2,
+  },
+  "3" => Object {
+    "a": 3,
+  },
+}
+`;
