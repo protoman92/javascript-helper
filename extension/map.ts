@@ -5,6 +5,7 @@ declare global {
     entryArray(): [K, V][];
     keyArray(): K[];
     map<V2>(mapper: (value: V) => V2): Map<K, V2>;
+    setAll(map: Map<K, V>): Map<K, V>;
     valueArray(): V[];
   }
 }
@@ -25,6 +26,11 @@ Map.prototype.map = function (mapper) {
   }
 
   return newMap;
+};
+
+Map.prototype.setAll = function (map) {
+  for (const [key, value] of map) this.set(key, value);
+  return this;
 };
 
 Map.prototype.valueArray = function () {
