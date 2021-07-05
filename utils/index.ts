@@ -4,6 +4,7 @@ import {
   ArrayOrSingle,
   DeepCloneReplacer,
   DeepCloneReviver,
+  IfNotNullableOrUndefinable,
   Resolvable,
   Returnable,
 } from "../interface";
@@ -137,19 +138,24 @@ export function mockSomething<T>(override: DeepPartial<T>): T {
   return override as T;
 }
 
-export function omit<T extends object, K extends keyof T>(
+export function omit<T, K extends keyof NonNullable<T>>(
   obj: T,
   ...keys: readonly K[]
-): StrictOmit<T, K> {
+): IfNotNullableOrUndefinable<
+  T,
+  T extends object ? StrictOmit<NonNullable<T>, K> : null
+> {
+  if (obj == null) return obj as any;
+  if (typeof obj !== "object") return null as any;
   const objClone: Partial<T> = {};
-  const keySet = new Set<keyof T>(keys);
+  const keySet = new Set<keyof NonNullable<T>>(keys);
 
   for (const objKey in obj) {
     if (keySet.has(objKey as keyof T)) continue;
     objClone[objKey] = obj[objKey];
   }
 
-  return objClone as StrictOmit<T, K>;
+  return objClone as any;
 }
 
 export const omitDeep = (() => {

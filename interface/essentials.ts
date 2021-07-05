@@ -8,6 +8,12 @@ export type ArrayToMap<
   TKey extends keyof T[number]
 > = Map<T[number][TKey], T[number]>;
 
+export type IfNotNullableOrUndefinable<T, True> = null extends T
+  ? True | null
+  : undefined extends T
+  ? True | undefined
+  : True;
+
 export type Promised<T> = T extends Promise<infer U> ? U : T;
 export type Mapper<T1, T2 = T1> = (args: T1) => T2;
 export type MapEntry<M> = M extends Map<infer K, infer V> ? [K, V] : never;
