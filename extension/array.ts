@@ -16,6 +16,8 @@ interface ExtensibleArray<T> extends ArrayLike<T> {
   elementAtIndex(index: number): T | undefined;
   first(): T | undefined;
   last(): T | undefined;
+  /** Like slice, but operates from the right -> the left side */
+  sliceRight(start: number, end?: number): T[];
   tap(fn: (element: T) => void): this;
   toMap: T extends Record<string, any> ? ToMap<T> : never;
   toSet(): Set<T>;
@@ -62,6 +64,10 @@ Array.prototype.mergeElements = function () {
   }
 
   return merged;
+};
+
+Array.prototype.sliceRight = function (start, end) {
+  return this.slice(end == null ? 0 : this.length - end, this.length - start);
 };
 
 Array.prototype.tap = function (fn) {
