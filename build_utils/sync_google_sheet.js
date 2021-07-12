@@ -19,6 +19,7 @@ const { google } = require("googleapis");
  * @property {string} [htmlTagMapping.bold]
  * @property {string} [htmlTagMapping.italic]
  * @property {string} [htmlTagMapping.underline]
+ * @property {string} [htmlTagMapping.wrapper]
  * @property {string} spreadsheetID
  * @param {Args} args
  */
@@ -30,6 +31,7 @@ module.exports = async function ({
     bold: boldTag = "b",
     italic: italicTag = "i",
     underline: underlineTag = "u",
+    wrapper: wrapperTag = undefined,
   } = {},
   spreadsheetID: spreadsheetId,
 }) {
@@ -64,24 +66,16 @@ module.exports = async function ({
         index
       ];
 
-      let htmlString = formattedValue.slice(startIndex, endIndex);
-
-      if (!!underline) {
-        htmlString = `<${underlineTag}>${htmlString}</${underlineTag}>`;
-      }
-
-      if (!!italic) {
-        htmlString = `<${italicTag}>${htmlString}</${italicTag}>`;
-      }
-
-      if (!!bold) {
-        htmlString = `<${boldTag}>${htmlString}</${boldTag}>`;
-      }
-
-      htmlStrings.push(htmlString);
+      let html = formattedValue.slice(startIndex, endIndex);
+      if (!!underline) html = `<${underlineTag}>${html}</${underlineTag}>`;
+      if (!!italic) html = `<${italicTag}>${html}</${italicTag}>`;
+      if (!!bold) html = `<${boldTag}>${html}</${boldTag}>`;
+      htmlStrings.push(html);
     }
 
-    return htmlStrings.join("");
+    let html = htmlStrings.join("");
+    if (!!wrapperTag) html = `<${wrapperTag}>${html}</${wrapperTag}>`;
+    return html;
   }
 
   const workbook = google.sheets({ auth: oAuth2Client, version: "v4" });
