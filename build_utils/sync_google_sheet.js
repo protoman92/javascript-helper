@@ -117,15 +117,16 @@ module.exports = async function ({
               return {
                 formattedValue: fmtValue,
                 /** Text format runs only apply for string values */
-                htmlValue: !!userEnteredValue.stringValue
-                  ? generateHTMLFromTextFormatRuns({
-                      textFormatRuns,
-                      formattedValue: fmtValue,
-                    })
-                  : generateHTMLFromTextFormatRuns({
-                      formattedValue: fmtValue,
-                      textFormatRuns: [{ format: {} }],
-                    }),
+                htmlValue:
+                  !!userEnteredValue.stringValue && textFormatRuns.length > 0
+                    ? generateHTMLFromTextFormatRuns({
+                        textFormatRuns,
+                        formattedValue: fmtValue,
+                      })
+                    : generateHTMLFromTextFormatRuns({
+                        formattedValue: fmtValue,
+                        textFormatRuns: [{ format: {} }],
+                      }),
               };
             }
           )
