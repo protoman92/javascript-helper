@@ -3,9 +3,15 @@
 const { google } = require("googleapis");
 
 /**
+ * @typedef SheetReference
+ * @property {string} columnName
+ * @property {number} rowIndex
+ * @property {number} sheetID
+ * @property {string} sheetTitle
  * @typedef RowData
  * @property {string} formattedValue
  * @property {string} htmlValue
+ * @property {SheetReference} [sheetReference]
  * @typedef SheetCallbackArgs
  * @property {import('googleapis').sheets_v4.Schema$GridData[]} gridData
  * @property {readonly RowData[][]} rowData
@@ -84,6 +90,14 @@ module.exports = async function ({
     data: { sheets: worksheets = [] },
   } = await workbook.spreadsheets.get({ spreadsheetId, includeGridData: true });
 
+  /** @type {Record<string, number>} */
+  const sheetTitleIDMapping = {};
+
+  for (const { properties: { sheetId = NaN, title = "" } = {} } of worksheets) {
+    if (sheetId == null || isNaN(sheetId) || title == null) continue;
+    sheetTitleIDMapping[title] = sheetId;
+  }
+
   /** @type {Set<number | string | null>} */
   const sheetsToSync = new Set(eligibleSheetTitlesOrIDs);
 
@@ -113,8 +127,37 @@ module.exports = async function ({
               userEnteredValue = {},
             }) => {
               const fmtValue = formattedValue || "";
+              /** @type {SheetReference | undefined} */
+              let sheetReference;
+              /** @type {RegExpMatchArray | null} */
+              let sheetReferenceMatch = null;
+
+              if (
+                !!userEnteredValue.formulaValue &&
+                (sheetReferenceMatch = userEnteredValue.formulaValue.match(
+                  /^'?=('?(?<sheetTitle>.+)'?!)?\$?(?<columnName>[A-Z]+)\$?(?<rowIndex>\d+)'?$/
+                )) != null &&
+                sheetReferenceMatch.groups != null
+              ) {
+                const {
+                  columnName: referenceColumnName,
+                  rowIndex: referenceRowIndex,
+                  sheetTitle: referenceSheetTitle = sheetTitle,
+                } = sheetReferenceMatch.groups;
+
+                const referenceSheetID =
+                  sheetTitleIDMapping[referenceSheetTitle];
+
+                sheetReference = {
+                  columnName: referenceColumnName,
+                  rowIndex: parseInt(referenceRowIndex) - 1,
+                  sheetID: referenceSheetID,
+                  sheetTitle: referenceSheetTitle,
+                };
+              }
 
               return {
+                sheetReference,
                 formattedValue: fmtValue,
                 /** Text format runs only apply for string values */
                 htmlValue:
