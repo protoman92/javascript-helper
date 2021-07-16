@@ -1,3 +1,4 @@
+// @ts-check
 /// <reference path="./interface.d.ts" />
 const fs = require("fs-extra");
 const { google } = require("googleapis");
@@ -5,23 +6,30 @@ const path = require("path");
 const readline = require("readline");
 
 /** @param {AuthorizeGoogleArgs} args */
-module.exports = async function ({
-  credentialFileName = "google_credentials.json",
-  credentialPath = "",
-  credentialString: originalCredentialString = "",
-  scopes,
-  tokenString: originalTokenString = "",
-  tokenFileName = "google_token.json",
-  tokenPath = credentialPath,
-}) {
-  const TOKEN_PATH = path.join(tokenPath, tokenFileName);
-  let credentialString = originalCredentialString;
+module.exports = async function ({ scopes, ...args }) {
+  /** @type {string | undefined} */
+  let credentialString;
+  /** @type {string | undefined} */
+  let fullCredentialPath;
 
-  if (!credentialString) {
+  if (!!args.credentialString) {
+    credentialString = args.credentialString;
+  } else if (
+    (!!args.credentialPath && !!(fullCredentialPath = args.credentialPath)) ||
+    (!!args.credentialDirectory &&
+      !!(fullCredentialPath = path.join(
+        args.credentialDirectory,
+        args.credentialFileName
+      )))
+  ) {
     // Load client secrets from a local file.
     credentialString = await fs
-      .readFile(path.join(credentialPath, credentialFileName))
+      .readFile(fullCredentialPath)
       .then((c) => c.toString("utf-8"));
+  }
+
+  if (!credentialString) {
+    throw new Error("Script cannot continue due to invalid OAuth credentials");
   }
 
   const credentials = JSON.parse(credentialString);
@@ -33,18 +41,28 @@ module.exports = async function ({
     redirect_uris[0]
   );
 
+  /** @type {string | undefined} */
+  let fullTokenPath;
+  /** @type {string | undefined} */
+  let tokenString = undefined;
   /** @type {any} */
   let tokens;
 
   try {
-    let tokenString = originalTokenString;
-
-    if (!tokenString) {
+    if (!!args.tokenString) {
+      tokenString = args.tokenString;
+    } else if (
+      (!!args.tokenPath && !!(fullTokenPath = args.tokenPath)) ||
+      (!!args.tokenDirectory &&
+        !!(fullTokenPath = path.join(args.tokenDirectory, args.tokenFileName)))
+    ) {
+      // Load client secrets from a local file.
       tokenString = await fs
-        .readFile(path.join(credentialPath, tokenFileName))
-        .then((t) => t.toString("utf-8"));
+        .readFile(fullTokenPath)
+        .then((c) => c.toString("utf-8"));
     }
 
+    if (!tokenString) throw new Error("No OAuth token provided");
     tokens = JSON.parse(tokenString);
 
     switch (true) {
@@ -58,6 +76,10 @@ module.exports = async function ({
         break;
     }
   } catch (e) {
+    if (!fullTokenPath) {
+      throw new Error("Script cannot continue due to invalid token path");
+    }
+
     const authURL = oAuth2Client.generateAuthUrl({
       access_type: "offline",
       scope: scopes,
@@ -70,27 +92,24 @@ module.exports = async function ({
       output: process.stdout,
     });
 
-    tokens = await new Promise((resolve, reject) => {
+    const oauthCode = await new Promise((resolve) => {
       rl.question("Enter the code from that page here: ", async (code) => {
         rl.close();
-
-        try {
-          const { tokens } = await oAuth2Client.getToken(code);
-
-          if (!originalTokenString) {
-            /**
-             * If the token file does not exist already, store the token to
-             * disk for later program executions
-             */
-            await fs.writeFile(TOKEN_PATH, JSON.stringify(tokens));
-          }
-
-          resolve(tokens);
-        } catch (e) {
-          reject(e);
-        }
+        resolve(code);
       });
     });
+
+    tokens = await oAuth2Client
+      .getToken(oauthCode)
+      .then(({ tokens }) => tokens);
+
+    if (!tokenString) {
+      /**
+       * If the token file does not exist already, store the token to disk for
+       * later program executions
+       */
+      await fs.writeFile(fullTokenPath, JSON.stringify(tokens));
+    }
   }
 
   oAuth2Client.setCredentials(tokens);
