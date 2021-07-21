@@ -14,7 +14,7 @@ import { onError as createErrorLink } from "@apollo/client/link/error";
 // @ts-ignore
 import { buildAxiosFetch } from "@lifeomic/axios-fetch";
 import { GraphQLError } from "graphql";
-import { Resolvable, Returnable } from "../../interface";
+import { ArrayOrSingle, Resolvable, Returnable } from "../../interface";
 import {
   omitDeep,
   requireNotNull,
@@ -34,7 +34,7 @@ export {
 };
 
 interface ExternalGraphQLRequestContext {
-  readonly headers?: Readonly<Record<string, string>>;
+  readonly headers?: Readonly<Record<string, ArrayOrSingle<string>>>;
 }
 
 export type ExternalGraphQLRequestArgs<A, R> = (
