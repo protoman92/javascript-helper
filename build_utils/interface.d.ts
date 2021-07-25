@@ -3,7 +3,7 @@
  * Either supply stringified token, or location of the token file.
  */
 type AuthorizeGoogleArgs = Readonly<
-  { tokenString?: undefined; scopes: string[] } & (
+  { scopes: string[] } & (
     | {
         credentialString: string;
         credentialDirectory?: undefined;

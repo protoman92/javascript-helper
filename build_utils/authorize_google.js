@@ -45,37 +45,26 @@ module.exports = async function ({ scopes, ...args }) {
   let fullTokenPath;
   /** @type {string | undefined} */
   let tokenString = undefined;
+
+  if (
+    (!!args.tokenPath && !!(fullTokenPath = args.tokenPath)) ||
+    (!!args.tokenDirectory &&
+      !!(fullTokenPath = path.join(args.tokenDirectory, args.tokenFileName)))
+  ) {
+    // Load client secrets from a local file.
+    tokenString = await fs
+      .readFile(fullTokenPath)
+      .then((c) => c.toString("utf-8"));
+  }
+
   /** @type {any} */
   let tokens;
 
-  try {
-    if (!!args.tokenString) {
-      tokenString = args.tokenString;
-    } else if (
-      (!!args.tokenPath && !!(fullTokenPath = args.tokenPath)) ||
-      (!!args.tokenDirectory &&
-        !!(fullTokenPath = path.join(args.tokenDirectory, args.tokenFileName)))
-    ) {
-      // Load client secrets from a local file.
-      tokenString = await fs
-        .readFile(fullTokenPath)
-        .then((c) => c.toString("utf-8"));
-    }
-
-    if (!tokenString) throw new Error("No OAuth token provided");
-    tokens = JSON.parse(tokenString);
-
-    switch (true) {
-      case !!tokens.refresh_token:
-        break;
-
-      case tokens.expiry_date < new Date().getTime():
-        throw new Error("Tokens expired");
-
-      default:
-        break;
-    }
-  } catch (e) {
+  if (
+    !tokenString ||
+    (tokens = JSON.parse(tokenString)) == null ||
+    (!tokens.refresh_token && tokens.expiry_date < new Date().getTime())
+  ) {
     if (!fullTokenPath) {
       throw new Error("Script cannot continue due to invalid token path");
     }
@@ -103,13 +92,11 @@ module.exports = async function ({ scopes, ...args }) {
       .getToken(oauthCode)
       .then(({ tokens }) => tokens);
 
-    if (!tokenString) {
-      /**
-       * If the token file does not exist already, store the token to disk for
-       * later program executions
-       */
-      await fs.writeFile(fullTokenPath, JSON.stringify(tokens));
-    }
+    /**
+     * If the token file does not exist already, store the token to disk for
+     * later program executions
+     */
+    await fs.writeFile(fullTokenPath, JSON.stringify(tokens));
   }
 
   oAuth2Client.setCredentials(tokens);
