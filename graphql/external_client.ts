@@ -14,13 +14,13 @@ import { onError as createErrorLink } from "@apollo/client/link/error";
 // @ts-ignore
 import { buildAxiosFetch } from "@lifeomic/axios-fetch";
 import { GraphQLError } from "graphql";
-import { ArrayOrSingle, Resolvable, Returnable } from "../../interface";
+import { ArrayOrSingle, Resolvable, Returnable } from "../interface";
 import {
   omitDeep,
   requireNotNull,
   wrapResolvable,
   wrapReturnable,
-} from "../../utils";
+} from "../utils";
 export {
   ApolloClient,
   ApolloLink,

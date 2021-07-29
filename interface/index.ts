@@ -60,7 +60,7 @@ export type PromisifiedClient<C extends GenericObject, K extends keyof C> = {
   Omit<C, K>;
 
 export type ExternalGraphQLClient = ReturnType<
-  typeof import("../client/graphql_client/external_client")["default"]
+  typeof import("../graphql/external_client")["default"]
 >;
 
 export namespace InternalGraphQLClient {

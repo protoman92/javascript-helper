@@ -1,4 +1,4 @@
-import { mockSomeParameters } from "../../test/utils";
+import { mockSomeParameters } from "../test/utils";
 import createExternalClient from "./external_client";
 
 describe("External GraphQL client", () => {

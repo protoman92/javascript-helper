@@ -1,5 +1,5 @@
 import { graphql, GraphQLSchema } from "graphql";
-import { InternalGraphQLClient } from "../../interface";
+import { InternalGraphQLClient } from "../interface";
 
 export default function <Context>({
   defaultContextValues = {},
