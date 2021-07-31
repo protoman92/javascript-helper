@@ -23,9 +23,9 @@ module.exports = async function ({ scopes, ...args }) {
       )))
   ) {
     // Load client secrets from a local file.
-    credentialString = await fs
-      .readFile(fullCredentialPath)
-      .then((c) => c.toString("utf-8"));
+    credentialString = await fs.readFile(fullCredentialPath).then((c) => {
+      return c.toString("utf-8");
+    });
   }
 
   if (!credentialString) {
@@ -54,7 +54,12 @@ module.exports = async function ({ scopes, ...args }) {
     // Load client secrets from a local file.
     tokenString = await fs
       .readFile(fullTokenPath)
-      .then((c) => c.toString("utf-8"));
+      .then((c) => {
+        return c.toString("utf-8");
+      })
+      .catch(() => {
+        return undefined;
+      });
   }
 
   /** @type {any} */
@@ -88,9 +93,9 @@ module.exports = async function ({ scopes, ...args }) {
       });
     });
 
-    tokens = await oAuth2Client
-      .getToken(oauthCode)
-      .then(({ tokens }) => tokens);
+    tokens = await oAuth2Client.getToken(oauthCode).then(({ tokens }) => {
+      return tokens;
+    });
 
     /**
      * If the token file does not exist already, store the token to disk for
