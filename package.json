@@ -46,6 +46,7 @@
     "jest": "26.3.0",
     "json-beautify": "1.1.1",
     "nodemon": "2.0.4",
+    "peerjs": "*",
     "react": "*",
     "react-redux": "*",
     "recompose": "*",
