@@ -6,16 +6,13 @@ interface GoogleAuthClientArgs {
 }
 
 export default function ({ scopes }: GoogleAuthClientArgs) {
-  const {
-    GOOGLE_SERVICE_ACCOUNT_CREDENTIALS: credentials = "{}",
-  } = process.env;
-
-  const { client_email, private_key } = JSON.parse(credentials);
-  requireAllTruthy({ client_email, private_key });
+  const { client_email, private_key } = requireAllTruthy(
+    JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS || "{}")
+  );
 
   const authClient = new GoogleAuth({
     credentials: { client_email, private_key },
-    scopes: [...scopes],
+    scopes: scopes.slice(),
   });
 
   return authClient;
