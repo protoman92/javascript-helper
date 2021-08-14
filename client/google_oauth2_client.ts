@@ -3,16 +3,10 @@ import { requireAllTruthy } from "../utils";
 
 export default function () {
   const {
-    GOOGLE_OAUTH2_CREDENTIALS = "{}",
-    GOOGLE_OAUTH2_REFRESH_TOKEN = "",
-  } = process.env;
-
-  const googleCredentials = JSON.parse(GOOGLE_OAUTH2_CREDENTIALS);
-  requireAllTruthy({ webCredentials: googleCredentials.web });
-
-  const {
     web: { client_secret, client_id, redirect_uris },
-  } = googleCredentials;
+  } = requireAllTruthy(
+    JSON.parse(process.env.GOOGLE_OAUTH2_CREDENTIALS || "{}").web
+  );
 
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
@@ -20,6 +14,9 @@ export default function () {
     redirect_uris[0]
   );
 
-  oAuth2Client.setCredentials({ refresh_token: GOOGLE_OAUTH2_REFRESH_TOKEN });
+  oAuth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_OAUTH2_REFRESH_TOKEN || "",
+  });
+
   return oAuth2Client;
 }
