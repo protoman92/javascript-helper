@@ -283,6 +283,11 @@ export function requireNull<T>(
   if (obj != null) throw new Error(message);
 }
 
+export function requireTruthy<T>(args: T): NonNullable<T> {
+  if (!args) throw new Error("Falsy value");
+  return args as any;
+}
+
 export function wrapResolvable<T>(resolvable: Resolvable<T>): Promise<T> {
   if (resolvable instanceof Promise) return resolvable;
   return Promise.resolve(resolvable);

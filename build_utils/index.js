@@ -1,4 +1,6 @@
+// @ts-check
 const { SharedIniFileCredentials } = require("aws-sdk");
+const { DefinePlugin } = require("webpack");
 
 /**
  * @param {{[x: string]: unknown}} envVars
@@ -32,6 +34,20 @@ exports.constructEnvVars = function ({
   extraEnv = { ...extraEnv, ...additionalEnv };
   requireEnvVars(extraEnv, ...requiredKeys);
   return extraEnv;
+};
+
+/** @param {Record<string, unknown>} environment */
+exports.createProcessEnvWebpackPlugin = function (environment) {
+  return new DefinePlugin(
+    Object.entries(environment).reduce(
+      (acc, [k, v]) =>
+        Object.assign(acc, {
+          [`process.env.${k}`]: JSON.stringify(v),
+          [`process.env["${k}"]`]: JSON.stringify(v),
+        }),
+      {}
+    )
+  );
 };
 
 /**
