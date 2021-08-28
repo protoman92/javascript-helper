@@ -283,8 +283,15 @@ export function requireNull<T>(
   if (obj != null) throw new Error(message);
 }
 
-export function requireTruthy<T>(args: T): NonNullable<T> {
-  if (!args) throw new Error("Falsy value");
+export function requireTruthy<T>(args: T, key = ""): NonNullable<T> {
+  if (!!key) {
+    key = `: ${key}`;
+  }
+
+  if (!args) {
+    throw new Error(`Falsy value${key}`);
+  }
+
   return args as any;
 }
 

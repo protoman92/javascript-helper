@@ -1,11 +1,22 @@
 import { google } from "googleapis";
-import { requireAllTruthy } from "../utils";
+import { requireAllTruthy, requireTruthy } from "../utils";
 
-export default function () {
-  const {
-    web: { client_secret, client_id, redirect_uris },
-  } = requireAllTruthy(
-    JSON.parse(process.env.GOOGLE_OAUTH2_CREDENTIALS || "{}").web
+interface GoogleOAuth2ClientArgs {
+  /** OAuth2 credentials */
+  readonly credentials?: Record<string, any>;
+  /** OAuth2 refresh token */
+  readonly refreshToken?: string;
+}
+
+export default function ({
+  credentials = JSON.parse(process.env.GOOGLE_OAUTH_CREDENTIALS || "{}"),
+  refreshToken: refresh_token = requireTruthy(
+    JSON.parse(process.env.GOOGLE_OAUTH_TOKEN || "{}").refresh_token,
+    "GOOGLE_OAUTH_TOKEN"
+  ),
+}: GoogleOAuth2ClientArgs) {
+  const { client_secret, client_id, redirect_uris } = requireAllTruthy(
+    credentials?.web
   );
 
   const oAuth2Client = new google.auth.OAuth2(
@@ -14,9 +25,6 @@ export default function () {
     redirect_uris[0]
   );
 
-  oAuth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_OAUTH2_REFRESH_TOKEN || "",
-  });
-
+  oAuth2Client.setCredentials({ refresh_token });
   return oAuth2Client;
 }
