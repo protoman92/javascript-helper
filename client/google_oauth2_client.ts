@@ -1,6 +1,28 @@
 import { google } from "googleapis";
 import { requireAllTruthy, requireTruthy } from "../utils";
 
+declare module "google-auth-library" {
+  interface OAuth2Client {
+    getUserInfo(): Promise<Readonly<{ email: string }>>;
+  }
+}
+
+google.auth.OAuth2.prototype.getUserInfo = async function () {
+  const { token } = await this.getAccessToken();
+
+  if (!token) {
+    throw new Error("No access token found");
+  }
+
+  const { email } = await this.getTokenInfo(token);
+
+  if (!email) {
+    throw new Error("No user email found");
+  }
+
+  return { email };
+};
+
 interface GoogleOAuth2ClientArgs {
   /** OAuth2 credentials */
   readonly credentials?: Record<string, any>;

@@ -10,7 +10,7 @@ export default function ({
   credentials = JSON.parse(
     process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS || "{}"
   ),
-}: GoogleServiceAccountAuthClientArgs) {
+}: GoogleServiceAccountAuthClientArgs = {}) {
   const { client_email, private_key } = requireAllTruthy(credentials);
 
   const authClient = new GoogleAuth({
