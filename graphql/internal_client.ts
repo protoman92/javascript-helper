@@ -24,7 +24,10 @@ export default function <Context>({
         variableValues: args.variables,
       });
 
-      if (errors != null && errors.length > 0) throw errors[0];
+      if (errors?.length) {
+        throw errors[0];
+      }
+
       return data!;
     },
   };
