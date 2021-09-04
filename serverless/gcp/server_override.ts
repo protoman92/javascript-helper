@@ -5,14 +5,13 @@ export default async function ({
   defaultPort,
   handlers,
 }: ServerOrServerlessArgs) {
-  const { PORT = "" } = process.env;
   const app = express();
 
   for (const handlerName in handlers) {
     app.use(`/${handlerName}`, handlers[handlerName]);
   }
 
-  const port = parseInt(PORT, undefined) || defaultPort;
+  const port = parseInt(process.env.PORT || "", undefined) || defaultPort;
   app.listen(port, () => console.log(`Listening to ${port}`));
   return app;
 }

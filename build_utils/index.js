@@ -56,22 +56,23 @@ exports.createProcessEnvWebpackPlugin = function ({
       : { NODE_ENV: "local" }),
   };
 
-  const definedProperties = Object.entries(environmentVariables).reduce(
-    (acc, [k, v]) => {
-      acc[`process.env.${k}`] = JSON.stringify(v);
-      acc[`process.env["${k}"]`] = JSON.stringify(v);
-      return acc;
-    },
-    {}
-  );
+  /** @type {Record<string, DefinePlugin.CodeValueObject>} */
+  let definedProperties = {};
+
+  for (const [k, v] of Object.entries(environmentVariables)) {
+    definedProperties[`process.env.${k}`] = JSON.stringify(v);
+    definedProperties[`process.env["${k}"]`] = JSON.stringify(v);
+  }
 
   if (useProcessEnv2Dump) {
-    definedProperties["process.env2"] = Object.entries(
-      environmentVariables
-    ).reduce((acc, [k, v]) => {
-      acc[k] = JSON.stringify(v);
-      return acc;
-    }, {});
+    /** @type {typeof definedProperties} */
+    const env2 = {};
+
+    for (const [k, v] of Object.entries(environmentVariables)) {
+      env2[k] = JSON.stringify(v);
+    }
+
+    definedProperties["process.env2"] = env2;
   }
 
   return new DefinePlugin(definedProperties);
