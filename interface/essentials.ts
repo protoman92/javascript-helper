@@ -1,5 +1,4 @@
 import { DeepPartial } from "ts-essentials";
-import { GenericAsyncFunction, GenericFunction } from ".";
 
 export type ArrayOrSingle<T> = T | T[] | readonly T[];
 
@@ -7,6 +6,10 @@ export type ArrayToMap<
   T extends any[] | readonly any[],
   TKey extends keyof T[number]
 > = Map<T[number][TKey], T[number]>;
+
+export type GenericFunction = (...args: any[]) => any;
+export type GenericAsyncFunction<T = any> = (...args: any[]) => Resolvable<T>;
+export type GenericObject = { [x: string]: unknown };
 
 export type IfNotNullableOrUndefinable<T, True> = null extends T
   ? True | null

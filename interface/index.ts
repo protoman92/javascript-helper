@@ -1,6 +1,13 @@
 import { IResolvers } from "apollo-server-express";
 import { DocumentNode, GraphQLArgs } from "graphql";
-import { Promised, Promisified, Resolvable } from "./essentials";
+import {
+  GenericAsyncFunction,
+  GenericFunction,
+  GenericObject,
+  Promised,
+  Promisified,
+  Resolvable,
+} from "./essentials";
 export * from "./essentials";
 export * from "./i18n";
 export * from "./peer";
@@ -23,10 +30,6 @@ export interface EventEmitterClient<
   off<K extends keyof CB>(key: K, callback: CB[K]): void;
   offAll(): void;
 }
-
-export type GenericFunction = (...args: any[]) => any;
-export type GenericAsyncFunction<T = any> = (...args: any[]) => Resolvable<T>;
-export type GenericObject = { [x: string]: unknown };
 
 export namespace InterceptorRegistry {
   export type InterceptorResult<FN extends GenericAsyncFunction> = Partial<
