@@ -29,6 +29,10 @@ export default function <
       }
 
       callbacks[key]!.push(callback);
+
+      return () => {
+        client.off(key, callback);
+      };
     },
     off: <K extends keyof CB>(key: K, callback: CB[K]) => {
       if (callbacks[key] == null) {

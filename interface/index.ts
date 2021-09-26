@@ -26,7 +26,7 @@ export interface EventEmitterClient<
   callbacksType: CB;
   emit<K extends keyof CB>(key: K, ...args: Parameters<CB[K]>): void;
   getCallbackCount<K extends keyof CB>(key: K): number;
-  on<K extends keyof CB>(key: K, callback: CB[K]): void;
+  on<K extends keyof CB>(key: K, callback: CB[K]): () => void;
   off<K extends keyof CB>(key: K, callback: CB[K]): void;
   offAll(): void;
 }

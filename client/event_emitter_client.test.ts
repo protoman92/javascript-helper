@@ -61,4 +61,15 @@ describe("Event emitter client", () => {
     // Then
     expect(callback).not.toHaveBeenCalled();
   });
+
+  it("On should return a valid unsubscribe function", () => {
+    // Setup
+    const callback = jest.fn();
+
+    // When && Then
+    const unsubscribe = eventEmitter.on("test", callback);
+    expect(eventEmitter.getCallbackCount("test")).toEqual(1);
+    unsubscribe();
+    expect(eventEmitter.getCallbackCount("test")).toEqual(0);
+  });
 });

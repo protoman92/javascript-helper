@@ -28,16 +28,24 @@ export function createLocalStorageClient({
     const callbackCount = eventEmitter.getCallbackCount(key);
 
     switch (key) {
-      case "change":
-        if (callbackCount === 0) currentOn("change", changeCallback);
-        break;
+      case "change": {
+        if (callbackCount === 0) {
+          currentOn("change", changeCallback);
+        }
 
-      case "remove":
-        if (callbackCount === 0) currentOn("remove", removeCallback);
         break;
+      }
+
+      case "remove": {
+        if (callbackCount === 0) {
+          currentOn("remove", removeCallback);
+        }
+
+        break;
+      }
     }
 
-    currentOn(key, callback);
+    return currentOn(key, callback);
   };
 
   eventEmitter.off = function (key, callback) {
@@ -45,13 +53,21 @@ export function createLocalStorageClient({
     const callbackCount = eventEmitter.getCallbackCount(key);
 
     switch (key) {
-      case "change":
-        if (callbackCount === 1) currentOff("change", changeCallback);
-        break;
+      case "change": {
+        if (callbackCount === 1) {
+          currentOff("change", changeCallback);
+        }
 
-      case "remove":
-        if (callbackCount === 1) currentOff("remove", removeCallback);
         break;
+      }
+
+      case "remove": {
+        if (callbackCount === 1) {
+          currentOff("remove", removeCallback);
+        }
+
+        break;
+      }
     }
   };
 
