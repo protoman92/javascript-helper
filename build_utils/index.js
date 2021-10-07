@@ -40,21 +40,14 @@ exports.constructEnvVars = function ({
  * @param {object} args
  * @param {string} args.environment Could be prod(uction)/dev(elopment)/local etc
  * @param {Record<string, unknown>} args.environmentVariables
- * @param {boolean} [args.useNodeEnvFix] https://stackoverflow.com/questions/59272819/cannot-use-e-schema-from-another-module-or-realm-and-duplicate-graphql
  * @param {boolean} [args.useProcessEnv2Dump] Dump all environment variables into process.env2.
  */
 exports.createProcessEnvWebpackPlugin = function ({
   environment,
   environmentVariables,
-  useNodeEnvFix = true,
   useProcessEnv2Dump = true,
 }) {
-  environmentVariables = {
-    ...environmentVariables,
-    ...(useNodeEnvFix && environment !== "local"
-      ? { NODE_ENV: "production" }
-      : { NODE_ENV: "local" }),
-  };
+  environmentVariables = { ...environmentVariables, NODE_ENV: environment };
 
   /** @type {Record<string, DefinePlugin.CodeValueObject>} */
   let definedProperties = {};

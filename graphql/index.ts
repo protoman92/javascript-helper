@@ -111,7 +111,9 @@ export function combineContextFunctions<InCtx, OutCtx>(
 }
 
 export type ResponseFormatter<Context> = NonNullable<
-  import("apollo-server-core/src/graphqlOptions").GraphQLServerOptions<Context>["formatResponse"]
+  import("apollo-server-core/src/graphqlOptions").GraphQLServerOptions<
+    Context
+  >["formatResponse"]
 >;
 
 /**

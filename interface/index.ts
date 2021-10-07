@@ -1,5 +1,8 @@
-import { IResolvers } from "apollo-server-express";
-import { DocumentNode, GraphQLArgs } from "graphql";
+import {
+  DocumentNode as GraphQLDocumentNode,
+  GraphQLArgs,
+  GraphQLFieldResolver as GraphQLResolvers,
+} from "graphql";
 import {
   GenericAsyncFunction,
   GenericFunction,
@@ -11,10 +14,7 @@ import {
 export * from "./essentials";
 export * from "./i18n";
 export * from "./peer";
-export type {
-  IResolvers as GraphQLResolvers,
-  DocumentNode as GraphQLDocumentNode,
-};
+export type { GraphQLResolvers, GraphQLDocumentNode };
 
 export type DeepCloneReplacer = (key: string, value: unknown) => unknown;
 export type DeepCloneReviver = (key: string, value: unknown) => unknown;
@@ -73,7 +73,7 @@ export namespace InternalGraphQLClient {
       "contextValue" | "schema" | "source" | "variableValues"
     > {
     readonly contextValue?: Context;
-    readonly document: DocumentNode;
+    readonly document: GraphQLDocumentNode;
     readonly variables: A;
   }
 }
