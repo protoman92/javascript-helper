@@ -16,7 +16,7 @@ export default function <Context>({
     }: InternalGraphQLClient.RequestArgs<Context, A>) => {
       const requestContext = { ...defaultContextValues, ...contextValue };
 
-      const { data, errors } = await graphql<R>({
+      const { data, errors } = await graphql({
         ...args,
         contextValue: requestContext,
         schema: schemaFn(),
@@ -28,7 +28,7 @@ export default function <Context>({
         throw errors[0];
       }
 
-      return data!;
+      return data as R;
     },
   };
 

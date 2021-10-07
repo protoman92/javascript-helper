@@ -5,6 +5,7 @@
     "checkJs": true,
     "esModuleInterop": true,
     "jsx": "react",
+    "lib": ["DOM", "ES2019"],
     "module": "commonjs",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
