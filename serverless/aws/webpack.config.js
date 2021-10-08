@@ -10,7 +10,7 @@ const WebpackShellPlugin = require("webpack-shell-plugin");
  * infrastructures interchangeably during development/deployment.
  * @typedef Args
  * @property {string} dirname the current project directory.
- * @property {'server' | 'serverless'} infrastructure the server infrastructure.
+ * @property {string} infrastructure the server infrastructure.
  * @property {ServerOverrides} [serverOverrides] overriding config for server infrastructure.
  * @property {typeof import('serverless-webpack')} slsw serverless config.
  * @param {Args} args
