@@ -53,17 +53,21 @@ export interface InterceptorRegistry<FN extends GenericAsyncFunction> {
   removeInterceptor(interceptor: InterceptorRegistry.Interceptor<FN>): void;
 }
 
-export type LocalStorageClient = typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
+export type LocalStorageClient =
+  typeof import("../client/local_storage_client")["defaultLocalStorageClient"];
 
 export type PromisifiedClient<C extends GenericObject, K extends keyof C> = {
   [x in keyof Pick<C, K>]: C[x] extends GenericFunction
     ? Promisified<C[x]>
     : C[x];
-} &
-  Omit<C, K>;
+} & Omit<C, K>;
 
 export type ExternalGraphQLClient = ReturnType<
   typeof import("../graphql/external_client")["default"]
+>;
+
+export type ExternalAxiosGraphQLClient = ReturnType<
+  typeof import("../graphql/axios_external_client")["default"]
 >;
 
 export namespace InternalGraphQLClient {

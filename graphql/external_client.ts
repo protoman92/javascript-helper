@@ -103,11 +103,13 @@ export default function <Cache = unknown>(
   const client = {
     clearCache: () => asyncClient.then((client) => client.clearStore()),
     /** Only use this for type-checking */
-    errorInterceptorType: ((() => {}) as unknown) as typeof errorInterceptors[number],
+    errorInterceptorType:
+      (() => {}) as unknown as typeof errorInterceptors[number],
     /** Only use this for type-checking */
     requestArgsType: {} as ExternalGraphQLRequestArgs<any, any>,
     /** Only use this for type-checking */
-    requestInterceptorType: ((() => {}) as unknown) as typeof requestInterceptors[number],
+    requestInterceptorType:
+      (() => {}) as unknown as typeof requestInterceptors[number],
     /**
      * Send a GraphQL request without interceptors. This can be overriden
      * to provide additional functionalities, such as retries.
@@ -149,8 +151,8 @@ export default function <Cache = unknown>(
         return requireNotNull(data);
       } catch (error) {
         /** Remove the "GraphQL error: " prefix */
-        const [, messageWithoutPrefix = error.message] =
-          error.message.match(/GraphQL error:\s(.*)/) || [];
+        const [, messageWithoutPrefix = (error as any).message] =
+          (error as any).message.match(/GraphQL error:\s(.*)/) || [];
 
         error = new Error(messageWithoutPrefix);
         throw error;
@@ -170,7 +172,10 @@ export default function <Cache = unknown>(
         return result;
       } catch (error) {
         for (const interceptor of errorInterceptors) {
-          const errorResult = await interceptor({ error, request: args });
+          const errorResult = await interceptor({
+            error: error as Error,
+            request: args,
+          });
 
           switch (errorResult.type) {
             case "NOOP":
