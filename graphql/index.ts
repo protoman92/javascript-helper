@@ -31,9 +31,8 @@ export const addTypenameToDocumentApolloPlugin: ApolloServerPlugin<any> = {
     return {
       didResolveOperation: async (request) => {
         if (request.document != null) {
-          (request as Writable<typeof request>)[
-            "document"
-          ] = addTypenameToDocument(request.document);
+          (request as Writable<typeof request>)["document"] =
+            addTypenameToDocument(request.document);
         }
       },
     };
@@ -87,7 +86,7 @@ export function createPreventFieldAliasesPlugin({
 }
 
 export type ContextFunction<InCtx, OutCtx> = (
-  ctx: InCtx
+  ctx: InCtx & Partial<OutCtx>
 ) => Promise<Partial<OutCtx>>;
 
 /**
@@ -95,13 +94,13 @@ export type ContextFunction<InCtx, OutCtx> = (
  * care of multiple functionalities defined by its sub-parts.
  */
 export function combineContextFunctions<InCtx, OutCtx>(
-  ...fns: readonly ContextFunction<InCtx, Partial<OutCtx>>[]
+  ...fns: readonly ContextFunction<InCtx, OutCtx>[]
 ): ContextFunction<InCtx, OutCtx> {
-  return async (...args) => {
+  return async (args) => {
     let ctx = {} as OutCtx;
 
     for (const fn of fns) {
-      ctx = { ...ctx, ...(await fn(...args)) };
+      ctx = { ...ctx, ...(await fn({ ...args, ...ctx })) };
     }
 
     return ctx;
@@ -109,9 +108,7 @@ export function combineContextFunctions<InCtx, OutCtx>(
 }
 
 export type ResponseFormatter<Context> = NonNullable<
-  import("apollo-server-core/src/graphqlOptions").GraphQLServerOptions<
-    Context
-  >["formatResponse"]
+  import("apollo-server-core/src/graphqlOptions").GraphQLServerOptions<Context>["formatResponse"]
 >;
 
 /**
