@@ -18,6 +18,7 @@ export default function ({
         ...defaultAxiosConfig,
         ...axiosConfig,
         data: { variables, query: document.loc?.source.body },
+        method: "post",
       });
 
       return data as Result;
