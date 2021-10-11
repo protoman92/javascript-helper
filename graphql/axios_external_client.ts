@@ -3,23 +3,24 @@ import { DocumentNode } from "graphql";
 
 export default function ({
   axiosInstance,
-}: Readonly<{ axiosInstance: AxiosInstance }>) {
+  ...defaultAxiosConfig
+}: Pick<AxiosRequestConfig, "baseURL" | "url"> &
+  Readonly<{ axiosInstance: AxiosInstance }>) {
   return {
     request: async <Args, Result>({
       url,
       document,
       variables,
-      ...args
-    }: Required<Pick<AxiosRequestConfig, "baseURL" | "url">> &
-      Pick<AxiosRequestConfig, "headers"> &
+      ...axiosConfig
+    }: Pick<AxiosRequestConfig, "baseURL" | "headers" | "url"> &
       Readonly<{ document: DocumentNode; variables: Args }>) => {
-      const { data } = await axiosInstance.post<Result>(
-        url,
-        { variables, query: document.loc?.source.body },
-        args
-      );
+      const { data } = await axiosInstance({
+        ...defaultAxiosConfig,
+        ...axiosConfig,
+        data: { variables, query: document.loc?.source.body },
+      });
 
-      return data;
+      return data as Result;
     },
   };
 }
