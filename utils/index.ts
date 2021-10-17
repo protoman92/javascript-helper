@@ -213,13 +213,11 @@ export function omitNull<T extends { [x: string]: any }>(obj: T) {
     newObject[key] = obj[key];
   }
 
-  return newObject as Readonly<
-    {
-      [x in keyof T]: T[x] extends NonNullable<T[x]>
-        ? T[x]
-        : NonNullable<T[x]> | undefined;
-    }
-  >;
+  return newObject as Readonly<{
+    [x in keyof T]: T[x] extends NonNullable<T[x]>
+      ? T[x]
+      : NonNullable<T[x]> | undefined;
+  }>;
 }
 
 interface PickFunction {
