@@ -3,8 +3,13 @@ import { analyzeError } from "../utils";
 
 export default function () {
   const logger = winston.createLogger({
+    format: winston.format.json({ space: 4 }),
     transports: [new transports.Console()],
   });
+
+  function formatMessageToLog(args: any) {
+    return args;
+  }
 
   return {
     e: async function ({
@@ -18,13 +23,22 @@ export default function () {
     }>) {
       const { message: errorMessage, ...analyzedError } = analyzeError(error);
       message = `${message}: ${errorMessage}`;
-      logger.error({ ...meta, ...analyzedError, error, message });
+
+      const messageToLog = formatMessageToLog({
+        ...meta,
+        ...analyzedError,
+        error,
+        message,
+      });
+
+      logger.error(messageToLog);
     },
     i: async function ({
       message,
       meta,
     }: Readonly<{ message: string; meta?: {} }>) {
-      logger.info({ ...meta, message });
+      const messageToLog = formatMessageToLog({ ...meta, message });
+      logger.info(messageToLog);
     },
   };
 }
