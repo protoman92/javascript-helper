@@ -19,18 +19,21 @@ export default function createAxiosGraphQLClient({
     }: Parameters<AxiosGraphQLClientRequest<Args, Result>>[0]): ReturnType<
       AxiosGraphQLClientRequest<Args, Result>
     > => {
-      const { data } = await axiosInstance({
+      const { data } = await axiosInstance.request<{
+        data: Result;
+        errors?: readonly Error[];
+      }>({
         ...defaultAxiosConfig,
         ...axiosConfig,
         data: { variables, query: document.loc?.source.body },
         method: "post",
       });
 
-      if ("errors" in data && data.errors?.length) {
+      if (data.errors != null && data.errors?.length) {
         throw data.errors[0];
       }
 
-      return data as Result;
+      return data.data;
     },
   };
 }
