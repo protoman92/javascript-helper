@@ -1,0 +1,7 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "license": "MIT",
+  "main": "src/index.js",
+  "name": "@haipham/javascript-helper-build-utils",
+  "version": "1.0.0"
+}

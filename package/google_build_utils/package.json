@@ -1,0 +1,14 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "devDependencies": {
+    "@haipham/javascript-helper-essential-types": "^1.0.0",
+    "googleapis": "*"
+  },
+  "license": "MIT",
+  "main": "src/index.js",
+  "name": "@haipham/javascript-helper-google-build-utils",
+  "resolutions": {
+    "googleapis": "59.0.0"
+  },
+  "version": "1.0.0"
+}

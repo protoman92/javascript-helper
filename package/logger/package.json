@@ -1,0 +1,11 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "dependencies": {
+    "@haipham/javascript-helper-utils": "^1.0.0",
+    "winston": "3.3.3"
+  },
+  "license": "MIT",
+  "main": "src/index.ts",
+  "name": "@haipham/javascript-helper-logger",
+  "version": "1.0.0"
+}

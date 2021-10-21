@@ -1,0 +1,28 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-beautiful-dnd": "13.0.0",
+    "@types/react-redux": "*",
+    "react": "*",
+    "react-redux": "*"
+  },
+  "license": "MIT",
+  "main": "src/index.tsx",
+  "name": "@haipham/javascript-helper-react",
+  "peerDependencies": {
+    "react": "*",
+    "react-redux": "*",
+    "recompose": "*",
+    "redux": "*"
+  },
+  "resolutions": {
+    "@types/react": "16.8.24",
+    "@types/react-redux": "7.1.9",
+    "react": "16.13.1",
+    "react-redux": "7.2.1",
+    "recompose": "0.30.0",
+    "redux": "4.0.5"
+  },
+  "version": "1.0.0"
+}

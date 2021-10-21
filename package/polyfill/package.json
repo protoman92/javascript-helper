@@ -1,0 +1,10 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "devDependencies": {
+    "@haipham/javascript-helper-utils": "^1.0.0"
+  },
+  "license": "MIT",
+  "main": "src/index.ts",
+  "name": "@haipham/javascript-helper-polyfill",
+  "version": "1.0.0"
+}
