@@ -1,0 +1,14 @@
+{
+  "command": {
+    "bootstrap": {
+      "npmClientArgs": ["--network-timeout 1000000"]
+    },
+    "version": {
+      "message": "chore: publish packages"
+    }
+  },
+  "npmClient": "yarn",
+  "packages": ["package/*"],
+  "useWorkspaces": true,
+  "version": "independent"
+}
