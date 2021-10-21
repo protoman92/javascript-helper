@@ -5,7 +5,7 @@
     "checkJs": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "lib": ["DOM", "ES2019"],
+    "lib": ["ES2019"],
     "module": "commonjs",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
@@ -22,6 +22,6 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "target": "es2017",
-    "types": ["jest"]
+    "types": ["node", "jest"]
   }
 }

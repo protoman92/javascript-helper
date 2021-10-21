@@ -8,7 +8,6 @@
     }
   },
   "npmClient": "yarn",
-  "packages": ["package/*"],
   "useWorkspaces": true,
   "version": "independent"
 }
