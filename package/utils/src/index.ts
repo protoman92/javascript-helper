@@ -56,12 +56,14 @@ export function analyzeError(err: any) {
 
 export async function asyncTimeout(
   timeout: number,
+  // @ts-ignore
   g?: typeof global | typeof window
 ) {
   let g2 = g;
 
   if (g2 == null) {
     try {
+      // @ts-ignore
       g2 = window;
     } catch {}
   }

@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Generic interceptor Add and remove interceptors should work 1`] = `
+Array [
+  Array [
+    Object {
+      "originalArguments": Array [
+        1,
+        2,
+        3,
+      ],
+      "previousResult": undefined,
+    },
+  ],
+]
+`;
+
+exports[`Generic interceptor Add and remove interceptors should work 2`] = `
+Array [
+  Array [
+    Object {
+      "originalArguments": Array [
+        1,
+        2,
+        3,
+      ],
+      "previousResult": 0,
+    },
+  ],
+]
+`;

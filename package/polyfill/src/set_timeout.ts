@@ -1,4 +1,5 @@
 /** Set timeout polyfill to accept large values */
+// @ts-ignore
 export default function (global: Pick<typeof window, "setTimeout"> = window) {
   const MAX_DELAY = Math.pow(2, 31) - 1;
   const _setTimeout = global.setTimeout;
@@ -6,7 +7,7 @@ export default function (global: Pick<typeof window, "setTimeout"> = window) {
   global.setTimeout = ((
     ...[handler, timeout, ...args]: Parameters<typeof _setTimeout>
   ) => {
-    if (!timeout || timeout <= MAX_DELAY) {
+    if (!timeout || (timeout as number) <= MAX_DELAY) {
       return _setTimeout(handler, timeout, ...args);
     }
 

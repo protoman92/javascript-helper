@@ -4,6 +4,7 @@ import { mockSomething } from "@haipham/javascript-helper-utils";
 describe("Set timout polyfill", () => {
   const MAX_DELAY = Math.pow(2, 31) - 1;
   let setTimeout: jest.Mock;
+  // @ts-ignore
   let global: typeof window;
 
   beforeEach(() => {

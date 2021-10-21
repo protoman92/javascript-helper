@@ -1,6 +1,1 @@
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "lib": ["DOM", "ES2019"]
-  }
-}
+{ "extends": "../../tsconfig.json" }

@@ -1,4 +1,4 @@
-import createEventEmitter, { EventEmitterClient } from ".";
+import { createEventEmitterClient, EventEmitterClient } from ".";
 
 describe("Event emitter client", () => {
   let eventEmitter: EventEmitterClient<{
@@ -6,7 +6,7 @@ describe("Event emitter client", () => {
   }>;
 
   beforeEach(() => {
-    eventEmitter = createEventEmitter();
+    eventEmitter = createEventEmitterClient();
     expect(eventEmitter.callbacksType).toBeTruthy();
   });
 

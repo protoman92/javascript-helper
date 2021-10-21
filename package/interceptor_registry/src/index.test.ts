@@ -1,4 +1,4 @@
-import createInterceptorRegistry from "./interceptor";
+import { createInterceptorRegistry } from ".";
 
 describe("Generic interceptor", () => {
   it("Add and remove interceptors should work", async () => {

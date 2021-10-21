@@ -7,7 +7,7 @@ module.exports = {
   },
   roots: ["<rootDir>"],
   testMatch: [path.join("<rootDir>", "**", "*.(test|spec).(js|jsx|ts|tsx)")],
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   transform: {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.tsx?$": "ts-jest",

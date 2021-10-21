@@ -1,10 +1,14 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
-    "@haipham/javascript-helper-utils": "^1.0.0"
+    "@haipham/javascript-helper-utils": "^1.0.0",
+    "googleapis": "*"
   },
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@haipham/javascript-helper-google-utils",
+  "resolutions": {
+    "googleapis": "59.0.0"
+  },
   "version": "1.0.0"
 }
