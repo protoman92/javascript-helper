@@ -2,5 +2,8 @@
   "author": "Hai Pham <swiften.svc@gmail.com",
   "license": "MIT",
   "name": "@haipham/javascript-helper-serverless",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "1.0.0"
 }

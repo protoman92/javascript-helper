@@ -3,5 +3,8 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@haipham/javascript-helper-essential-types",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "1.0.0"
 }

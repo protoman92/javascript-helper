@@ -16,6 +16,9 @@
     "recompose": "*",
     "redux": "*"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "resolutions": {
     "@types/react": "16.8.24",
     "@types/react-redux": "7.1.9",

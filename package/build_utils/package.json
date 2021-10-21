@@ -3,5 +3,8 @@
   "license": "MIT",
   "main": "src/index.js",
   "name": "@haipham/javascript-helper-build-utils",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "1.0.0"
 }

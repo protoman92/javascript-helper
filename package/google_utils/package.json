@@ -7,6 +7,9 @@
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@haipham/javascript-helper-google-utils",
+  "publishConfig": {
+    "access": "public"
+  },
   "resolutions": {
     "googleapis": "59.0.0"
   },

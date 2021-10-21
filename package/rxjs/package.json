@@ -12,6 +12,9 @@
   "peerDependencies": {
     "rxjs": "*"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "resolutions": {
     "rxjs": "6.6.3"
   },
