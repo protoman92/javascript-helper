@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Decorate client methods Should decorate class instance methods correctly 1`] = `
+Object {
+  "method2": [Function],
+}
+`;
+
+exports[`Decorate client methods Should decorate key-value object methods correctly 1`] = `
+Object {
+  "method1": [Function],
+  "method2": [Function],
+  "property1": Object {
+    "method1": [Function],
+    "method2": [Function],
+    "property1": [Circular],
+    "property2": [Function],
+    "property3": [Function],
+  },
+  "property2": [Function],
+  "property3": [Function],
+}
+`;
+
+exports[`Decorate client methods Should decorate object instance methods correctly 1`] = `
+Object {
+  "method1": [Function],
+  "method2": [Function],
+}
+`;

@@ -6,6 +6,7 @@ import {
 } from "@haipham/javascript-helper-essential-types";
 import { shallowEqual } from "recompose";
 import { DeepPartial, StrictOmit } from "ts-essentials";
+import decorateClientMethods from "./decorate_client_methods";
 import deepClone from "./deep_clone";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createOptionSet from "./option_set";
@@ -18,6 +19,7 @@ export * from "./retry";
 export {
   createSwitchAsyncFunction,
   createOptionSet,
+  decorateClientMethods,
   deepClone,
   flipMutualExclusiveFlags,
   getAllPaginatedPages,

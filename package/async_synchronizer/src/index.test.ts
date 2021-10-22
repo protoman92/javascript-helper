@@ -1,4 +1,5 @@
 import { createAsyncSynchronizer } from ".";
+import { decorateClientMethods } from "@haipham/javascript-helper-utils";
 
 describe("Request synchronizer", () => {
   it("Should synchronize requests correctly", async () => {
@@ -46,5 +47,30 @@ describe("Request synchronizer", () => {
 
     expect(Object.keys(cache)).toHaveLength(keyCount);
     expect(Object.values(cache)).toEqual([...Array(keyCount).keys()]);
+  });
+
+  it("Should synchronize all client methods correctly", async () => {
+    // Setup
+    const synchronizer = createAsyncSynchronizer();
+
+    const client = {
+      method1: async function () {
+        return this;
+      },
+      method2: async () => {
+        return 1;
+      },
+    };
+
+    // When
+    const synchronizedClient = decorateClientMethods<typeof client>({
+      decorator: synchronizer.synchronize,
+    })(client);
+
+    // Then
+    expect(synchronizedClient.method1.name).toEqual("bound synchronized");
+    expect(synchronizedClient.method2.name).toEqual("bound synchronized");
+    expect(await synchronizedClient.method1()).toStrictEqual(client);
+    expect(await synchronizedClient.method2()).toEqual(1);
   });
 });

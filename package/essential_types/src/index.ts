@@ -1,5 +1,3 @@
-import { DeepPartial } from "ts-essentials";
-
 export type ArrayOrSingle<T> = T | T[] | readonly T[];
 
 export type ArrayToMap<
@@ -55,19 +53,6 @@ export type Resolvable<T> = T | Promise<T> | PromiseLike<T>;
 export type SetToArray<T> = T extends Set<infer V> ? V[] : never;
 export type SetValue<T> = T extends Set<infer V> ? V : never;
 
-export interface Stack<T> {
-  peek(): T | undefined;
-  pop(): T | undefined;
-  push(element: T): number;
-  toArray(): T[];
-}
-
 export type UndefinableProps<T extends object> = {
   [K in keyof Required<T>]: T[K] | undefined;
 };
-
-export type WithDeepPartialReturn<FN extends (...args: any[]) => any> = (
-  ...args: Parameters<FN>
-) => ReturnType<FN> extends Promise<infer T>
-  ? Promise<DeepPartial<T>>
-  : DeepPartial<ReturnType<FN>>;
