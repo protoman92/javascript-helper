@@ -1,5 +1,5 @@
 import { Mapper } from "@haipham/javascript-helper-essential-types";
-import decorateClientMethods from "./decorate_client_methods";
+import { decorateClientMethods } from ".";
 
 describe("Decorate client methods", () => {
   const methodDecorator: Mapper<any, any> = (fn) => {
@@ -11,7 +11,10 @@ describe("Decorate client methods", () => {
 
   it("Should decorate object instance methods correctly", async () => {
     // Setup
-    function Client() {}
+    function Client() {
+      // @ts-ignore
+      this.raw1 = 1;
+    }
 
     Client.prototype.method1 = function () {
       return this;
@@ -53,15 +56,11 @@ describe("Decorate client methods", () => {
     })(client);
 
     // Then
-    // @ts-ignore
+    expect(clientClone.raw1).toEqual(1);
     expect(clientClone.property1).toStrictEqual(client);
-    // @ts-ignore
     expect(clientClone.property2()).toStrictEqual(client);
-    // @ts-ignore
     expect(clientClone.property3()).toStrictEqual(clientClone);
-    // @ts-ignore
     expect(clientClone.method1()).toStrictEqual(client);
-    // @ts-ignore
     expect(clientClone.method2()).toStrictEqual(2);
     expect(clientClone).toMatchSnapshot();
   });
@@ -69,6 +68,8 @@ describe("Decorate client methods", () => {
   it("Should decorate class instance methods correctly", async () => {
     // Setup
     class Client {
+      raw1 = 1;
+
       get property1() {
         return this;
       }
@@ -102,6 +103,7 @@ describe("Decorate client methods", () => {
     })(client);
 
     // Then
+    expect(clientClone.raw1).toEqual(1);
     expect(clientClone.property1).toStrictEqual(client);
     expect(clientClone.property2()).toStrictEqual(client);
     expect(clientClone.property3()).toStrictEqual(clientClone);
@@ -113,6 +115,7 @@ describe("Decorate client methods", () => {
   it("Should decorate key-value object methods correctly", async () => {
     // Setup
     const client = {
+      raw1: 1,
       get property1() {
         return this;
       },
@@ -141,6 +144,7 @@ describe("Decorate client methods", () => {
     })(client);
 
     // Then
+    expect(clientClone.raw1).toEqual(1);
     expect(clientClone.property1).toStrictEqual(client);
     expect(clientClone.property2()).toStrictEqual(client);
     expect(clientClone.property3()).toStrictEqual(clientClone);

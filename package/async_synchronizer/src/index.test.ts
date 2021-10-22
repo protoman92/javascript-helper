@@ -1,5 +1,5 @@
 import { createAsyncSynchronizer } from ".";
-import { decorateClientMethods } from "@haipham/javascript-helper-utils";
+import { decorateClientMethods } from "@haipham/javascript-helper-decorator";
 
 describe("Request synchronizer", () => {
   it("Should synchronize requests correctly", async () => {

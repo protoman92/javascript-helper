@@ -8,7 +8,7 @@ import {
  * functionalities. This should take care of both key-value object clients and
  * object/class instances.
  */
-export default function decorateClientMethods<
+export function decorateClientMethods<
   Client,
   MethodName extends NonNullable<
     {
@@ -84,8 +84,12 @@ export default function decorateClientMethods<
       } else {
         newPropertyDescriptor = {
           ...propertyDescriptor,
-          get: propertyDescriptor.get?.bind(client),
-          set: propertyDescriptor.set?.bind(client),
+          ...("get" in propertyDescriptor
+            ? {
+                get: propertyDescriptor.get?.bind(client),
+                set: propertyDescriptor.set?.bind(client),
+              }
+            : {}),
         };
       }
 

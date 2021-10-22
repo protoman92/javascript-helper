@@ -3,6 +3,7 @@
 exports[`Decorate client methods Should decorate class instance methods correctly 1`] = `
 Object {
   "method2": [Function],
+  "raw1": 1,
 }
 `;
 
@@ -16,9 +17,11 @@ Object {
     "property1": [Circular],
     "property2": [Function],
     "property3": [Function],
+    "raw1": 1,
   },
   "property2": [Function],
   "property3": [Function],
+  "raw1": 1,
 }
 `;
 
@@ -26,5 +29,6 @@ exports[`Decorate client methods Should decorate object instance methods correct
 Object {
   "method1": [Function],
   "method2": [Function],
+  "raw1": 1,
 }
 `;
