@@ -1,4 +1,5 @@
 import { Mapper } from "@haipham/javascript-helper-essential-types";
+import { compose } from "@haipham/javascript-helper-utils";
 import { decorateClientMethods } from ".";
 
 describe("Decorate client methods", () => {
@@ -62,6 +63,9 @@ describe("Decorate client methods", () => {
     expect(clientClone.property3()).toStrictEqual(clientClone);
     expect(clientClone.method1()).toStrictEqual(client);
     expect(clientClone.method2()).toStrictEqual(2);
+    expect(
+      clientClone["_javascript-utilities-decorator-originalClient"]
+    ).toStrictEqual(client);
     expect(clientClone).toMatchSnapshot();
   });
 
@@ -109,6 +113,9 @@ describe("Decorate client methods", () => {
     expect(clientClone.property3()).toStrictEqual(clientClone);
     expect(clientClone.method1()).toStrictEqual(client);
     expect(clientClone.method2()).toStrictEqual(client);
+    expect(
+      clientClone["_javascript-utilities-decorator-originalClient"]
+    ).toStrictEqual(client);
     expect(clientClone).toMatchSnapshot();
   });
 
@@ -150,6 +157,85 @@ describe("Decorate client methods", () => {
     expect(clientClone.property3()).toStrictEqual(clientClone);
     expect(clientClone.method1()).toStrictEqual(client);
     expect(clientClone.method2()).toStrictEqual(this);
+    expect(
+      clientClone["_javascript-utilities-decorator-originalClient"]
+    ).toStrictEqual(client);
     expect(clientClone).toMatchSnapshot();
+  });
+
+  it("Should only decorate specified methods", async () => {
+    // Setup
+    const client = {
+      get property1() {
+        return 1;
+      },
+      method1: function () {
+        return 1;
+      },
+      method2: () => {
+        return 1;
+      },
+    };
+
+    // When
+    const clientClone = decorateClientMethods<typeof client>({
+      decorator: () => {
+        return function decorated() {
+          return 2;
+        };
+      },
+      methodNames: ["method1"],
+    })(client);
+
+    // Then
+    expect(clientClone.method1()).toEqual(2);
+    expect(clientClone.method2()).toEqual(1);
+    expect(clientClone).toMatchSnapshot();
+  });
+
+  it("Should retain original client and bind to it", async () => {
+    // Setup
+    class Client {
+      get property1() {
+        return 3;
+      }
+
+      method1(args: number) {
+        return this.property1 + args;
+      }
+    }
+
+    // When
+    const client = new Client();
+
+    const clientClone = compose(
+      decorateClientMethods<typeof client>({
+        decorator: (fn) => {
+          return function d1(this: typeof client, ...args) {
+            return fn.call(this, ...args) + this.property1 * 2;
+          };
+        },
+      }),
+      decorateClientMethods<typeof client>({
+        decorator: (fn) => {
+          return function d2(this: typeof client, ...args) {
+            return fn.call(this, ...args) * 4 + this.property1;
+          };
+        },
+      }),
+      decorateClientMethods<typeof client>({
+        decorator: (fn) => {
+          return function d3(this: typeof client, ...args) {
+            return fn.call(this, ...args) - 1;
+          };
+        },
+      })
+    )(client);
+
+    // Then
+    expect(
+      clientClone["_javascript-utilities-decorator-originalClient"]
+    ).toStrictEqual(client);
+    expect(clientClone.method1(2)).toEqual((2 + 3 + 6) * 4 + 3 - 1);
   });
 });

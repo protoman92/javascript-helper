@@ -2,6 +2,10 @@
 
 exports[`Decorate client methods Should decorate class instance methods correctly 1`] = `
 Object {
+  "_javascript-utilities-decorator-originalClient": Client {
+    "method2": [Function],
+    "raw1": 1,
+  },
   "method2": [Function],
   "raw1": 1,
 }
@@ -9,6 +13,14 @@ Object {
 
 exports[`Decorate client methods Should decorate key-value object methods correctly 1`] = `
 Object {
+  "_javascript-utilities-decorator-originalClient": Object {
+    "method1": [Function],
+    "method2": [Function],
+    "property1": [Circular],
+    "property2": [Function],
+    "property3": [Function],
+    "raw1": 1,
+  },
   "method1": [Function],
   "method2": [Function],
   "property1": Object {
@@ -27,8 +39,24 @@ Object {
 
 exports[`Decorate client methods Should decorate object instance methods correctly 1`] = `
 Object {
+  "_javascript-utilities-decorator-originalClient": Client {
+    "raw1": 1,
+  },
   "method1": [Function],
   "method2": [Function],
   "raw1": 1,
+}
+`;
+
+exports[`Decorate client methods Should only decorate specified methods 1`] = `
+Object {
+  "_javascript-utilities-decorator-originalClient": Object {
+    "method1": [Function],
+    "method2": [Function],
+    "property1": 1,
+  },
+  "method1": [Function],
+  "method2": [Function],
+  "property1": 1,
 }
 `;
