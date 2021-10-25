@@ -1,5 +1,5 @@
 // @ts-check
-/// <reference path="./interface.d.ts" />
+/// <reference path="./index.d.ts" />
 const { google } = require("googleapis");
 
 /**
