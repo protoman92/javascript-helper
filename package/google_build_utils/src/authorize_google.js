@@ -5,8 +5,8 @@ const { google } = require("googleapis");
 const path = require("path");
 const readline = require("readline");
 
-/** @param {AuthorizeGoogleArgs} args */
-module.exports = async function ({ scopes, ...args }) {
+/** @type {import('./index').AuthorizeGoogle} */
+const authorizeGoogle = async function ({ scopes, ...args }) {
   /** @type {string | undefined} */
   let credentialString;
   /** @type {string | undefined} */
@@ -107,3 +107,5 @@ module.exports = async function ({ scopes, ...args }) {
   oAuth2Client.setCredentials(tokens);
   return oAuth2Client;
 };
+
+module.exports = authorizeGoogle;

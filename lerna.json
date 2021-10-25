@@ -3,6 +3,9 @@
     "bootstrap": {
       "npmClientArgs": ["--network-timeout 1000000"]
     },
+    "publish": {
+      "ignoreChanges": ["**/*.md", "node_modules", "package/*"]
+    },
     "version": {
       "message": "chore: publish packages"
     }

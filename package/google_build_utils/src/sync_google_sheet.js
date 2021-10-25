@@ -29,7 +29,7 @@ const { google } = require("googleapis");
  * @property {string} spreadsheetID
  * @param {Args} args
  */
-module.exports = async function ({
+const syncGoogleSheet = async function ({
   callback,
   eligibleSheetTitlesOrIDs,
   oAuth2Client,
@@ -177,3 +177,5 @@ module.exports = async function ({
     });
   }
 };
+
+module.exports = syncGoogleSheet;
