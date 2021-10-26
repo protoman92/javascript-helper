@@ -1,4 +1,5 @@
-import { google } from "googleapis";
+import { Resolvable } from "@haipham/javascript-helper-essential-types";
+import { google, sheets_v4 } from "googleapis";
 
 export type AuthorizeGoogle = (
   /**
@@ -41,7 +42,40 @@ export type AuthorizeGoogle = (
   >
 ) => Promise<typeof google.auth.OAuth2["prototype"]>;
 
-export type SyncGoogleSheet = typeof import("./sync_google_sheet");
+declare namespace SyncGoogleSheet {
+  export interface SheetReference {
+    readonly columnName: string;
+    readonly rowIndex: number;
+    readonly sheetID: number;
+    readonly sheetTitle: string;
+  }
+}
+
+export type SyncGoogleSheet = (
+  args: Readonly<{
+    callback: (
+      args: Readonly<{
+        gridData: readonly sheets_v4.Schema$GridData[];
+        rowData: readonly Readonly<{
+          formattedValue: string;
+          htmlValue: string;
+          sheetReference: SyncGoogleSheet.SheetReference | undefined;
+        }>[][];
+        sheetID: number;
+        sheetTitle: string;
+      }>
+    ) => Resolvable<void>;
+    eligibleSheetTitlesOrIDs: readonly (number | string)[];
+    htmlTagMapping: Readonly<{
+      bold: string;
+      italic: string;
+      underline: string;
+      wrapper: string;
+    }>;
+    oAuth2Client: typeof google["auth"]["OAuth2"]["prototype"];
+    spreadsheetID: string;
+  }>
+) => Promise<void>;
 
 export const authorizeGoogle: AuthorizeGoogle;
 export const syncGoogleSheet: SyncGoogleSheet;

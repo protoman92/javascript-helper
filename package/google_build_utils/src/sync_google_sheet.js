@@ -2,33 +2,7 @@
 /// <reference path="./index.d.ts" />
 const { google } = require("googleapis");
 
-/**
- * @typedef SheetReference
- * @property {string} columnName
- * @property {number} rowIndex
- * @property {number} sheetID
- * @property {string} sheetTitle
- * @typedef RowData
- * @property {string} formattedValue
- * @property {string} htmlValue
- * @property {SheetReference} [sheetReference]
- * @typedef SheetCallbackArgs
- * @property {import('googleapis').sheets_v4.Schema$GridData[]} gridData
- * @property {readonly RowData[][]} rowData
- * @property {number} sheetID
- * @property {string} sheetTitle
- * @typedef Args
- * @property {(args: SheetCallbackArgs) => import("@haipham/javascript-helper-essential-types").Resolvable<void>} callback
- * @property {google["auth"]["OAuth2"]['prototype']} oAuth2Client
- * @property {readonly (number | string)[]} [eligibleSheetTitlesOrIDs]
- * @property {object} [htmlTagMapping]
- * @property {string} [htmlTagMapping.bold]
- * @property {string} [htmlTagMapping.italic]
- * @property {string} [htmlTagMapping.underline]
- * @property {string} [htmlTagMapping.wrapper]
- * @property {string} spreadsheetID
- * @param {Args} args
- */
+/** @type {import('./index').SyncGoogleSheet} */
 const syncGoogleSheet = async function ({
   callback,
   eligibleSheetTitlesOrIDs,
@@ -72,14 +46,27 @@ const syncGoogleSheet = async function ({
         textFormatRuns[index];
 
       let html = formattedValue.slice(startIndex, endIndex);
-      if (!!underline) html = `<${underlineTag}>${html}</${underlineTag}>`;
-      if (!!italic) html = `<${italicTag}>${html}</${italicTag}>`;
-      if (!!bold) html = `<${boldTag}>${html}</${boldTag}>`;
+
+      if (!!underline) {
+        html = `<${underlineTag}>${html}</${underlineTag}>`;
+      }
+
+      if (!!italic) {
+        html = `<${italicTag}>${html}</${italicTag}>`;
+      }
+
+      if (!!bold) {
+        html = `<${boldTag}>${html}</${boldTag}>`;
+      }
+
       htmlStrings.push(html);
     }
 
     let html = htmlStrings.join("");
-    if (!!wrapperTag) html = `<${wrapperTag}>${html}</${wrapperTag}>`;
+
+    if (!!wrapperTag) {
+      html = `<${wrapperTag}>${html}</${wrapperTag}>`;
+    }
     return html;
   }
 
@@ -93,7 +80,10 @@ const syncGoogleSheet = async function ({
   const sheetTitleIDMapping = {};
 
   for (const { properties: { sheetId = NaN, title = "" } = {} } of worksheets) {
-    if (sheetId == null || isNaN(sheetId) || title == null) continue;
+    if (sheetId == null || isNaN(sheetId) || title == null) {
+      continue;
+    }
+
     sheetTitleIDMapping[title] = sheetId;
   }
 
@@ -117,16 +107,16 @@ const syncGoogleSheet = async function ({
       gridData,
       sheetTitle,
       sheetID: sheetId || NaN,
-      rowData: gridData.flatMap(({ rowData = [] } = {}) =>
-        rowData.map(({ values = [] }) =>
-          values.map(
+      rowData: gridData.flatMap(({ rowData = [] } = {}) => {
+        return rowData.map(({ values = [] }) => {
+          return values.map(
             ({
               formattedValue,
               textFormatRuns = [],
               userEnteredValue = {},
             }) => {
               const fmtValue = formattedValue || "";
-              /** @type {SheetReference | undefined} */
+              /** @type {import('./index').SyncGoogleSheet.SheetReference | undefined} */
               let sheetReference;
               /** @type {RegExpMatchArray | null} */
               let sheetReferenceMatch = null;
@@ -171,9 +161,9 @@ const syncGoogleSheet = async function ({
                       }),
               };
             }
-          )
-        )
-      ),
+          );
+        });
+      }),
     });
   }
 };
