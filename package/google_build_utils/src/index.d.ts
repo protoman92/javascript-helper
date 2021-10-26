@@ -65,12 +65,12 @@ export type SyncGoogleSheet = (
         sheetTitle: string;
       }>
     ) => Resolvable<void>;
-    eligibleSheetTitlesOrIDs: readonly (number | string)[];
-    htmlTagMapping: Readonly<{
-      bold: string;
-      italic: string;
-      underline: string;
-      wrapper: string;
+    eligibleSheetTitlesOrIDs?: readonly (number | string)[];
+    htmlTagMapping?: Readonly<{
+      bold?: string;
+      italic?: string;
+      underline?: string;
+      wrapper?: string;
     }>;
     oAuth2Client: typeof google["auth"]["OAuth2"]["prototype"];
     spreadsheetID: string;
