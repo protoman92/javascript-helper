@@ -1,11 +1,13 @@
-import { Resolvable } from "@haipham/javascript-helper-essential-types";
+import {
+  Resolvable,
+  Writable,
+} from "@haipham/javascript-helper-essential-types";
 import { ApolloServerPlugin } from "apollo-server-plugin-base";
 import { addTypenameToDocument } from "apollo-utilities";
 import { GraphQLScalarType } from "graphql";
 import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import gql from "graphql-tag";
 import GraphQLJSON from "graphql-type-json";
-import { Writable } from "ts-essentials";
 import createApolloGraphQLClient from "./external_client";
 export { makeExecutableSchema } from "@graphql-tools/schema";
 export { getDirectives, MapperKind, mapSchema } from "@graphql-tools/utils";

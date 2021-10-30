@@ -1,4 +1,4 @@
-import { deepClone, omitDeep, stripLeadingSlash } from ".";
+import { deepClone, omitDeep, omitNull, stripLeadingSlash } from ".";
 
 describe("General utilities", () => {
   it("Strip leading slashes should work correctly", async () => {
@@ -65,5 +65,14 @@ describe("General utilities", () => {
     expect(omitDeep(new Date(), "a")).toBeInstanceOf(Date);
     expect(omitDeep(null, "a")).toEqual(null);
     expect(omitDeep(undefined, "a")).toEqual(undefined);
+  });
+
+  it("Omit null should work both arrays and key-value objects", () => {
+    // Setup
+    expect(omitNull([1, 2, undefined, 3, null, 4])).toEqual([1, 2, 3, 4]);
+    expect(omitNull({ a: null, b: undefined, c: 3, d: 4 })).toEqual({
+      c: 3,
+      d: 4,
+    });
   });
 });

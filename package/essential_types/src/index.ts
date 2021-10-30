@@ -1,3 +1,5 @@
+export * from "ts-essentials";
+
 export type ArrayOrSingle<T> = T | T[] | readonly T[];
 
 export type ArrayToMap<
@@ -29,6 +31,17 @@ export type MapToObject<M> = M extends Map<infer K, infer V>
   : never;
 
 export type MapValue<M> = M extends Map<unknown, infer V> ? V : never;
+
+/** Extract only keys that point to non-nullable properties */
+export type NonNullableKeys<T> = NonNullable<
+  {
+    [Key in keyof T]: undefined extends T[Key]
+      ? undefined
+      : null extends T[Key]
+      ? undefined
+      : Key;
+  }[keyof T]
+>;
 
 export type NonNullableProps<
   A extends Record<number | string | symbol, any>,

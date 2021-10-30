@@ -1,11 +1,12 @@
 import {
   ArrayOrSingle,
+  DeepPartial,
   IfNotNullableOrUndefinable,
   Resolvable,
   Returnable,
+  StrictOmit,
 } from "@haipham/javascript-helper-essential-types";
 import { shallowEqual } from "recompose";
-import { DeepPartial, StrictOmit } from "ts-essentials";
 import compose from "./compose";
 import deepClone from "./deep_clone";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
@@ -172,20 +173,35 @@ export function omitFalsy<T extends { [x: string]: any }>(obj: T): Partial<T> {
   return newObject;
 }
 
-export function omitNull<T extends { [x: string]: any }>(obj: T) {
-  const newObject: Partial<T> = {};
+interface OmitNull {
+  <T extends { [Key: string]: any }>(obj: T): {
+    [Key in keyof T]: T[Key] extends NonNullable<T[Key]>
+      ? T[Key]
+      : NonNullable<T[Key]> | undefined;
+  };
+  <T>(arr: (T | null | undefined)[]): T[];
+  <T>(arr: readonly (T | null | undefined)[]): readonly T[];
+}
 
-  for (const key in obj) {
-    if (obj[key] == null) continue;
-    newObject[key] = obj[key];
+export const omitNull: OmitNull = ((args1: any) => {
+  if (Array.isArray(args1)) {
+    return args1.filter((args2) => {
+      return args2 != null;
+    });
   }
 
-  return newObject as Readonly<{
-    [x in keyof T]: T[x] extends NonNullable<T[x]>
-      ? T[x]
-      : NonNullable<T[x]> | undefined;
-  }>;
-}
+  const newObject: typeof args1 = {};
+
+  for (const key in args1) {
+    if (args1[key] == null) {
+      continue;
+    }
+
+    newObject[key] = args1[key];
+  }
+
+  return newObject;
+}) as OmitNull;
 
 interface PickFunction {
   <T, K extends keyof T>(arr: T[], ...keys: readonly K[]): Pick<T, K>[];

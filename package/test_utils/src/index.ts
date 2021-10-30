@@ -1,10 +1,10 @@
 import {
+  DeepPartial,
   GenericFunction,
   MapKey,
   MapValue,
 } from "@haipham/javascript-helper-essential-types";
 import { compose } from "@haipham/javascript-helper-utils";
-import { DeepPartial } from "ts-essentials";
 
 export type HigherOrderDescribe = (cb: GenericFunction) => GenericFunction;
 

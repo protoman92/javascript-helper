@@ -1,7 +1,7 @@
-import { NonNullableProps } from ".";
+import { NonNullableKeys, NonNullableProps } from ".";
 
 describe("Essential types", () => {
-  it("Non nullable props should work", async () => {
+  it("Non-nullable props should work", async () => {
     // Setup
     type A = { a?: number; b?: { a?: number; b?: { a?: number } } };
     type B = NonNullableProps<A>;
@@ -14,5 +14,14 @@ describe("Essential types", () => {
     // Then
     expect(b.b).toBeTruthy();
     expect(c.a).toBeTruthy();
+  });
+
+  it("Non-nullable keys should work", async () => {
+    // Setup
+    type A = { a?: number; b: number | undefined; c: number | null; d: number };
+    const a: NonNullableKeys<A> = "d";
+
+    // When
+    expect(a).toEqual("d");
   });
 });
