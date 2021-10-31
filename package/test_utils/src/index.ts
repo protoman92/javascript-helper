@@ -6,12 +6,20 @@ import {
 } from "@haipham/javascript-helper-essential-types";
 import { compose } from "@haipham/javascript-helper-utils";
 
-export type HigherOrderDescribe = (cb: GenericFunction) => GenericFunction;
+export type HigherOrderDescribe = () => GenericFunction;
 
-export function composeDescribe(
-  ...hfns: [HigherOrderDescribe, ...HigherOrderDescribe[]]
-) {
-  return compose(...hfns);
+/** Compose a series of higher-order describe functions together into one */
+export function composeDescribe(...hfns: readonly HigherOrderDescribe[]) {
+  return compose(
+    ...hfns.map((hfn) => {
+      return (fn: GenericFunction) => {
+        return (...args: Parameters<typeof fn>) => {
+          fn();
+          hfn()(...args);
+        };
+      };
+    })
+  );
 }
 
 export function mockSomething<T>(override: DeepPartial<T>): T {

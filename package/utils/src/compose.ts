@@ -4,7 +4,7 @@ interface Compose {
   <T, HFN extends Mapper<T> = Mapper<T>>(
     ...hfns: readonly [HFN, ...HFN[]]
   ): HFN;
-  <HFN extends Mapper<any>>(...hfns: readonly [HFN, ...HFN[]]): HFN;
+  <HFN extends Mapper<any>>(...hfns: readonly HFN[]): HFN;
 }
 
 /**
@@ -12,16 +12,18 @@ interface Compose {
  * order function.
  */
 export default (function compose<T, HFN extends Mapper<T> = Mapper<T>>(
-  ...hfns: readonly [HFN, ...HFN[]]
+  ...hfns: readonly HFN[]
 ): HFN {
-  let finalFn = hfns[0];
+  let finalFn: HFN = ((args) => {
+    return args;
+  }) as HFN;
 
-  for (let index = 1; index < hfns.length; index += 1) {
+  for (let index = 0; index < hfns.length; index += 1) {
     const _lastHfn = finalFn;
     const hfn = hfns[index];
 
-    finalFn = ((fn) => {
-      return hfn(_lastHfn(fn));
+    finalFn = ((args) => {
+      return hfn(_lastHfn(args));
     }) as HFN;
   }
 

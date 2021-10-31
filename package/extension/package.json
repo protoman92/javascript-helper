@@ -1,10 +1,25 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
+  "dependencies": {
+    "capitalize": "2.0.3"
+  },
+  "devDependencies": {
+    "@types/capitalize": "2.0.0",
+    "@types/lodash-es": "*",
+    "lodash-es": "*"
+  },
   "license": "MIT",
   "main": "src/index.ts",
   "name": "@haipham/javascript-helper-extension",
+  "peerDependencies": {
+    "lodash-es": "*"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "resolutions": {
+    "@types/lodash-es": "4.17.4",
+    "lodash-es": "4.17.20"
   },
   "version": "1.0.0"
 }

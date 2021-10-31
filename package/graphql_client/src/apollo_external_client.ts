@@ -90,7 +90,7 @@ export function extractGraphQLError(error: any): Error {
   return error;
 }
 
-export default function createApolloGraphQLClient<Cache = unknown>(
+export function createApolloGraphQLClient<Cache = unknown>(
   clientOrOptions: Returnable<
     Resolvable<ApolloClient<Cache> | ApolloClientOptions<Cache>>
   >

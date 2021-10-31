@@ -19,7 +19,7 @@ export interface InternalGraphQLClient<Context> {
   ): Promise<R>;
 }
 
-export default function createInternalGraphQLClient<Context>({
+export function createInternalGraphQLClient<Context>({
   defaultContextValues = {},
   schemaFn,
 }: Readonly<{

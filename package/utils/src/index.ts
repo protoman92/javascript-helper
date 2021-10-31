@@ -6,7 +6,6 @@ import {
   Returnable,
   StrictOmit,
 } from "@haipham/javascript-helper-essential-types";
-import { shallowEqual } from "recompose";
 import compose from "./compose";
 import deepClone from "./deep_clone";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
@@ -79,13 +78,6 @@ export async function asyncTimeout(
 
   if (g2 == null) throw new Error("setTimeout is not defined");
   return new Promise((resolve) => g2!.setTimeout(resolve, timeout));
-}
-
-export function isShallowEqual<T>(
-  lhs: T | undefined,
-  rhs: T | undefined
-): boolean {
-  return shallowEqual(lhs as any, rhs as any);
 }
 
 export function isType<T, K extends keyof T = keyof T>(

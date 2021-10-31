@@ -1,12 +1,12 @@
 import { mockSomeParameters } from "@haipham/javascript-helper-test-utils";
-import createExternalClient from "./external_client";
+import { createApolloGraphQLClient } from "./apollo_external_client";
 
 describe("External GraphQL client", () => {
-  let client: ReturnType<typeof createExternalClient>;
+  let client: ReturnType<typeof createApolloGraphQLClient>;
 
   beforeEach(async () => {
-    client = createExternalClient(
-      ...mockSomeParameters<typeof createExternalClient>({
+    client = createApolloGraphQLClient(
+      ...mockSomeParameters<typeof createApolloGraphQLClient>({
         cache: {},
         link: {},
       })

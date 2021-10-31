@@ -3,7 +3,7 @@ import winston, { transports } from "winston";
 
 export type Logger = ReturnType<typeof createLogger>;
 
-export default function createLogger() {
+export function createLogger() {
   const logger = winston.createLogger({
     format: winston.format.json({ space: 4 }),
     transports: [new transports.Console()],

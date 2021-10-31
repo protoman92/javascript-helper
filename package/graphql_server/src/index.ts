@@ -8,7 +8,6 @@ import { GraphQLScalarType } from "graphql";
 import { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 import gql from "graphql-tag";
 import GraphQLJSON from "graphql-type-json";
-import createApolloGraphQLClient from "./external_client";
 export { makeExecutableSchema } from "@graphql-tools/schema";
 export { getDirectives, MapperKind, mapSchema } from "@graphql-tools/utils";
 export { ApolloServer, toApolloError } from "apollo-server-express";
@@ -16,7 +15,8 @@ export { defaultFieldResolver, GraphQLSchema } from "graphql";
 export { GraphQLDate, GraphQLDateTime } from "graphql-iso-date";
 export { GraphQLJSONObject } from "graphql-type-json";
 export * from "./interface";
-export { createApolloGraphQLClient, gql, GraphQLJSON };
+export * from "./internal_client";
+export { gql, GraphQLJSON };
 
 export type ApolloServerPluginDefinition<Context> = ApolloServerPlugin<Context>;
 
@@ -31,7 +31,7 @@ export const GraphQLDateTimeInput = new GraphQLScalarType({
 });
 
 export const addTypenameToDocumentApolloPlugin: ApolloServerPlugin<any> = {
-  requestDidStart: () => {
+  requestDidStart: async () => {
     return {
       didResolveOperation: async (request) => {
         if (request.document != null) {
@@ -57,8 +57,8 @@ export function createPreventFieldAliasesPlugin({
   const ERROR_MARKER_CONTEXT = "__CannotAliasFieldErrorMessage";
 
   return {
-    requestDidStart: () => ({
-      executionDidStart: ({ context }) => ({
+    requestDidStart: async () => ({
+      executionDidStart: async ({ context }) => ({
         willResolveField: ({ info }) => {
           const shouldPreventAliases = filterFields({
             fieldName: info.fieldName,

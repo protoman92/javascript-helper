@@ -1,5 +1,8 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
+  "dependencies": {
+    "serverless-http": "2.4.1"
+  },
   "license": "MIT",
   "name": "@haipham/javascript-helper-serverless",
   "publishConfig": {

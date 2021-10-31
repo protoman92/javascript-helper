@@ -6,7 +6,7 @@ export type AxiosGraphQLClientRequest<Args, Result> = (
     Readonly<{ document: DocumentNode; variables: Args }>
 ) => Promise<Result>;
 
-export default function createAxiosGraphQLClient({
+export function createAxiosGraphQLClient({
   axiosInstance,
   ...defaultAxiosConfig
 }: Pick<AxiosRequestConfig, "baseURL" | "url"> &
