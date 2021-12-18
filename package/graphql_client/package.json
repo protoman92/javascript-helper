@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@haipham/javascript-helper-test-utils": "^1.0.0",
-    "graphql": "15.6.1"
+    "graphql": "15.7.2"
   },
   "license": "MIT",
   "main": "src/index.ts",
