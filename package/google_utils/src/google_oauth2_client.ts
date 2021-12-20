@@ -34,14 +34,14 @@ interface GoogleOAuth2ClientArgs {
 }
 
 export default function createGoogleOAuth2Client({
-  credentials = JSON.parse(process.env.GOOGLE_OAUTH_CREDENTIALS || "{}"),
+  credentials = JSON.parse(process.env["GOOGLE_OAUTH_CREDENTIALS"] || "{}"),
   refreshToken: refresh_token = requireTruthy(
-    JSON.parse(process.env.GOOGLE_OAUTH_TOKEN || "{}").refresh_token,
+    JSON.parse(process.env["GOOGLE_OAUTH_TOKEN"] || "{}").refresh_token,
     "GOOGLE_OAUTH_TOKEN"
   ),
 }: GoogleOAuth2ClientArgs) {
   const { client_secret, client_id, redirect_uris } = requireAllTruthy(
-    credentials?.web
+    credentials["web"]
   );
 
   const oAuth2Client = new google.auth.OAuth2(

@@ -220,7 +220,7 @@ export const pick = function <T, K extends keyof T>(
 /** Request all values of an object to be truthy, and throw an error otherwise */
 export function requireAllTruthy<T>(
   args: T
-): Readonly<{ [x in keyof T]: NonNullable<T[x]> }> {
+): Readonly<Required<{ [x in keyof T]: NonNullable<T[x]> }>> {
   for (const key in args) if (!args[key]) throw new Error(`Falsy value ${key}`);
   return args as any;
 }
@@ -307,8 +307,8 @@ export function swapArrayIndexes<T>(
   j: number
 ) {
   const arrayClone = [...array];
-  const iElement = arrayClone[i];
-  arrayClone[i] = arrayClone[j];
+  const iElement = arrayClone[i]!;
+  arrayClone[i] = arrayClone[j]!;
   arrayClone[j] = iElement;
   return arrayClone;
 }

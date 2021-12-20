@@ -15,9 +15,9 @@ export default function _<Option extends string>(
 
   const optionSet = {
     option: (option: Option) => ({
-      includes: (option2: Option) => (flags[option] & flags[option2]) > 0,
-      toString: flags[option].toString.bind(flags[option]),
-      value: () => flags[option],
+      includes: (option2: Option) => (flags[option]! & flags[option2]!) > 0,
+      toString: flags[option]!.toString.bind(flags[option]),
+      value: () => flags[option]!,
     }),
     options: () => {
       return (Object.keys(flags) as Option[]).map((o) => optionSet.option(o));
@@ -33,7 +33,7 @@ export default function _<Option extends string>(
       let newOptionValue = 1;
 
       for (const fromOption of fromOptions) {
-        newOptionValue = newOptionValue | flags[fromOption];
+        newOptionValue = newOptionValue | flags[fromOption]!;
       }
 
       return _<Option | NewOption>(flags, {

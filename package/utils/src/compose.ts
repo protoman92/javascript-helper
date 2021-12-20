@@ -18,9 +18,8 @@ export default (function compose<T, HFN extends Mapper<T> = Mapper<T>>(
     return args;
   }) as HFN;
 
-  for (let index = 0; index < hfns.length; index += 1) {
+  for (const hfn of hfns) {
     const _lastHfn = finalFn;
-    const hfn = hfns[index];
 
     finalFn = ((args) => {
       return hfn(_lastHfn(args));

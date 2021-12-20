@@ -8,7 +8,7 @@ interface GoogleServiceAccountAuthClientArgs {
 
 export default function createGoogleServiceAccountAuthClient({
   credentials = JSON.parse(
-    process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS || "{}"
+    process.env["GOOGLE_SERVICE_ACCOUNT_CREDENTIALS"] || "{}"
   ),
 }: GoogleServiceAccountAuthClientArgs = {}) {
   const { client_email, private_key } = requireAllTruthy(credentials);
