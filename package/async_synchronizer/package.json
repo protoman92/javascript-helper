@@ -1,10 +1,7 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
-  "dependencies": {
-    "@haipham/javascript-helper-utils": "1.0.0"
-  },
   "devDependencies": {
-    "@haipham/javascript-helper-decorator": "1.0.0"
+    "ts-essentials": "^9.0.0"
   },
   "files": [
     "src/index.ts"
