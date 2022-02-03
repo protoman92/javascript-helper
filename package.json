@@ -46,6 +46,8 @@
     "ts-essentials": "7.0.1"
   },
   "scripts": {
+    "lerna:bootstrap": "lerna bootstrap --force-local",
+    "lerna:publish": "lerna publish --no-private",
     "nodemon": "nodemon",
     "test": "jest"
   },
