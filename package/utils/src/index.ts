@@ -1,5 +1,4 @@
 import {
-  ArrayOrSingle,
   DeepPartial,
   Resolvable,
   Returnable,
@@ -98,29 +97,4 @@ export function stripLeadingSlash(str: string) {
   }
 
   return str;
-}
-
-interface ToArray {
-  <T>(elemOrArray: ArrayOrSingle<T>): T[];
-}
-
-export const toArray = ((elemOrArray: ArrayOrSingle<any>) => {
-  if (elemOrArray instanceof Array) return elemOrArray;
-  return [elemOrArray];
-}) as ToArray;
-
-export function tuple<T1, T2>(element1: T1, element2: T2): [T1, T2] {
-  return [element1, element2];
-}
-
-export function swapArrayIndexes<T>(
-  array: T[] | readonly T[],
-  i: number,
-  j: number
-) {
-  const arrayClone = [...array];
-  const iElement = arrayClone[i]!;
-  arrayClone[i] = arrayClone[j]!;
-  arrayClone[j] = iElement;
-  return arrayClone;
 }

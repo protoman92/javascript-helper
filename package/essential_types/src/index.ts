@@ -1,7 +1,5 @@
 export * from "ts-essentials";
 
-export type ArrayOrSingle<T> = T | T[] | readonly T[];
-
 export type ArrayToMap<
   T extends any[] | readonly any[],
   TKey extends keyof T[number]

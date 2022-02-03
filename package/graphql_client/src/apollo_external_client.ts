@@ -11,20 +11,19 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError as createErrorLink } from "@apollo/client/link/error";
-// @ts-ignore
-import { buildAxiosFetch } from "@lifeomic/axios-fetch";
-import { GraphQLError } from "graphql";
 import {
-  ArrayOrSingle,
   Resolvable,
   Returnable,
 } from "@haipham/javascript-helper-essential-types";
+import { omitDeep } from "@haipham/javascript-helper-object";
+import { requireNotNull } from "@haipham/javascript-helper-preconditions";
 import {
-  omitDeep,
-  requireNotNull,
   wrapResolvable,
   wrapReturnable,
 } from "@haipham/javascript-helper-utils";
+// @ts-ignore
+import { buildAxiosFetch } from "@lifeomic/axios-fetch";
+import { GraphQLError } from "graphql";
 export {
   ApolloClient,
   ApolloLink,
@@ -38,7 +37,9 @@ export {
 };
 
 interface ExternalGraphQLRequestContext {
-  readonly headers?: Readonly<Record<string, ArrayOrSingle<string>>>;
+  readonly headers?: Readonly<
+    Record<string, string | string[] | readonly string[]>
+  >;
 }
 
 export type ExternalGraphQLRequestArgs<A, R> = (

@@ -3,6 +3,8 @@
   "dependencies": {
     "@apollo/client": "*",
     "@haipham/javascript-helper-essential-types": "^1.0.0",
+    "@haipham/javascript-helper-object": "^1.0.0",
+    "@haipham/javascript-helper-preconditions": "^1.0.0",
     "@haipham/javascript-helper-utils": "^1.0.0",
     "@lifeomic/axios-fetch": "1.4.2",
     "axios": "*"
