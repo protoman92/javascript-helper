@@ -10,7 +10,6 @@
     "@types/express": "*",
     "@types/fs-extra": "9.0.1",
     "@types/jest": "26.0.15",
-    "@types/recompose": "0.26.1",
     "@types/serverless": "1.72.6",
     "@types/webpack-shell-plugin": "0.5.0",
     "aws-sdk": "*",

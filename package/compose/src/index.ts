@@ -11,7 +11,7 @@ interface Compose {
  * Compose a series of higher-order functions together into one single higher-
  * order function.
  */
-export default (function compose<T, HFN extends Mapper<T> = Mapper<T>>(
+export const compose = function <T, HFN extends Mapper<T> = Mapper<T>>(
   ...hfns: readonly HFN[]
 ): HFN {
   let finalFn: HFN = ((args) => {
@@ -27,4 +27,6 @@ export default (function compose<T, HFN extends Mapper<T> = Mapper<T>>(
   }
 
   return finalFn;
-} as Compose);
+} as Compose;
+
+export default compose;

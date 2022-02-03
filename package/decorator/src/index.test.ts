@@ -1,5 +1,5 @@
 import { Mapper } from "@haipham/javascript-helper-essential-types";
-import { compose } from "@haipham/javascript-helper-utils";
+import { compose } from "@haipham/javascript-helper-compose";
 import { decorateClientMethods } from ".";
 
 describe("Decorate client methods", () => {

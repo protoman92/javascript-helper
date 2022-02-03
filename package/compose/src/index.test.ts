@@ -1,4 +1,4 @@
-import compose from "./compose";
+import compose from ".";
 
 describe("Compose higher-order functions", () => {
   it("Should compose higher-order functions correctly", async () => {

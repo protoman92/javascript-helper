@@ -6,7 +6,6 @@ import {
   Returnable,
   StrictOmit,
 } from "@haipham/javascript-helper-essential-types";
-import compose from "./compose";
 import deepClone from "./deep_clone";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";
 import createOptionSet from "./option_set";
@@ -17,7 +16,6 @@ import underscoreIDKeys from "./underscore_id_key";
 export * from "./boolean_predicate";
 export * from "./retry";
 export {
-  compose,
   createSwitchAsyncFunction,
   createOptionSet,
   deepClone,
