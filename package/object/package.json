@@ -1,0 +1,10 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "name": "@haipham/javascript-helper-object",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "1.0.0"
+}

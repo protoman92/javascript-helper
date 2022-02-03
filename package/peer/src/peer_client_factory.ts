@@ -1,4 +1,4 @@
-import { omitNull } from "@haipham/javascript-helper-utils";
+import { omitNull } from "@haipham/javascript-helper-object";
 import Peer, { DataConnection } from "peerjs";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { PeerClient, PeerConnection, PeerEvent, PeerState } from "./interface";

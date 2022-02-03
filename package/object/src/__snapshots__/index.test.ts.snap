@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Object utilities Omit deep should work correctly 1`] = `
+Object {
+  "b": Object {
+    "c": Object {
+      "b": 2,
+    },
+  },
+}
+`;
+
+exports[`Object utilities Omit deep should work correctly 2`] = `1`;
+
+exports[`Object utilities Omit deep should work correctly 3`] = `
+Array [
+  1,
+  2,
+  3,
+]
+`;
+
+exports[`Object utilities Omit deep should work correctly 4`] = `
+Array [
+  1,
+  2,
+  Object {
+    "b": Object {},
+  },
+]
+`;
+
+exports[`Object utilities Omit deep should work correctly 5`] = `
+Set {
+  Object {
+    "b": Set {
+      Object {},
+    },
+  },
+  Object {
+    "b": 2,
+  },
+}
+`;
+
+exports[`Object utilities Omit deep should work correctly 6`] = `
+Map {
+  "key1" => Object {
+    "b": Map {
+      "key3" => Object {},
+    },
+  },
+  "key2" => Object {
+    "b": 2,
+  },
+}
+`;
