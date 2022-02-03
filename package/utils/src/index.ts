@@ -78,20 +78,6 @@ export async function asyncTimeout(
   return new Promise((resolve) => g2!.setTimeout(resolve, timeout));
 }
 
-export function isType<T, K extends keyof T = keyof T>(
-  object: unknown,
-  ...keys: K[]
-): object is T {
-  if (typeof object !== "object" || object == null) return false;
-
-  for (const key of keys) {
-    if (key in object) continue;
-    return false;
-  }
-
-  return true;
-}
-
 export function mockSomething<T>(override: DeepPartial<T>): T {
   return override as T;
 }
@@ -214,57 +200,6 @@ export const pick = function <T, K extends keyof T>(
 
   return keys.reduce((acc, k) => Object.assign(acc, { [k]: objOrArr[k] }), {});
 } as PickFunction;
-
-/** Request all values of an object to be truthy, and throw an error otherwise */
-export function requireAllTruthy<T>(
-  args: T
-): Readonly<Required<{ [x in keyof T]: NonNullable<T[x]> }>> {
-  for (const key in args) if (!args[key]) throw new Error(`Falsy value ${key}`);
-  return args as any;
-}
-
-export function requireFalse(
-  value: boolean | null | undefined,
-  message = "Expected false value"
-): false {
-  if (value === false) throw new Error(message);
-  return false;
-}
-
-export function requireTrue(
-  value: boolean | null | undefined,
-  message = "Expected true value"
-): true {
-  if (value === true) throw new Error(message);
-  return true;
-}
-
-export function requireNotNull<T>(
-  obj: T | null | undefined,
-  message = "Expected non-null value"
-) {
-  if (obj == null) throw new Error(message);
-  return obj;
-}
-
-export function requireNull<T>(
-  obj: T | null | undefined,
-  message = "Expected non-null value"
-) {
-  if (obj != null) throw new Error(message);
-}
-
-export function requireTruthy<T>(args: T, key = ""): NonNullable<T> {
-  if (!!key) {
-    key = `: ${key}`;
-  }
-
-  if (!args) {
-    throw new Error(`Falsy value${key}`);
-  }
-
-  return args as any;
-}
 
 export function wrapResolvable<T>(resolvable: Resolvable<T>): Promise<T> {
   if (resolvable instanceof Promise) return resolvable;
