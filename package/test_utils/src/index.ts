@@ -1,10 +1,10 @@
+import { compose } from "@haipham/javascript-helper-compose";
 import {
   DeepPartial,
   GenericFunction,
   MapKey,
   MapValue,
 } from "@haipham/javascript-helper-essential-types";
-import { compose } from "@haipham/javascript-helper-utils";
 
 export type HigherOrderDescribe = () => GenericFunction;
 
