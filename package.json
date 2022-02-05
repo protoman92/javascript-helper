@@ -31,7 +31,6 @@
   "license": "MIT",
   "name": "javascript-helper",
   "peerDependencies": {
-    "express": "4.17.1",
     "ts-essentials": "*"
   },
   "private": true,
