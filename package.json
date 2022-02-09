@@ -12,7 +12,6 @@
     "@types/jest": "26.0.15",
     "@types/serverless": "1.72.6",
     "@types/webpack-shell-plugin": "0.5.0",
-    "aws-sdk": "*",
     "babel-jest": "26.3.0",
     "dotenv": "8.2.0",
     "fs-extra": "9.0.1",
@@ -37,7 +36,6 @@
   "repository": "https://github.com/protoman92/javascript-helper.git",
   "resolutions": {
     "@types/express": "4.17.7",
-    "aws-sdk": "2.830.0",
     "axios": "0.19.2",
     "dayjs": "1.8.33",
     "googleapis": "59.0.0",
