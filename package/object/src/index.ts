@@ -1,3 +1,23 @@
+interface IKeyOf {
+  <T, K extends keyof T = keyof T>(key: K): typeof key;
+  <T, K extends keyof T>(args: T, key: K): typeof key;
+}
+
+export const keyof: IKeyOf = ((args1: any, args2 = args1) => {
+  return args2;
+}) as IKeyOf;
+
+interface IKeyOfArray {
+  <TArr extends any[], K extends keyof TArr[number]>(
+    args: TArr,
+    key: K
+  ): typeof key;
+}
+
+export const keyofArray: IKeyOfArray = ((args1: any, args2 = args1) => {
+  return args2;
+}) as IKeyOfArray;
+
 export function omit<T, K extends keyof NonNullable<T>>(
   obj: T,
   ...keys: readonly K[]
