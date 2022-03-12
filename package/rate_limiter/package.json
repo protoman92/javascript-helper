@@ -1,0 +1,13 @@
+{
+  "author": "Hai Pham <swiften.svc@gmail.com",
+  "devDependencies": {
+    "ts-essentials": "^9.0.0"
+  },
+  "license": "MIT",
+  "main": "src/index.ts",
+  "name": "@haipham/javascript-helper-rate-limiter",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "1.0.0"
+}
