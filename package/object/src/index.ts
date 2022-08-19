@@ -9,7 +9,11 @@ export const keyof: IKeyOf = ((args1: any, args2 = args1) => {
 
 interface IKeyOfArray {
   <TArr extends any[], K extends keyof TArr[number]>(
-    args: TArr,
+    args: TArr | undefined,
+    key: K
+  ): typeof key;
+  <TArr extends readonly any[], K extends keyof TArr[number]>(
+    args: TArr | undefined,
     key: K
   ): typeof key;
 }
