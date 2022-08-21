@@ -1,3 +1,9 @@
+export function isKeyValueObject(
+  args: unknown
+): args is Record<string, unknown> {
+  return Object.prototype.toString.call(args) === "[object Object]";
+}
+
 interface IKeyOf {
   <T, K extends keyof T = keyof T>(key: K): typeof key;
   <T, K extends keyof T>(args: T, key: K): typeof key;
