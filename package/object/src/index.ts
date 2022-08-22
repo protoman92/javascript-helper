@@ -1,3 +1,5 @@
+import { DeepWritable, Writable } from "ts-essentials";
+
 export function isKeyValueObject(
   args: unknown
 ): args is Record<string, unknown> {
@@ -158,3 +160,15 @@ export const pick = function <T, K extends keyof T>(
 
   return keys.reduce((acc, k) => Object.assign(acc, { [k]: objOrArr[k] }), {});
 } as PickFunction;
+
+export function typedValue<T>(args: T): T {
+  return args;
+}
+
+export function deepWritable<T>(args: T): DeepWritable<T> {
+  return args as DeepWritable<T>;
+}
+
+export function writable<T>(args: T): Writable<T> {
+  return args as Writable<T>;
+}
