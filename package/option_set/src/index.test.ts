@@ -1,4 +1,4 @@
-import createOptionSet from "./option_set";
+import createOptionSet from ".";
 
 describe("Option set", () => {
   it("Create option set", async () => {

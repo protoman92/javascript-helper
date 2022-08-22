@@ -1,4 +1,4 @@
-export default function _<Option extends string>(
+export default function createOptionSet<Option extends string>(
   ...allOptions: readonly (Option | Record<Option, number>)[]
 ) {
   let flags: Record<string, number> = {};
@@ -36,7 +36,7 @@ export default function _<Option extends string>(
         newOptionValue = newOptionValue | flags[fromOption]!;
       }
 
-      return _<Option | NewOption>(flags, {
+      return createOptionSet<Option | NewOption>(flags, {
         [newOption]: newOptionValue,
       } as Record<Option | NewOption, number>);
     },
