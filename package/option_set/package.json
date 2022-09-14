@@ -6,5 +6,8 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "test": "jest"
+  },
   "version": "1.0.0"
 }
