@@ -1,4 +1,4 @@
-import { omitDeep, omitNull } from ".";
+import { flattenDeepObject, omitDeep, omitNull } from ".";
 
 describe("Object utilities", () => {
   it("Omit deep should work correctly", () => {
@@ -40,5 +40,18 @@ describe("Object utilities", () => {
       c: 3,
       d: 4,
     });
+  });
+
+  it("Flatten deep should work correctly", () => {
+    // Setup
+    // When
+    const flattened = flattenDeepObject({
+      a: { b: { c: "1" } },
+      b: { c: [2] },
+      c: { d: { e: false } },
+    });
+
+    // Then
+    expect(flattened).toEqual({ "a.b.c": "1", "b.c": [2], "c.d.e": false });
   });
 });
