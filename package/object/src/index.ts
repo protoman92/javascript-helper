@@ -1,5 +1,32 @@
 import { DeepWritable, Writable } from "ts-essentials";
 
+type DeepValueOf<T extends Record<string, unknown>> = {
+  [K in keyof T]: T[K] extends Record<string, unknown>
+    ? DeepValueOf<T[K]>
+    : T[K];
+}[keyof T];
+
+export function flattenDeepObject<T extends Record<string, unknown>>(args: T) {
+  const result: Record<string, unknown> = {};
+
+  for (const key in args) {
+    let intermediateValue = args[key];
+
+    if (isKeyValueObject(intermediateValue)) {
+      const flattenedChild: Record<string, unknown> =
+        flattenDeepObject(intermediateValue);
+
+      for (const childKey in flattenedChild) {
+        result[`${key}.${childKey}`] = flattenedChild[childKey];
+      }
+    } else {
+      result[key] = intermediateValue;
+    }
+  }
+
+  return result as Record<string, DeepValueOf<T>>;
+}
+
 export function isKeyValueObject(
   args: unknown
 ): args is Record<string, unknown> {
