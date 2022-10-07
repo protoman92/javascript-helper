@@ -4,6 +4,29 @@ interface ToArray {
   <T>(elemOrArray: ArrayOrSingle<T>): T[];
 }
 
+export function chunkArrayWithPredicate<T>(
+  array: T[],
+  predicate: (element: T) => boolean
+): T[][] {
+  const chunks: T[][] = [];
+  let lastPredicateResult: boolean | undefined = undefined;
+
+  for (const element of array) {
+    const lastChunk = chunks[chunks.length - 1];
+    const predicateResult = Boolean(predicate(element));
+
+    if (lastChunk == null || predicateResult !== lastPredicateResult) {
+      chunks.push([element]);
+    } else {
+      lastChunk.push(element);
+    }
+
+    lastPredicateResult = predicateResult;
+  }
+
+  return chunks;
+}
+
 export const toArray = ((elemOrArray: ArrayOrSingle<any>) => {
   if (Array.isArray(elemOrArray)) {
     return elemOrArray;

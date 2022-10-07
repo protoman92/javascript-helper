@@ -1,1 +1,6 @@
-{ "extends": "../../tsconfig.json" }
+{
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true
+  },
+  "extends": "../../tsconfig.json"
+}
