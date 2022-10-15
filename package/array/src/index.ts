@@ -7,8 +7,8 @@ interface ToArray {
 export function chunkArrayWithPredicate<T>(
   array: T[],
   predicate: (element: T) => boolean
-): T[][] {
-  const chunks: T[][] = [];
+): [T, ...T[]][] {
+  const chunks: [T, ...T[]][] = [];
   let lastPredicateResult: boolean | undefined = undefined;
 
   for (const element of array) {
