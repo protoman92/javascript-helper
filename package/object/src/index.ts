@@ -103,7 +103,7 @@ export const omitDeep = (() => {
 
     if (obj instanceof Map) {
       return new Map(
-        [...obj.entries()].map(([key, value]) => [
+        Array.from(obj.entries()).map(([key, value]) => [
           key,
           omitDeep(value, ...keys),
         ])
@@ -111,7 +111,7 @@ export const omitDeep = (() => {
     }
 
     if (obj instanceof Set) {
-      return new Set(omitDeep([...obj.values()], ...keys)) as any;
+      return new Set(omitDeep(Array.from(obj.values()), ...keys)) as any;
     }
 
     if (!isObject(obj)) return obj;
