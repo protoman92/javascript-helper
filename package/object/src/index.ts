@@ -33,6 +33,39 @@ export function isKeyValueObject(
   return Object.prototype.toString.call(args) === "[object Object]";
 }
 
+export type IsKeyValueObjectTypeValidators<T, K extends keyof T> = Readonly<{
+  [K1 in K]: Readonly<{
+    validator: (key: K1, value: T[K1] | unknown) => boolean;
+  }>;
+}>;
+
+/**
+ * If you don't want to install joi or other validation libraries, this is a
+ * simple alternative.
+ */
+export function isKeyValueObjectType<T extends {}, K extends keyof T = keyof T>(
+  object: T | unknown,
+  validators: IsKeyValueObjectTypeValidators<T, K>
+): object is T {
+  if (!isKeyValueObject(object)) {
+    return false;
+  }
+
+  for (const key in validators) {
+    if (!Object.prototype.hasOwnProperty.apply(object, [key])) {
+      return false;
+    }
+
+    const { validator } = validators[key];
+
+    if (!validator(key, object[key])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 interface IKeyOf {
   <T, K extends keyof T = keyof T>(key: K): typeof key;
   <T, K extends keyof T>(args: T, key: K): typeof key;

@@ -1,4 +1,4 @@
-import { flattenDeepObject, omitDeep, omitNull } from ".";
+import { flattenDeepObject, isKeyValueObjectType, omitDeep, omitNull } from ".";
 
 describe("Object utilities", () => {
   it("Omit deep should work correctly", () => {
@@ -53,5 +53,27 @@ describe("Object utilities", () => {
 
     // Then
     expect(flattened).toEqual({ "a.b.c": "1", "b.c": [2], "c.d.e": false });
+  });
+
+  it("Should check and validate key-value object type correctly", () => {
+    // Setup
+    const object = { a: false, b: 2 };
+
+    // When
+    const validated = isKeyValueObjectType<typeof object>(object, {
+      a: {
+        validator: (...[, value]) => {
+          return value === true;
+        },
+      },
+      b: {
+        validator: (...[, value]) => {
+          return value === 1;
+        },
+      },
+    });
+
+    // When
+    expect(validated).toEqual(false);
   });
 });
