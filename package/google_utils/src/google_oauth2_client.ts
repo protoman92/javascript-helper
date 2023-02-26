@@ -1,7 +1,7 @@
 import {
   requireAllTruthy,
   requireTruthy,
-} from "@haipham/javascript-helper-utils";
+} from "@haipham/javascript-helper-preconditions";
 import { google } from "googleapis";
 
 declare module "google-auth-library" {

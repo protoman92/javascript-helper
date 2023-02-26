@@ -1,5 +1,5 @@
-import { GoogleAuth, CredentialBody } from "google-auth-library";
-import { requireAllTruthy } from "@haipham/javascript-helper-utils";
+import { requireAllTruthy } from "@haipham/javascript-helper-preconditions";
+import { CredentialBody, GoogleAuth } from "google-auth-library";
 
 interface GoogleServiceAccountAuthClientArgs {
   /** Service account credentials */
