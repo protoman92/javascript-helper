@@ -49,7 +49,7 @@ exports.createProcessEnvWebpackPlugin = function ({
 }) {
   environmentVariables = { ...environmentVariables, NODE_ENV: environment };
 
-  /** @type {Record<string, DefinePlugin.CodeValueObject>} */
+  /** @type {ConstructorParameters<typeof DefinePlugin>[0]} */
   let definedProperties = {};
 
   for (const [k, v] of Object.entries(environmentVariables)) {
