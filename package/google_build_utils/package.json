@@ -1,7 +1,7 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "devDependencies": {
-    "@haipham/javascript-helper-essential-types": "^1.0.0",
+    "@haipham/javascript-helper-essential-types": "^1.0.1",
     "googleapis": "*"
   },
   "license": "MIT",
@@ -14,5 +14,5 @@
     "googleapis": "59.0.0"
   },
   "types": "src/index.d.ts",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

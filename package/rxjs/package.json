@@ -1,7 +1,7 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
-    "@haipham/javascript-helper-essential-types": "^1.0.0"
+    "@haipham/javascript-helper-essential-types": "^1.0.1"
   },
   "devDependencies": {
     "rxjs": "*"
@@ -18,5 +18,5 @@
   "resolutions": {
     "rxjs": "6.6.3"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

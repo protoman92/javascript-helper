@@ -1,7 +1,7 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
-    "@haipham/javascript-helper-preconditions": "^1.0.0",
+    "@haipham/javascript-helper-preconditions": "^1.0.1",
     "googleapis": "*"
   },
   "license": "MIT",
@@ -13,5 +13,5 @@
   "resolutions": {
     "googleapis": "59.0.0"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

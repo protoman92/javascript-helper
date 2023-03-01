@@ -1,9 +1,9 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
-    "@haipham/javascript-helper-event-emitter": "^1.0.0",
-    "@haipham/javascript-helper-object": "^1.0.0",
-    "@haipham/javascript-helper-rxjs": "^1.0.0"
+    "@haipham/javascript-helper-event-emitter": "^1.0.1",
+    "@haipham/javascript-helper-object": "^1.0.1",
+    "@haipham/javascript-helper-rxjs": "^1.0.1"
   },
   "devDependencies": {
     "@types/lodash-es": "*",
@@ -27,5 +27,5 @@
     "peerjs": "1.3.1",
     "rxjs": "6.6.3"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -1,7 +1,7 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
-    "@haipham/javascript-helper-utils": "^1.0.0",
+    "@haipham/javascript-helper-utils": "^1.0.1",
     "winston": "3.3.3"
   },
   "license": "MIT",
@@ -10,5 +10,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
