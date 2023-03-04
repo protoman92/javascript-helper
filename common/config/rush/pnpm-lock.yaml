@@ -10,6 +10,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -18,6 +19,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -29,6 +31,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -38,6 +41,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -48,6 +52,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -56,6 +61,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -67,6 +73,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -77,6 +84,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -88,6 +96,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -98,6 +107,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -110,6 +120,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -121,6 +132,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -131,6 +143,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -139,6 +152,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -149,6 +163,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -157,6 +172,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -172,6 +188,7 @@ importers:
       jest: ^29.4.3
       lodash: ^4.17.21
       lodash-es: ^4.17.21
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -186,6 +203,7 @@ importers:
       babel-jest: 29.4.3
       jest: 29.4.3
       lodash: 4.17.21
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -198,6 +216,7 @@ importers:
       babel-jest: ^29.4.3
       googleapis: '*'
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -208,6 +227,7 @@ importers:
       babel-jest: 29.4.3
       googleapis: 112.0.0
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -221,6 +241,7 @@ importers:
       google-auth-library: ~8.7.0
       googleapis: '*'
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -233,6 +254,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -253,6 +275,7 @@ importers:
       babel-jest: ^29.4.3
       graphql: 15.7.2
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -272,6 +295,7 @@ importers:
       babel-jest: 29.4.3
       graphql: 15.7.2
       jest: 29.4.3_@types+node@18.14.6
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -292,6 +316,7 @@ importers:
       graphql-iso-date: 3.6.1
       graphql-type-json: 0.3.2
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -311,6 +336,7 @@ importers:
       babel-jest: 29.4.3
       graphql: 15.7.2
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -323,6 +349,7 @@ importers:
       babel-jest: ^29.4.3
       gremlin: 3.4.8
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -334,6 +361,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -345,6 +373,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -355,6 +384,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -366,6 +396,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -376,6 +407,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -387,6 +419,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -397,6 +430,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -408,6 +442,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -420,6 +455,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -430,6 +466,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -438,6 +475,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -448,6 +486,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -456,6 +495,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -474,6 +514,7 @@ importers:
       jest-environment-jsdom: ~29.4.3
       lodash-es: ^4.17.21
       peerjs: ^1.4.7
+      prettier: 2.0.5
       rxjs: ^6.6.3
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
@@ -493,6 +534,7 @@ importers:
       babel-jest: 29.4.3
       jest: 29.4.3
       jest-environment-jsdom: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -505,6 +547,7 @@ importers:
       '@types/node': ^18.14.6
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -515,6 +558,7 @@ importers:
       '@types/node': 18.14.6
       babel-jest: 29.4.3
       jest: 29.4.3_@types+node@18.14.6
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -525,6 +569,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -533,6 +578,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -543,6 +589,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -551,6 +598,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -566,6 +614,7 @@ importers:
       babel-jest: ^29.4.3
       jest: ^29.4.3
       jest-environment-jsdom: ~29.4.3
+      prettier: 2.0.5
       react: '*'
       react-redux: '*'
       sort-json: ^2.0.1
@@ -581,6 +630,7 @@ importers:
       babel-jest: 29.4.3
       jest: 29.4.3
       jest-environment-jsdom: 29.4.3
+      prettier: 2.0.5
       react: 18.2.0
       react-redux: 8.0.5_7b08a519b01d2cb6137dcbdb0391a2df
       sort-json: 2.0.1
@@ -594,6 +644,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       rxjs: ^6.6.3
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
@@ -606,6 +657,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -616,6 +668,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       serverless-http: ^2.7.0
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
@@ -627,6 +680,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -639,6 +693,7 @@ importers:
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -650,6 +705,7 @@ importers:
       '@types/jest': 29.4.0
       babel-jest: 29.4.3
       jest: 29.4.3
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -664,6 +720,7 @@ importers:
       babel-jest: ^29.4.3
       exponential-backoff: ^3.1.1
       jest: ^29.4.3
+      prettier: 2.0.5
       sort-json: ^2.0.1
       ts-essentials: ^9.3.1
       ts-jest: ^29.0.5
@@ -677,6 +734,7 @@ importers:
       '@types/node': 18.14.6
       babel-jest: 29.4.3
       jest: 29.4.3_@types+node@18.14.6
+      prettier: 2.0.5
       sort-json: 2.0.1
       ts-essentials: 9.3.1_typescript@4.9.5
       ts-jest: 29.0.5_aefb5b5024546a469b99896e74224167
@@ -4859,6 +4917,12 @@ packages:
   /prelude-ls/1.1.2:
     resolution: {integrity: sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==}
     engines: {node: '>= 0.8.0'}
+    dev: true
+
+  /prettier/2.0.5:
+    resolution: {integrity: sha512-7PtVymN48hGcO4fGjybyBSIWDsLU4H4XlvOHfq91pz9kkGlonzwTfYkaIEwiRg/dAJF9YlbsduBAgtYLi+8cFg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /pretty-format/29.4.3:
