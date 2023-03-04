@@ -1,7 +1,7 @@
 import {
   DeepPartial,
   Resolvable,
-  Returnable
+  Returnable,
 } from "@haipham/javascript-helper-essential-types";
 import deepClone from "./deep_clone";
 import flipMutualExclusiveFlags from "./flip_exclusive_flags";

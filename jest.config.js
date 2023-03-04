@@ -5,9 +5,10 @@ module.exports = {
   moduleNameMapper: {
     "^lodash-es$": "lodash",
   },
+  passWithNoTests: true,
   roots: ["<rootDir>"],
   testMatch: [path.join("<rootDir>", "**", "*.(test|spec).(js|jsx|ts|tsx)")],
-  testEnvironment: "jsdom",
+  testEnvironment: "node",
   transform: {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.tsx?$": "ts-jest",

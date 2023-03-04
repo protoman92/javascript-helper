@@ -123,6 +123,7 @@ export default function createPeerClientFactory({
 
             function onOpen() {
               obs.next({ peerID, type: "OPEN" });
+              // @ts-expect-error
               conn.on("data", onData);
               conn.on("close", onClose);
 
@@ -145,6 +146,7 @@ export default function createPeerClientFactory({
             return () => {
               conn.off("error", onError);
               conn.off("open", onOpen);
+              // @ts-expect-error
               conn.off("data", onData);
               conn.off("close", onClose);
 

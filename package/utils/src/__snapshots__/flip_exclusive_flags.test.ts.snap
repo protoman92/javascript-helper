@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Flip exclusive flags Flipper with pre-supplied mappers should maintain type-safety 1`] = `
-Object {
+{
   "a": false,
   "b": true,
 }
 `;
 
 exports[`Flip exclusive flags Flipper with pre-supplied mappers should maintain type-safety 2`] = `
-Object {
+{
   "a": true,
   "b": false,
 }
 `;
 
 exports[`Flip exclusive flags Flipper with pre-supplied mappers should maintain type-safety 3`] = `
-Object {
+{
   "a": false,
   "b": true,
 }
 `;
 
 exports[`Flip exclusive flags Should work correctly 1`] = `
-Object {
+{
   "a": true,
   "b": false,
   "c": false,
@@ -30,7 +30,7 @@ Object {
 `;
 
 exports[`Flip exclusive flags Should work correctly 2`] = `
-Object {
+{
   "a": false,
   "b": true,
   "c": false,
@@ -38,7 +38,7 @@ Object {
 `;
 
 exports[`Flip exclusive flags Should work correctly 3`] = `
-Object {
+{
   "a": 1,
   "b": 2,
   "c": 3,
@@ -46,7 +46,7 @@ Object {
 `;
 
 exports[`Flip exclusive flags Should work correctly 4`] = `
-Object {
+{
   "a": 1,
   "b": 2,
   "c": 3,
@@ -54,7 +54,7 @@ Object {
 `;
 
 exports[`Flip exclusive flags Should work correctly 5`] = `
-Object {
+{
   "a": 1,
   "b": 2,
   "c": 3,
@@ -62,7 +62,7 @@ Object {
 `;
 
 exports[`Flip exclusive flags Should work correctly 6`] = `
-Object {
+{
   "a": 1,
   "b": 2,
   "c": 3,

@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Generic interceptor Add and remove interceptors should work 1`] = `
-Array [
-  Array [
-    Object {
-      "originalArguments": Array [
+[
+  [
+    {
+      "originalArguments": [
         1,
         2,
         3,
@@ -16,10 +16,10 @@ Array [
 `;
 
 exports[`Generic interceptor Add and remove interceptors should work 2`] = `
-Array [
-  Array [
-    Object {
-      "originalArguments": Array [
+[
+  [
+    {
+      "originalArguments": [
         1,
         2,
         3,

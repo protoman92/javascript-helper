@@ -7,6 +7,7 @@ import {
   gql,
   InMemoryCache,
   MutationOptions,
+  OperationVariables,
   QueryOptions,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
@@ -119,7 +120,7 @@ export function createApolloGraphQLClient<Cache = unknown>(
      * Send a GraphQL request without interceptors. This can be overriden
      * to provide additional functionalities, such as retries.
      */
-    requestWithoutInterceptors: async <A, R>({
+    requestWithoutInterceptors: async <A extends OperationVariables, R>({
       variables,
       ...args
     }: ExternalGraphQLRequestArgs<A, R>) => {
@@ -164,7 +165,7 @@ export function createApolloGraphQLClient<Cache = unknown>(
       }
     },
     /** Send a GraphQL request with interceptors */
-    request: async <A, R>(
+    request: async <A extends OperationVariables, R>(
       args: ExternalGraphQLRequestArgs<A, R>
     ): Promise<R> => {
       try {

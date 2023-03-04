@@ -1,5 +1,3 @@
-import {} from "util";
-
 declare global {
   interface Map<K, V> {
     entryArray(): [K, V][];
@@ -36,3 +34,5 @@ Map.prototype.setAll = function (map) {
 Map.prototype.valueArray = function () {
   return [...this.values()];
 };
+
+export {};

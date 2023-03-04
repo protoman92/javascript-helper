@@ -1,5 +1,3 @@
-import {} from "util";
-
 declare global {
   interface Set<T> {
     cloneShallow(): Set<T>;
@@ -14,3 +12,5 @@ Set.prototype.cloneShallow = function () {
 Set.prototype.toArray = function () {
   return [...this.values()];
 };
+
+export {};

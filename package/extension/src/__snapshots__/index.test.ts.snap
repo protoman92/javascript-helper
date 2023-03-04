@@ -2,13 +2,13 @@
 
 exports[`Array extensions toMap should work 1`] = `
 Map {
-  1 => Object {
+  1 => {
     "a": 1,
   },
-  2 => Object {
+  2 => {
     "a": 2,
   },
-  3 => Object {
+  3 => {
     "a": 3,
   },
 }
@@ -16,13 +16,13 @@ Map {
 
 exports[`Array extensions toMap should work 2`] = `
 Map {
-  1 => Object {
+  1 => {
     "a": 1,
   },
-  2 => Object {
+  2 => {
     "a": 2,
   },
-  3 => Object {
+  3 => {
     "a": 3,
   },
 }
@@ -30,13 +30,13 @@ Map {
 
 exports[`Array extensions toMap should work 3`] = `
 Map {
-  "1" => Object {
+  "1" => {
     "a": 1,
   },
-  "2" => Object {
+  "2" => {
     "a": 2,
   },
-  "3" => Object {
+  "3" => {
     "a": 3,
   },
 }

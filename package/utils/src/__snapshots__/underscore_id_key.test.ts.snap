@@ -1,17 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Underscore ID key Replace ID key 1`] = `
-Object {
+{
   "_id": 1,
-  "a": Object {
+  "a": {
     "_id": 2,
-    "b": Object {
+    "b": {
       "_id": 3,
       "c": "Big deal",
     },
     "c": "No big deal",
   },
-  "c": "\\"id\\":",
+  "c": ""id":",
   "d": "id:",
 }
 `;

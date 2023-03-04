@@ -1,8 +1,15 @@
 {
   "author": "Hai Pham <swiften.svc@gmail.com",
   "devDependencies": {
-    "@haipham/javascript-helper-essential-types": "^1.0.1",
-    "googleapis": "*"
+    "@haipham/javascript-helper-essential-types": "workspace:*",
+    "@types/jest": "^29.4.0",
+    "babel-jest": "^29.4.3",
+    "googleapis": "*",
+    "jest": "^29.4.3",
+    "sort-json": "^2.0.1",
+    "ts-essentials": "^9.0.0",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.3"
   },
   "license": "MIT",
   "main": "src/index.js",
@@ -12,6 +19,10 @@
   },
   "resolutions": {
     "googleapis": "59.0.0"
+  },
+  "scripts": {
+    "build": "echo \"Skipped\"",
+    "test": "jest"
   },
   "types": "src/index.d.ts",
   "version": "1.0.1"

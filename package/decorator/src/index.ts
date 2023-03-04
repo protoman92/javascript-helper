@@ -13,7 +13,7 @@ const _KEY_ORIGINAL_CLIENT =
  * object/class instances.
  */
 export function decorateClientMethods<
-  Client,
+  Client extends object,
   MethodName extends NonNullable<
     {
       [Key in keyof Client]: Client[Key] extends GenericAsyncFunction
