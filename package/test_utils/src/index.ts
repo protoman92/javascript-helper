@@ -1,25 +1,11 @@
-import { compose } from "@haipham/javascript-helper-compose";
-import {
-  DeepPartial,
-  GenericFunction,
-  MapKey,
-  MapValue,
-} from "@haipham/javascript-helper-essential-types";
+import { DeepPartial } from "ts-essentials";
 
-export type HigherOrderDescribe = () => GenericFunction;
-
-/** Compose a series of higher-order describe functions together into one */
-export function composeDescribe(...hfns: readonly HigherOrderDescribe[]) {
-  return compose(
-    ...hfns.map((hfn) => {
-      return (fn: GenericFunction) => {
-        return (...args: Parameters<typeof fn>) => {
-          fn();
-          hfn()(...args);
-        };
-      };
-    })
-  );
+export function asyncTimeout(timeoutMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(undefined);
+    }, timeoutMs);
+  });
 }
 
 export function mockSomething<T>(override: DeepPartial<T>): T {
@@ -32,12 +18,33 @@ export function mockSomeParameters<FN extends (...args: any[]) => any>(
   return override as Parameters<FN>;
 }
 
-interface MockMap {
-  <M extends Map<any, any> | null | undefined>(
-    ...args: DeepPartial<[MapKey<M>, MapValue<M>]>[]
-  ): NonNullable<M>;
+export function waitUntil(
+  predicate: () => Promise<boolean> | boolean,
+  {
+    intervalMs = 100,
+    timeoutErrorMessage = "Timed out",
+    timeoutMs = 5000,
+  }: Readonly<{
+    intervalMs?: number;
+    timeoutErrorMessage?: string;
+    timeoutMs?: number;
+  }> = {}
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
 
-  <K, V>(...args: DeepPartial<[K, V][]>): Map<K, V>;
+    async function _wait() {
+      const success = await predicate();
+
+      if (success) {
+        resolve(undefined);
+      } else if (Date.now() - startTime > timeoutMs) {
+        reject(new Error(timeoutErrorMessage));
+      } else {
+        setTimeout(_wait, intervalMs);
+      }
+    }
+
+    _wait();
+  });
 }
-
-export const mockMap: MockMap = (...args: any[]) => new Map(args as any);
