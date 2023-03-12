@@ -21,7 +21,6 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "target": "es2017",
-    "types": ["node", "jest"]
+    "target": "es2017"
   }
 }

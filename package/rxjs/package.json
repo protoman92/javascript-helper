@@ -2,13 +2,13 @@
   "author": "Hai Pham <swiften.svc@gmail.com",
   "dependencies": {
     "@haipham/javascript-helper-essential-types": "workspace:*",
-    "rxjs": "^6.6.3"
+    "rxjs": "^7.5.6"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
     "babel-jest": "^29.4.3",
     "jest": "^29.4.3",
-    "prettier": "2.0.5",
+    "prettier": "^2.7.1",
     "sort-json": "^2.0.1",
     "ts-essentials": "^9.3.1",
     "ts-jest": "^29.0.5",
@@ -19,9 +19,6 @@
   "name": "@haipham/javascript-helper-rxjs",
   "publishConfig": {
     "access": "public"
-  },
-  "resolutions": {
-    "rxjs": "6.6.3"
   },
   "scripts": {
     "build": "echo \"Skipped\"",
