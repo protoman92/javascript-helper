@@ -8,6 +8,12 @@ export function asyncTimeout(timeoutMs: number): Promise<void> {
   });
 }
 
+export function formatTransformIgnorePatternsForPNPM(
+  ...dependencies: string[]
+): readonly string[] {
+  return [`node_modules/(?!.pnpm|${dependencies.join("|")})`];
+}
+
 export function mockSomething<T>(override: DeepPartial<T>): T {
   return override as T;
 }

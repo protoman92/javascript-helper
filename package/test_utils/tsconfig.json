@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["ES2019", "DOM"]
+    "declaration": true,
+    "lib": ["ES2019", "DOM"],
+    "noEmit": false,
+    "outDir": "build"
   },
+  "exclude": ["build", "jest.config.js"],
   "extends": "../../tsconfig.json"
 }
