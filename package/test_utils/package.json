@@ -21,6 +21,6 @@
     "build": "rm -rf build && tsc",
     "test": "jest"
   },
-  "types": "index.d.ts",
+  "types": "build/index.d.ts",
   "version": "1.0.1"
 }
