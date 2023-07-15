@@ -238,7 +238,7 @@ importers:
       '@haipham/javascript-helper-preconditions': workspace:*
       '@types/jest': ^29.4.0
       babel-jest: ^29.4.3
-      google-auth-library: ~8.7.0
+      google-auth-library: ^8.7.0
       googleapis: '*'
       jest: ^29.4.3
       prettier: ^2.7.1
