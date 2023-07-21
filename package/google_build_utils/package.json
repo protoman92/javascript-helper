@@ -2,8 +2,10 @@
   "author": "Hai Pham <swiften.svc@gmail.com",
   "devDependencies": {
     "@haipham/javascript-helper-essential-types": "workspace:*",
+    "@types/fs-extra": "^11.0.1",
     "@types/jest": "^29.4.0",
     "babel-jest": "^29.4.3",
+    "fs-extra": "^11.1.0",
     "googleapis": "*",
     "jest": "^29.4.3",
     "prettier": "^2.7.1",
